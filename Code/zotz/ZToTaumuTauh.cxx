@@ -8,6 +8,12 @@
 #include "SkimConfig.h"
 #include "PDG_Var.h"
 #include "SimpleFits/FitSoftware/interface/PDGInfo.h"
+#include "SimpleFits/FitSoftware/interface/TrackParticle.h"
+#include "SimpleFits/FitSoftware/interface/LorentzVectorParticle.h"
+#include "SimpleFits/FitSoftware/interface/MultiProngTauSolver.h"
+#include "SimpleFits/FitSoftware/interface/ErrorMatrixPropagator.h"
+#include "SimpleFits/FitSoftware/interface/TauA1NuConstrainedFitter.h"
+#include "SimpleFits/FitSoftware/interface/DiTauConstrainedFitter.h"
 
 ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
   Selection(Name_,id_),
@@ -888,6 +894,32 @@ void  ZToTaumuTauh::doEvent(){
 	  else std::cout << "Event failed selection" << std::endl;
 	  std::cout << "------------------------" << std::endl;
   }
+
+  //DiTau Reco
+  if(status && value.at(TauFLSigma) != TauFLSigmaDummy){
+	  for(unsigned Ambiguity=0; Ambiguity<3; Ambiguity++){
+		  LorentzVectorParticle theTau;
+		  std::vector<LorentzVectorParticle> daughter;
+		  double LC_chi2;
+		  double phisign;
+		  LorentzVectorParticle theZ;
+		  LorentzVectorParticle TauA1 = Ntp->PFTau_a1_lvp(selTau);
+		  std::vector<LorentzVectorParticle> Daughters;
+		  int Niterat;
+		  double csum;
+
+		  if(Ntp->ThreeProngTauFit(selTau, Ambiguity, theTau, daughter, LC_chi2, phisign)){
+			  Ntp->EventFit(Ambiguity, selMuon_Iso, TauA1, theZ, Daughters, LC_chi2, Niterat, csum);
+			  if(theZ.Mass() >= 0){
+				  std::cout << theZ.Mass() << std::endl;
+			  	  std::cout << Niterat << std::endl;
+			  	  std::cout << csum << std::endl;
+			  	  std::cout << LC_chi2 << std::endl;
+			  }
+		  }
+	  }
+  }
+
   ///////////////////////////////////////////////////////////
   // Add plots
   if(status){

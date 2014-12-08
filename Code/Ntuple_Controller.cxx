@@ -1425,7 +1425,20 @@ std::vector<TVector3> Ntuple_Controller::PFTau_daughterTracks_poca(unsigned int 
   }
   return poca;
 }
-   
+
+bool Ntuple_Controller::AmbiguitySolver(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Probs,   int &IndexToReturn, bool &AmbuguityPoint){
+
+  if(EventFit.at(0) == true && EventFit.at(1) == false && EventFit.at(2) == false){IndexToReturn =0; AmbuguityPoint = true; return true;}
+  if(EventFit.at(1) == true && EventFit.at(2) == false){ IndexToReturn = 1;AmbuguityPoint = false;return true;}
+  if(EventFit.at(1) == false && EventFit.at(2) == true){ IndexToReturn = 2;AmbuguityPoint = false;return true;}
+
+  if((A1Fit.at(1) == true && A1Fit.at(2) == true) && (EventFit.at(1) == true && EventFit.at(2) == true)){
+    if(Probs.at(1)  >Probs.at(2) ){ IndexToReturn  =1;AmbuguityPoint = false;return true;}
+    if(Probs.at(1)  <Probs.at(2) ){ IndexToReturn  =2;AmbuguityPoint = false;return true;}
+    //  std::cout<< " probs 1,2  "<< Probs.at(1) <<"  "<< Probs.at(2)<<std::endl;
+  }
+  return false;
+}
 
 TMatrixTSym<double> Ntuple_Controller::PF_Tau_FlightLegth3d_TauFrame_cov(unsigned int i){
   TVector3 f=PFTau_FlightLength3d(i);

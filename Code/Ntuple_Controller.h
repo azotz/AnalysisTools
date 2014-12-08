@@ -49,6 +49,7 @@
 #include "SimpleFits/FitSoftware/interface/MultiProngTauSolver.h"
 #include "SimpleFits/FitSoftware/interface/ErrorMatrixPropagator.h"
 #include "SimpleFits/FitSoftware/interface/TauA1NuConstrainedFitter.h"
+#include "SimpleFits/FitSoftware/interface/DiTauConstrainedFitter.h"
 
 // Rochester muon momentum correction
 #include "CommonFiles/rochcor2012jan22.h"
@@ -438,23 +439,78 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
    double   PFTau_FlightLength_error(unsigned int i){return sqrt(PF_Tau_FlightLegth3d_TauFrame_cov(i)(LorentzVectorParticle::vz,LorentzVectorParticle::vz));}
    double   PFTau_FlightLength(unsigned int i){return PFTau_FlightLength3d(i).Mag();}
    
-   bool ThreeProngTauFit(unsigned int i, unsigned int j,LorentzVectorParticle &theTau,std::vector<LorentzVectorParticle> &daughter,double &LC_chi2){
-     if(Ntp->PFTau_TIP_secondaryVertex_vtxchi2->at(i).size()==1 && Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar){
-       // Tau Solver
-       TVector3 pv=PFTau_TIP_primaryVertex_pos(i);
-       TMatrixTSym<double> pvcov=PFTau_TIP_primaryVertex_cov(i);
-       LorentzVectorParticle a1=PFTau_a1_lvp(i);
-       TauA1NuConstrainedFitter TauA1NU(j,a1,pv,pvcov);
-       bool fitStatus= TauA1NU.Fit();
-       if(fitStatus){
-	 theTau=TauA1NU.GetMother();
-	 daughter=TauA1NU.GetReFitDaughters();
-	 return  true;
-       }
-     }
-     return false;
+   bool ThreeProngTauFit(unsigned int i, unsigned int j,LorentzVectorParticle &theTau,std::vector<LorentzVectorParticle> &daughter,double &LC_chi2, double &phisign){
+	   if(Ntp->PFTau_TIP_secondaryVertex_vtxchi2->at(i).size()==1 && Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar){
+		   // Tau Solver
+		   TVector3 pv=PFTau_TIP_primaryVertex_pos(i);
+		   TMatrixTSym<double> pvcov=PFTau_TIP_primaryVertex_cov(i);
+		   LorentzVectorParticle a1=PFTau_a1_lvp(i);
+		   TauA1NuConstrainedFitter TauA1NU(j,a1,pv,pvcov);
+		   bool fitStatus= TauA1NU.Fit();
+		   if(fitStatus){
+			   phisign =TauA1NU.GetTauRotationSignificance();
+			   theTau=TauA1NU.GetMother();
+			   //	 std::cout<<" theTau.Px()   "<< theTau.LV().Px() <<"   " <<" theTau.Py()   "<< theTau.LV().Py() <<"   " <<" theTau.Pz()   "<< theTau.LV().Pz() <<"   " <<std::endl;
+			   daughter=TauA1NU.GetReFitDaughters();
+			   return true;
+		   }
+	   }
+	   return false;
    }
-   
+
+/*    bool ThreeProngTauFit(unsigned int i, unsigned int j,LorentzVectorParticle &theTau,std::vector<LorentzVectorParticle> &daughter,double &LC_chi2){ */
+/*      if(Ntp->PFTau_TIP_secondaryVertex_vtxchi2->at(i).size()==1 && Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar){ */
+/*        // Tau Solver */
+/*        TVector3 pv=PFTau_TIP_primaryVertex_pos(i); */
+/*        TMatrixTSym<double> pvcov=PFTau_TIP_primaryVertex_cov(i); */
+/*        LorentzVectorParticle a1=PFTau_a1_lvp(i); */
+/*        TauA1NuConstrainedFitter TauA1NU(j,a1,pv,pvcov); */
+/*        bool fitStatus= TauA1NU.Fit(); */
+/*        if(fitStatus){ */
+/* 	 theTau=TauA1NU.GetMother(); */
+/* 	 daughter=TauA1NU.GetReFitDaughters(); */
+/* 	 return  true; */
+/*        } */
+/*      } */
+/*      return false; */
+/*    } */
+   bool EventFit(unsigned int i, unsigned int MuonIndex, LorentzVectorParticle TauA1, LorentzVectorParticle &theZ,std::vector<LorentzVectorParticle> &Daughters,double &LC_chi2, int &Niterat, double &csum){
+	   TrackParticle Muon = Muon_TrackParticle(MuonIndex);
+	   TLorentzVector MuonLV = TLorentzVector(Ntp->Muon_p4->at(MuonIndex).at(1),Ntp->Muon_p4->at(MuonIndex).at(2),Ntp->Muon_p4->at(MuonIndex).at(3),Ntp->Muon_p4->at(MuonIndex).at(0));
+
+	   if(Ntp->PFTau_TIP_secondaryVertex_vtxchi2->at(i).size()==1 &&
+          Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar){
+		   // Tau Solver
+		   TVector3 pv=PFTau_TIP_primaryVertex_pos(i);
+		   TMatrixTSym<double> pvcov=PFTau_TIP_primaryVertex_cov(i);
+		   TVector3 MuonPoca(Ntp->Muon_Poca->at(MuonIndex).at(0),Ntp->Muon_Poca->at(MuonIndex).at(1),Ntp->Muon_Poca->at(MuonIndex).at(2));
+		   std::cout << "DiTau before" << std::endl;
+		   DiTauConstrainedFitter Z2Tau(TauA1, Muon, pv, pvcov);
+		   std::cout << "DiTau After" << std::endl;
+		   Z2Tau.SetMaxDelta(0.5);
+		   Z2Tau.SetNIterMax(1000);
+		   Z2Tau.SetEpsilon(0.001);
+
+		   bool fitStatus= Z2Tau.Fit();
+		   if(fitStatus && Z2Tau.isConverged()){
+			   Daughters = Z2Tau.GetReFitDaughters();
+			   LorentzVectorParticle TZ=Z2Tau.GetMother();
+			   theZ = Z2Tau.GetMother();
+			   LorentzVectorParticle TauMuInitialEstimate =Z2Tau.GetTauMuEstimate();
+
+			   daughter=Z2Tau.GetReFitDaughters();
+			   LC_chi2=Z2Tau.ChiSquare();
+			   Niterat = Z2Tau.NIter();
+			   csum = Z2Tau.CSum();
+
+			   return  true;
+		   }
+	   }
+	   return false;
+   }
+
+   bool AmbiguitySolver(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Probs,   int &IndexToReturn, bool &AmbuguityPoint);
+
    ////////////////////////////////////////////////
    // wrapper for backwards compatibility to KFit do not use in new code!!!
    int NKFTau(){return NPFTaus();}
@@ -464,52 +520,52 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
      return false;
    }
 
-   bool KFTau_discriminatorByKFit(unsigned int i, unsigned int j=0){
-     LorentzVectorParticle theTau;
-     std::vector<LorentzVectorParticle> daughter;
-     double LC_chi2;
-     return ThreeProngTauFit(i,j,theTau,daughter,LC_chi2);
-   }
+/*    bool KFTau_discriminatorByKFit(unsigned int i, unsigned int j=0){ */
+/*      LorentzVectorParticle theTau; */
+/*      std::vector<LorentzVectorParticle> daughter; */
+/*      double LC_chi2; */
+/*      return ThreeProngTauFit(i,j,theTau,daughter,LC_chi2); */
+/*    } */
 
-   TLorentzVector KFTau_TauFit_p4(unsigned int i, unsigned int j=0){
-     LorentzVectorParticle theTau;
-     std::vector<LorentzVectorParticle> daughter;
-     double LC_chi2;
-     if(ThreeProngTauFit(i,j,theTau,daughter,LC_chi2))return theTau.LV();return TLorentzVector(0,0,0,0);
-   }
+/*    TLorentzVector KFTau_TauFit_p4(unsigned int i, unsigned int j=0){ */
+/*      LorentzVectorParticle theTau; */
+/*      std::vector<LorentzVectorParticle> daughter; */
+/*      double LC_chi2; */
+/*      if(ThreeProngTauFit(i,j,theTau,daughter,LC_chi2))return theTau.LV();return TLorentzVector(0,0,0,0); */
+/*    } */
    int KFTau_MatchedHPS_idx(unsigned int i){return i;}
-   bool isGoodKFTau(unsigned int i,unsigned int j=0){
-     LorentzVectorParticle theTau;
-     std::vector<LorentzVectorParticle> daughter;
-     double LC_chi2;
-     if(ThreeProngTauFit(i,j,theTau,daughter,LC_chi2)){
-       if(KFTau_discriminatorByQC(i,j)){
-	 if(PFTau_hpsDecayMode(KFTau_MatchedHPS_idx(i)) == 10 && PFTau_isHPSByDecayModeFinding(i)){
-	   if(PFTau_isVLooseIsolationDBSumPtCorr(KFTau_MatchedHPS_idx(i))){
-	     return true;
-	   }
-	 }
-       }
-     }
-     return false;
-   }
+/*    bool isGoodKFTau(unsigned int i,unsigned int j=0){ */
+/*      LorentzVectorParticle theTau; */
+/*      std::vector<LorentzVectorParticle> daughter; */
+/*      double LC_chi2; */
+/*      if(ThreeProngTauFit(i,j,theTau,daughter,LC_chi2)){ */
+/*        if(KFTau_discriminatorByQC(i,j)){ */
+/* 	 if(PFTau_hpsDecayMode(KFTau_MatchedHPS_idx(i)) == 10 && PFTau_isHPSByDecayModeFinding(i)){ */
+/* 	   if(PFTau_isVLooseIsolationDBSumPtCorr(KFTau_MatchedHPS_idx(i))){ */
+/* 	     return true; */
+/* 	   } */
+/* 	 } */
+/*        } */
+/*      } */
+/*      return false; */
+/*    } */
    
-   TLorentzVector   KFTau_TauVis_p4(unsigned int i,unsigned int j=0){return PFTau_a1_lvp(i).LV();}
-   TLorentzVector   KFTau_Neutrino_p4(unsigned int i,unsigned int j=0){return (KFTau_TauFit_p4(i,j)-PFTau_a1_lvp(i).LV());}
+/*    TLorentzVector   KFTau_TauVis_p4(unsigned int i,unsigned int j=0){return PFTau_a1_lvp(i).LV();} */
+/*    TLorentzVector   KFTau_Neutrino_p4(unsigned int i,unsigned int j=0){return (KFTau_TauFit_p4(i,j)-PFTau_a1_lvp(i).LV());} */
    int      KFTau_nKinTaus(){return NKFTau();}
    int      KFTau_indexOfFitInfo(unsigned int i){return i;}
    TVector3 KFTau_Fit_TauPrimVtx(unsigned int i){return PFTau_TIP_primaryVertex_pos(i);}
    float    KFTau_Fit_ndf(unsigned int i,unsigned int j=0){return PFTau_TIP_secondaryVertex_vtxndof(i);}
-   float    KFTau_Fit_chi2(unsigned int i,unsigned int j=0){
-     LorentzVectorParticle theTau;
-     std::vector<LorentzVectorParticle> daughter;
-     double LC_chi2;
-     if(ThreeProngTauFit(i,j,theTau,daughter,LC_chi2)){
-       return PFTau_TIP_secondaryVertex_vtxchi2(i)+LC_chi2;
-     }
-     return 999;
-   }
-   float    KFTau_Fit_Chi2Prob(unsigned int i,unsigned int j=0){return TMath::Prob(KFTau_Fit_chi2(i,j),(int)KFTau_Fit_ndf(i,j));}
+/*    float    KFTau_Fit_chi2(unsigned int i,unsigned int j=0){ */
+/*      LorentzVectorParticle theTau; */
+/*      std::vector<LorentzVectorParticle> daughter; */
+/*      double LC_chi2; */
+/*      if(ThreeProngTauFit(i,j,theTau,daughter,LC_chi2)){ */
+/*        return PFTau_TIP_secondaryVertex_vtxchi2(i)+LC_chi2; */
+/*      }  */
+/*      return 999; */
+/*    } */
+//   float    KFTau_Fit_Chi2Prob(unsigned int i,unsigned int j=0){return TMath::Prob(KFTau_Fit_chi2(i,j),(int)KFTau_Fit_ndf(i,j));}
    int      KFTau_Fit_charge(unsigned int i){if(Ntp->PFTau_a1_charge->at(i).size()>0) return Ntp->PFTau_a1_charge->at(i).at(0); return 0;}
    int      KFTau_Fit_csum(unsigned int i,unsigned int j=0){return 0;}
    int      KFTau_Fit_iterations(unsigned int i, unsigned int j=0){return 0;}
