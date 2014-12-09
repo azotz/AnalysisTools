@@ -24,9 +24,9 @@ class ZToTaumuTauh : public Selection {
 	  NTauKin,
 	  NTauIso,
 	  ChargeSum,
-	  MT_MuMET,
 	  TauDecayMode,
 	  TauFLSigma,
+	  MT_MuMET,
 	  NCuts};
 
  protected:
@@ -79,6 +79,8 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> dPhi_DiTauGen, Pt_DiTauGen, Pt_ZGen, M_ZGen, M_DiTauPtBalance, dM_DiTau, dPt_GenTaumuPtBalance, dP_GenTaumuPtBalance, dP_GenTauh;
   std::vector<TH2D> dP_GenTauMuPtBalance_vs_dPTauh, Pt_vs_dPhi_DiTauGen;
   std::vector<TH2D> TauFLSigmaCut_vs_Res, TauFLSigma_vs_Res;
+
+  std::vector<TH1D> Reco_ZMass, Reco_Solution;
 
   std::vector<TH1D> NQCD;
   std::vector<TH1D> QCD_MT_MuMET_A, QCD_MT_MuMET_B, QCD_MT_MuMET_C, QCD_MT_MuMET_D;
