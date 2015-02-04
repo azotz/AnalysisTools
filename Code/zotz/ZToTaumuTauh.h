@@ -42,13 +42,12 @@ class ZToTaumuTauh : public Selection {
 
   double OneProngNoPiWeight;
   //dummy values
-  int TriggerOkDummy, selVertexDummy, selMuon_IsoDummy, selMuon_AntiIsoDummy, selTauDummy, ChargeSumDummy;
+  int TriggerOkDummy, selVertexDummy, selMuonDummy, selTauDummy, ChargeSumDummy;
   double MTDummy, MvisDummy, TauFLSigmaDummy;
 
   int Charge;
   double SB_lowerLimit, SB_upperLimit;
   bool Scaleby_Counting;
-  TString tau_corr;
   bool verbose, Use_Embedded;
 
   // Histograms
@@ -80,7 +79,16 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH2D> dP_GenTauMuPtBalance_vs_dPTauh, Pt_vs_dPhi_DiTauGen;
   std::vector<TH2D> TauFLSigmaCut_vs_Res, TauFLSigma_vs_Res;
 
-  std::vector<TH1D> Reco_ZMass, Reco_Solution;
+  std::vector<TH1D> TPTF_TauA1_pRes_BestSolution, TPTF_TauA1_pRes_FitSolution;
+  std::vector<TH2D> TPTF_TauA1_BestSolution_vs_FitSolution, TPTF_TauA1_pRes_vs_GenA1Mass_BestSolution, TPTF_TauA1_pRes_vs_GenA1Mass_FitSolution, TPTF_TauA1_pRes_vs_GenGJAngle_FitSolution, TPTF_TauA1_pRes_vs_GenGJAngle_BestSolution, TPTF_TauA1_pRes_vs_RecoChi2_FitSolution;
+  std::vector<TH2D> TPTF_A1_pRes_vs_GenGJAngle;
+  std::vector<TH2D> TPTF_TauA1_pRes_vs_RecoA1Mass_FitSolution, TPTF_TauA1_pRes_vs_RecoGJAngle_FitSolution, TPTF_A1_pRes_vs_RecoGJAngle;
+
+  std::vector<TH1D> Reco_ZMass, Reco_ZMass_UnboostedGenZ, Reco_EventFit_Solution, Reco_A1Fit_Solution, Reco_Chi2, Reco_Chi2_FitSolutionOnly, Reco_Chi2_FitSolutionOnlyLargeScale, Reco_ConstrainedDeltaSum, Reco_ConstrainedDeltaMass, Reco_ConstrainedDeltaPt, Reco_NIter;
+  std::vector<TH1D> GenReco_ZMass, GenReco_EventFit_Solution, GenReco_A1Fit_Solution, GenReco_Chi2, GenReco_Chi2_FitSolutionOnly, GenReco_ConstrainedDeltaSum, GenReco_NIter;
+  std::vector<TH1D> Reco_PtRes_TauA1, Reco_PtRes_TauMu;
+  std::vector<TH1D> Reco_ZMass_MassScan, Reco_ZMasswithProbWeight_MassScan, Reco_ProbStack_MassScan, Reco_ZMass_PDF;
+  std::vector<TH1D> GenZ_Pt_Unboosted, RecoZ_Pt_Unboosted;
 
   std::vector<TH1D> NQCD;
   std::vector<TH1D> QCD_MT_MuMET_A, QCD_MT_MuMET_B, QCD_MT_MuMET_C, QCD_MT_MuMET_D;

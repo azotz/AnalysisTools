@@ -474,7 +474,7 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 /*      } */
 /*      return false; */
 /*    } */
-   bool EventFit(unsigned int i, unsigned int MuonIndex, LorentzVectorParticle TauA1, LorentzVectorParticle &theZ,std::vector<LorentzVectorParticle> &Daughters,double &LC_chi2, int &Niterat, double &csum){
+   bool EventFit(unsigned int i, unsigned int MuonIndex, LorentzVectorParticle TauA1, LorentzVectorParticle &theZ,std::vector<LorentzVectorParticle> &Daughters,double &LC_chi2, int &Niterat, double &csum, double MassConstraint){
 	   TrackParticle Muon = Muon_TrackParticle(MuonIndex);
 	   TLorentzVector MuonLV = TLorentzVector(Ntp->Muon_p4->at(MuonIndex).at(1),Ntp->Muon_p4->at(MuonIndex).at(2),Ntp->Muon_p4->at(MuonIndex).at(3),Ntp->Muon_p4->at(MuonIndex).at(0));
 
@@ -485,8 +485,9 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 		   TMatrixTSym<double> pvcov=PFTau_TIP_primaryVertex_cov(i);
 		   TVector3 MuonPoca(Ntp->Muon_Poca->at(MuonIndex).at(0),Ntp->Muon_Poca->at(MuonIndex).at(1),Ntp->Muon_Poca->at(MuonIndex).at(2));
 		   DiTauConstrainedFitter Z2Tau(TauA1, Muon, pv, pvcov);
-		   Z2Tau.SetMaxDelta(0.5);
-		   Z2Tau.SetNIterMax(1000);
+		   Z2Tau.SetMassConstraint(MassConstraint);
+		   Z2Tau.SetMaxDelta(0.1);
+		   Z2Tau.SetNIterMax(100);
 		   Z2Tau.SetEpsilon(0.001);
 
 		   bool fitStatus= Z2Tau.Fit();
