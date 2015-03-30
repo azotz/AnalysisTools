@@ -1401,17 +1401,37 @@ LorentzVectorParticle Ntuple_Controller::PFTau_a1_lvp(unsigned int i){
 
 std::vector<TrackParticle> Ntuple_Controller::PFTau_daughterTracks(unsigned int i){
   std::vector<TrackParticle> daughter;
-  for(unsigned int d=0;d<Ntp->PFTau_daughterTracks_poca->at(i).size();d++){
+  //std::cout << "selTau no. " << i << std::endl;
+  //std::cout << "Ntp->PFTau_daughterTracks_poca->size() " << Ntp->PFTau_daughterTracks_poca->size() << std::endl;
+  //std::cout << "Ntp->PFTau_daughterTracks->size() " << Ntp->PFTau_daughterTracks->size() << std::endl;
+  for(unsigned int d=0;d<Ntp->PFTau_daughterTracks->at(i).size();d++){
+    //std::cout << "Pion daughter no. " << d << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_poca->at(i).size() " << Ntp->PFTau_daughterTracks_poca->at(i).size() << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks->at(i).size() " << Ntp->PFTau_daughterTracks->at(i).size() << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_M->at(i).size() " << Ntp->PFTau_daughterTracks_M->at(i).size() << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_charge->at(i).size() " << Ntp->PFTau_daughterTracks_charge->at(i).size() << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_pdgid->at(i).size() " << Ntp->PFTau_daughterTracks_pdgid->at(i).size() << std::endl;
     TMatrixT<double>    a1_par(TrackParticle::NHelixPar,1);
     TMatrixTSym<double> a1_cov(TrackParticle::NHelixPar);
     int l=0;
+    //std::cout << "Ntp->PFTau_daughterTracks_M->at(i).at(d)  Pion Mass: " << Ntp->PFTau_daughterTracks_M->at(i).at(d) << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_poca->at(i).at(d) " << Ntp->PFTau_daughterTracks_poca->at(i).at(d).at(0) << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_poca->at(i).at(d) " << Ntp->PFTau_daughterTracks_poca->at(i).at(d).at(1) << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_poca->at(i).at(d) " << Ntp->PFTau_daughterTracks_poca->at(i).at(d).at(2) << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_charge->at(i).at(d) " << Ntp->PFTau_daughterTracks_charge->at(i).at(d) << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_pdgid->at(i).at(d) " << Ntp->PFTau_daughterTracks_pdgid->at(i).at(d) << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_B->at(i).at(d) " << Ntp->PFTau_daughterTracks_B->at(i).at(d) << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks_M->at(i).at(d) " << Ntp->PFTau_daughterTracks_M->at(i).at(d) << std::endl;
+    //std::cout << "Ntp->PFTau_daughterTracks->at(i).at(d).size() " << Ntp->PFTau_daughterTracks->at(i).at(d).size() << std::endl;
+    if(Ntp->PFTau_daughterTracks->at(i).at(d).size() == TrackParticle::NHelixPar){
     for(int k=0; k<TrackParticle::NHelixPar; k++){
       a1_par(k,0)=Ntp->PFTau_daughterTracks->at(i).at(d).at(k);
       for(int j=k; j<TrackParticle::NHelixPar; j++){
-	a1_cov(k,j)=Ntp->PFTau_daughterTracks->at(i).at(d).at(l);
-	a1_cov(j,k)=Ntp->PFTau_daughterTracks->at(i).at(d).at(l);
+	a1_cov(k,j)=Ntp->PFTau_daughterTracks_cov->at(i).at(d).at(l);
+	a1_cov(j,k)=Ntp->PFTau_daughterTracks_cov->at(i).at(d).at(l);
 	l++;
       }
+    }
     }
     daughter.push_back(TrackParticle(a1_par,a1_cov,Ntp->PFTau_daughterTracks_pdgid->at(i).at(d),Ntp->PFTau_daughterTracks_M->at(i).at(d),Ntp->PFTau_daughterTracks_charge->at(i).at(d),Ntp->PFTau_daughterTracks_B->at(i).at(d)));
   }
@@ -1426,7 +1446,17 @@ std::vector<TVector3> Ntuple_Controller::PFTau_daughterTracks_poca(unsigned int 
   return poca;
 }
 
-bool Ntuple_Controller::AmbiguitySolver(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Probs,   int &IndexToReturn, bool &AmbiguityPoint){
+//All ReFitTracks are evaluated at the fitted secondary vertex TODO: save TrackParticle also for full helix parametrization
+std::vector<TLorentzVector> Ntuple_Controller::PFTau_daughterReFitTracks_p4(unsigned int i){
+  std::vector<TLorentzVector> refittracks_p4;
+  for(unsigned int d=0; d<Ntp->PFTau_PionsP4->at(i).size(); d++){
+    TLorentzVector TLV(Ntp->PFTau_PionsP4->at(i).at(d).at(0), Ntp->PFTau_PionsP4->at(i).at(d).at(1), Ntp->PFTau_PionsP4->at(i).at(d).at(2), Ntp->PFTau_PionsP4->at(i).at(d).at(3));
+    refittracks_p4.push_back(TLV);
+  }
+  return refittracks_p4;
+}
+
+bool Ntuple_Controller::AmbiguitySolver(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Probs, int &IndexToReturn, bool &AmbiguityPoint){
 
   if(EventFit.at(0) == true && EventFit.at(1) == false && EventFit.at(2) == false){IndexToReturn =0; AmbiguityPoint = true; return true;}
   if(EventFit.at(1) == true && EventFit.at(2) == false){ IndexToReturn = 1;AmbiguityPoint = false;return true;}
@@ -1435,6 +1465,19 @@ bool Ntuple_Controller::AmbiguitySolver(std::vector<bool> A1Fit, std::vector<boo
   if((A1Fit.at(1) == true && A1Fit.at(2) == true) && (EventFit.at(1) == true && EventFit.at(2) == true)){
     if(Probs.at(1)  >Probs.at(2) ){ IndexToReturn  =1;AmbiguityPoint = false;return true;}
     if(Probs.at(1)  <Probs.at(2) ){ IndexToReturn  =2;AmbiguityPoint = false;return true;}
+    //  std::cout<< " probs 1,2  "<< Probs.at(1) <<"  "<< Probs.at(2)<<std::endl;
+  }
+  return false;
+}
+bool Ntuple_Controller::AmbiguitySolverByChi2(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Chi2s, int &IndexToReturn, bool &AmbiguityPoint){
+
+  if(EventFit.at(0) == true && EventFit.at(1) == false && EventFit.at(2) == false){IndexToReturn =0; AmbiguityPoint = true; return true;}
+  if(EventFit.at(1) == true && EventFit.at(2) == false){ IndexToReturn = 1; AmbiguityPoint = false;return true;}
+  if(EventFit.at(1) == false && EventFit.at(2) == true){ IndexToReturn = 2; AmbiguityPoint = false;return true;}
+
+  if((A1Fit.at(1) == true && A1Fit.at(2) == true) && (EventFit.at(1) == true && EventFit.at(2) == true)){
+    if(Chi2s.at(1) < Chi2s.at(2) && Chi2s.at(1) > 0){ IndexToReturn =1; AmbiguityPoint = false;return true;}
+    if(Chi2s.at(1) > Chi2s.at(2) && Chi2s.at(2) > 0){ IndexToReturn =2; AmbiguityPoint = false;return true;}
     //  std::cout<< " probs 1,2  "<< Probs.at(1) <<"  "<< Probs.at(2)<<std::endl;
   }
   return false;
@@ -1475,6 +1518,10 @@ TVector3 Ntuple_Controller::PF_Tau_FlightLegth3d_TauFrame(unsigned int i){
   Res(4,0)=f.Theta();
   TMatrixT<double> Resp=MultiProngTauSolver::RotateToTauFrame(Res);
   return TVector3(Resp(0,0),Resp(1,0),Resp(2,0));
+}
+
+double Ntuple_Controller::PFTau_Mass(unsigned int i){
+  return Ntp->PFTau_Mass(i);
 }
 
 double Ntuple_Controller::dxySigned(TLorentzVector fourvector, TVector3 poca, TVector3 vtx){

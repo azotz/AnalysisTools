@@ -62,8 +62,8 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> NSignal_SB_WJets;
   std::vector<TH1D> NSB_Data;
   std::vector<TH1D> NSB;
-  std::vector<TH1D> Mu_pt, Mu_eta, Mu_phi, Tau_pt, Tau_eta, Tau_phi, MET_phi;
-  std::vector<TH1D> TauFL, TauFLSigned, TauFLSigmaSigned, TauFLSigmaUnsigned;
+  std::vector<TH1D> Mu_pt, Mu_eta, Mu_phi, Tau_pt, Tau_eta, Tau_phi, Tau_Mass_Inclusive, Tau_Mass_sq_Inclusive, Tau_Mass_Inclusive_NoTLV, Tau_Mass_Inclusive_UnFitTracks, Tau_Mass_Inclusive_ReFitTracks, Tau_Mass_Difference_PFTau_UnFitTracks_3PS, MET_phi;
+  std::vector<TH1D> TauFL_NoTauFLSigmaCut, TauFLSigned_NoTauFLSigmaCut, TauFLSigmaSigned, TauFLSigmaUnsigned;
   std::vector<TH1D> A1mass, A1mass10GeV;
 
   std::vector<TH1D> Mvis3Prong, Mvis1Prong, MvisIncl;
@@ -72,22 +72,49 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> dR_selTauh_genTauh, dR_selMu_genMu;
   std::vector<TH1D> POCAPV_Mag;
   std::vector<TH1D> Phi_SVPV, Phi_genTauh, Theta_SVPV, Theta_genTauh, dPhi_SVPV_genTauh, dTheta_SVPV_genTauh, Angle_SVPV_genTauh;
+  std::vector<TH2D> dPhi_SVPV_genTauh_vs_TauFL, dPhi_SVPV_genTauhPlus_vs_TauFL, dPhi_SVPV_genTauhMinus_vs_TauFL;
   std::vector<TH1D> Phi_POCAPV, Phi_genTaumu, Theta_POCAPV, Theta_genTaumu, dPhi_POCAPV_genTaumu, dTheta_POCAPV_genTaumu;
   std::vector<TH1D> dPhi_MinusSVPV_genTaumu, dTheta_MinusSVPV_genTaumu, Angle_MinusSVPV_genTaumu;
-  std::vector<TH1D> GJ_Tauh, GJ_Taumu;
-  std::vector<TH1D> dPhi_DiTauGen, Pt_DiTauGen, Pt_ZGen, M_ZGen, M_DiTauPtBalance, dM_DiTau, dPt_GenTaumuPtBalance, dP_GenTaumuPtBalance, dP_GenTauh;
+  std::vector<TH1D> Gen_TauA1_GJ, Gen_TauMu_GJ;
+  std::vector<TH1D> Gen_DiTau_dPhi, Gen_DiTau_Pt, Gen_Z_Pt, Gen_Z_M, Gen_DiTau_PtBalance_M, Gen_DiTau_PtBalance_dM, Gen_TauMu_PtBalance_Pt, Gen_TauMu_PtBalance_dP, Gen_TauA1_dP;
+  std::vector<TH1D> Gen_TPTF_TauA1_Solution_NoSelection, Gen_TPTF_TauA1_Solution_WithSelection;
   std::vector<TH2D> dP_GenTauMuPtBalance_vs_dPTauh, Pt_vs_dPhi_DiTauGen;
-  std::vector<TH2D> TauFLSigmaCut_vs_Res, TauFLSigma_vs_Res;
+  std::vector<TH1D> TauFL_WithTauFLSigmaCut;
+  std::vector<TH2D> TauFLSigmaCut_vs_Res, TauFLSigma_vs_Res, TauFLSigma_vs_UnphysicalAll, TauFL_vs_UnphysicalAll;
+  std::vector<TH1D> TauFLSigma_vs_UnphysicalProb, TauFL_vs_UnphysicalProb;
 
   std::vector<TH1D> TPTF_TauA1_pRes_BestSolution, TPTF_TauA1_pRes_FitSolution;
-  std::vector<TH2D> TPTF_TauA1_BestSolution_vs_FitSolution, TPTF_TauA1_pRes_vs_GenA1Mass_BestSolution, TPTF_TauA1_pRes_vs_GenA1Mass_FitSolution, TPTF_TauA1_pRes_vs_GenGJAngle_FitSolution, TPTF_TauA1_pRes_vs_GenGJAngle_BestSolution, TPTF_TauA1_pRes_vs_RecoChi2_FitSolution;
+  std::vector<TH2D> TPTF_TauA1_BestSolution_vs_FitSolution, TPTF_TauA1_RightSolution_vs_FitSolution, TPTF_TauA1_pRes_vs_GenA1Mass_BestSolution, TPTF_TauA1_pRes_vs_GenA1Mass_FitSolution, TPTF_TauA1_pRes_vs_GenGJAngle_FitSolution, TPTF_TauA1_pRes_vs_GenGJAngle_BestSolution, TPTF_TauA1_pRes_vs_RecoChi2_FitSolution;
   std::vector<TH2D> TPTF_A1_pRes_vs_GenGJAngle;
-  std::vector<TH2D> TPTF_TauA1_pRes_vs_RecoA1Mass_FitSolution, TPTF_TauA1_pRes_vs_RecoGJAngle_FitSolution, TPTF_A1_pRes_vs_RecoGJAngle;
+  std::vector<TH2D> TPTF_TauA1_pRes_vs_RecoA1Mass_FitSolution, TPTF_TauA1_pRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_p_iRes_sq_vs_RecoGJAngle_FitSolution, TPTF_A1_pRes_vs_RecoGJAngle;
+  std::vector<TH2D> TPTF_TauA1_pxRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_pyRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_pzRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_ptRes_vs_RecoGJAngle_FitSolution;
+  std::vector<TH2D> TPTF_TauA1_pxsqRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_pysqRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_pzsqRes_vs_RecoGJAngle_FitSolution;
+  std::vector<TH2D> TPTF_TauA1_p_orthoRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_p_paralRes_vs_RecoGJAngle_FitSolution;
+  std::vector<TH1D> TPTF_TauA1_p_Reco, TPTF_TauA1_pt_Reco, TPTF_TauA1_px_Reco, TPTF_TauA1_py_Reco, TPTF_TauA1_pz_Reco, TPTF_TauA1_p_Gen, TPTF_TauA1_pt_Gen, TPTF_TauA1_px_Gen, TPTF_TauA1_py_Gen, TPTF_TauA1_pz_Gen;
+  std::vector<TH1D> TPTF_TauA1_pxsq_Reco, TPTF_TauA1_pysq_Reco, TPTF_TauA1_pzsq_Reco, TPTF_TauA1_pxsq_Gen, TPTF_TauA1_pysq_Gen, TPTF_TauA1_pzsq_Gen;
+
+  std::vector<TH2D> TPTF_TauA1_ptRes_vs_ptGen, TPTF_TauA1_ptRes_vs_ptReco;
+
+  std::vector<TH1D> TPTF_Neutrino_UnFitTracks_Mass;
+  std::vector<TH2D> TPTF_Neutrino_UnFitTracks_Mass_vs_TauFL;
+  std::vector<TH1D> TPTF_Neutrino_ReFitTracks_Mass;
+  std::vector<TH2D> TPTF_Neutrino_ReFitTracks_Mass_vs_TauFL;
+  std::vector<TH1D> TPTF_Neutrino_PFTau_Mass;
+  std::vector<TH2D> TPTF_Neutrino_PFTau_Mass_vs_TauFL;
+
+  std::vector<TH1D> TransTrk_Failure_withSelection, TransTrk_Failure_noSelection;
 
   std::vector<TH1D> Reco_ZMass, Reco_ZMass_UnboostedGenZ, Reco_EventFit_Solution, Reco_A1Fit_Solution, Reco_Chi2, Reco_Chi2_FitSolutionOnly, Reco_Chi2_FitSolutionOnlyLargeScale, Reco_ConstrainedDeltaSum, Reco_ConstrainedDeltaMass, Reco_ConstrainedDeltaPt, Reco_NIter;
+  std::vector<TH1D> Reco_Z_Energy_Res, RecoZ_Pt;
   std::vector<TH1D> GenReco_ZMass, GenReco_EventFit_Solution, GenReco_A1Fit_Solution, GenReco_Chi2, GenReco_Chi2_FitSolutionOnly, GenReco_ConstrainedDeltaSum, GenReco_NIter;
-  std::vector<TH1D> Reco_PtRes_TauA1, Reco_PtRes_TauMu;
-  std::vector<TH1D> Reco_ZMass_MassScan, Reco_ZMasswithProbWeight_MassScan, Reco_ProbStack_MassScan, Reco_ZMass_PDF;
+  std::vector<TH1D> Reco_PtRes_TauA1, Reco_PtRes_TauA1_AmbPoint0, Reco_PtRes_TauA1_AmbPoint12, Reco_PtRes_TauA1_AmbPoint1, Reco_PtRes_TauMu, Reco_PtRes_TauMu_AmbPoint0, Reco_PtRes_TauMu_AmbPoint12, Reco_PtRes_TauMu_AmbPoint1;
+  std::vector<TH1D> Reco_PtRes_TauA1_LowZPt, Reco_PtRes_TauMu_LowZPt;
+  std::vector<TH1D> Reco_PtRes_TauA1_NoFit, Reco_PtRes_TauA1_AmbPoint0_NoFit, Reco_PtRes_TauA1_AmbPoint12_NoFit, Reco_PtRes_TauMu_NoFit, Reco_PtRes_TauMu_AmbPoint0_NoFit, Reco_PtRes_TauMu_AmbPoint12_NoFit;
+  std::vector<TH1D> Reco_TauMu_DeltaPX_FitImpact, Reco_TauMu_DeltaPY_FitImpact, Reco_TauMu_DeltaPZ_FitImpact;
+  std::vector<TH1D> Reco_TauA1_DeltaPX_FitImpact, Reco_TauA1_DeltaPY_FitImpact, Reco_TauA1_DeltaPZ_FitImpact;
+  std::vector<TH1D> Reco_TauMu_ResCosTheta, Reco_TauMu_ResPhi;
+  std::vector<TH1D> Reco_dPhi_TauMuTauA1_AfterFit, Reco_dPhi_TauMuTauA1_BeforeFit;
+  std::vector<TH1D> Reco_ZMass_MassScan, Reco_ZMass_MassScanUnboosted, Reco_ZMasswithProbWeight_MassScan, Reco_ProbStack_MassScan, Reco_ZMass_PDF;
   std::vector<TH1D> GenZ_Pt_Unboosted, RecoZ_Pt_Unboosted;
 
   std::vector<TH1D> NQCD;
@@ -104,7 +131,9 @@ class ZToTaumuTauh : public Selection {
   bool selectPFTau_Isolation(unsigned i);
   bool selectPFTau_Kinematics(unsigned i);
   double Reconstruct_hadronicTauEnergy(unsigned i);
-
+  LorentzVectorParticle CorrectRecoTauMomentumBias(LorentzVectorParticle RecoTau, TLorentzVector RecoA1, std::vector<double> BiasInGJAngleBins);
+  TLorentzVector BoostToRestFrame(TLorentzVector TLV1, TLorentzVector TLV2);
+  TLorentzVector TauHelixP4AtSV(unsigned int selTau, TLorentzVector Tau, TVector3 PV, TVector3 SV);
  private:
 
 };

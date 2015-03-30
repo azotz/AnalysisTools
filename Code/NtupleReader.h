@@ -1144,6 +1144,7 @@ public :
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
+   virtual double   PFTau_Mass(unsigned int i);
 };
 
 #endif
@@ -2134,4 +2135,20 @@ Int_t NtupleReader::Cut(Long64_t entry)
 // returns -1 otherwise.
    return 1;
 }
+double NtupleReader::PFTau_Mass(unsigned int i)
+{
+  double m(-999);
+  if(PFTau_isHPSByDecayModeFinding->size() >0 && PFTau_isHPSByDecayModeFinding->at(i)){
+      double E = PFTau_p4->at(i).at(0);
+      double px = PFTau_p4->at(i).at(1);
+      double py = PFTau_p4->at(i).at(2);
+      double pz = PFTau_p4->at(i).at(3);
+
+      double p2 = px*px + py*py + pz*pz;
+
+      m = (E*E > p2) ? sqrt(E*E - p2) : -sqrt(p2 - E*E);
+  }
+  return m;
+}
+
 #endif // #ifdef NtupleReader_cxx

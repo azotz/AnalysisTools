@@ -428,7 +428,10 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
    bool PFTau_TIP_hasA1Momentum(unsigned int i){if(Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar)return true; return false;}
    LorentzVectorParticle PFTau_a1_lvp(unsigned int i);
    TLorentzVector PFTau_3PS_A1_LV(unsigned int i){return PFTau_a1_lvp(i).LV();}
+   int PFTau_NdaughterTracks(unsigned int i){return Ntp->PFTau_daughterTracks_M->at(i).size();}
    std::vector<TrackParticle> PFTau_daughterTracks(unsigned int i);
+   int PFTau_NdaughtersReFitTracks_p4(unsigned int i) {return Ntp->PFTau_PionsP4->at(i).size();};
+   std::vector<TLorentzVector> PFTau_daughterReFitTracks_p4(unsigned int i);
    std::vector<TVector3> PFTau_daughterTracks_poca(unsigned int i);   
    TMatrixTSym<double> PFTau_FlightLength3d_cov(unsigned int i){return  PFTau_TIP_secondaryVertex_cov(i)+PFTau_TIP_primaryVertex_cov(i);}
    TVector3 PFTau_FlightLength3d(unsigned int i){return PFTau_TIP_secondaryVertex_pos(i)-PFTau_TIP_primaryVertex_pos(i);}
@@ -439,6 +442,8 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
    double   PFTau_FlightLength_error(unsigned int i){return sqrt(PF_Tau_FlightLegth3d_TauFrame_cov(i)(LorentzVectorParticle::vz,LorentzVectorParticle::vz));}
    double   PFTau_FlightLength(unsigned int i){return PFTau_FlightLength3d(i).Mag();}
    
+   double   PFTau_Mass(unsigned int i);
+
    bool ThreeProngTauFit(unsigned int i, unsigned int j,LorentzVectorParticle &theTau,std::vector<LorentzVectorParticle> &daughter,double &LC_chi2, double &phisign){
 	   if(Ntp->PFTau_TIP_secondaryVertex_vtxchi2->at(i).size()==1 && Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar){
 		   // Tau Solver
@@ -474,29 +479,50 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 /*      } */
 /*      return false; */
 /*    } */
-   bool EventFit(unsigned int i, unsigned int MuonIndex, LorentzVectorParticle TauA1, LorentzVectorParticle &theZ,std::vector<LorentzVectorParticle> &Daughters,double &LC_chi2, int &Niterat, double &csum, double MassConstraint){
+   bool EventFit(unsigned int i, unsigned int MuonIndex, LorentzVectorParticle TauA1, LorentzVectorParticle &theZ,std::vector<LorentzVectorParticle> &RefitDaughters, std::vector<LorentzVectorParticle> &InitDaughters,double &LC_chi2, int &Niterat, double &csum, double MassConstraint){//, TVectorD &par_0, TVectorD &par){
 	   TrackParticle Muon = Muon_TrackParticle(MuonIndex);
+	   //std::cout << "Muon Track: Kappa:" << Muon.Parameter(TrackParticle::kappa) << std::endl;
+	   //std::cout << "Muon Track: Lambda:" << Muon.Parameter(TrackParticle::lambda) << std::endl;
+	   //std::cout << "Muon Track: Phi:" << Muon.Parameter(TrackParticle::phi) << std::endl;
+	   //std::cout << "Muon Track: dxy:" << Muon.Parameter(TrackParticle::dxy) << std::endl;
+	   //std::cout << "Muon Track: dz:" << Muon.Parameter(TrackParticle::dz) << std::endl;
+	   //std::cout << "Muon Track: P:" << Muon_p4(MuonIndex).P() << std::endl;
+	   //std::cout << "Muon Track: Pt:" << Muon_p4(MuonIndex).Pt() << std::endl;
+
 	   TLorentzVector MuonLV = TLorentzVector(Ntp->Muon_p4->at(MuonIndex).at(1),Ntp->Muon_p4->at(MuonIndex).at(2),Ntp->Muon_p4->at(MuonIndex).at(3),Ntp->Muon_p4->at(MuonIndex).at(0));
 
 	   if(Ntp->PFTau_TIP_secondaryVertex_vtxchi2->at(i).size()==1 &&
-          Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar){
+		   Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar){
 		   // Tau Solver
 		   TVector3 pv=PFTau_TIP_primaryVertex_pos(i);
 		   TMatrixTSym<double> pvcov=PFTau_TIP_primaryVertex_cov(i);
+		   //std::cout << "Print pvcov" << std::endl;
+		   //pvcov.Print();
 		   TVector3 MuonPoca(Ntp->Muon_Poca->at(MuonIndex).at(0),Ntp->Muon_Poca->at(MuonIndex).at(1),Ntp->Muon_Poca->at(MuonIndex).at(2));
 		   DiTauConstrainedFitter Z2Tau(TauA1, Muon, pv, pvcov);
 		   Z2Tau.SetMassConstraint(MassConstraint);
-		   Z2Tau.SetMaxDelta(0.1);
+		   Z2Tau.SetMaxDelta(1.0);
 		   Z2Tau.SetNIterMax(100);
-		   Z2Tau.SetEpsilon(0.001);
-
+		   Z2Tau.SetEpsilon(0.01);
+		   //std::cout << "DEBUG 6" << std::endl;
 		   bool fitStatus= Z2Tau.Fit();
+		   //std::cout << "DEBUG 7" << std::endl;
 		   if(fitStatus && Z2Tau.isConverged()){
-			   Daughters = Z2Tau.GetReFitDaughters();
+			   RefitDaughters = Z2Tau.GetReFitDaughters();
+			   InitDaughters = Z2Tau.GetInitialDaughters();
+			   //std::cout << "InitDaughters.at(0): "; InitDaughters.at(0).LV().Print();
+			   //std::cout << "InitDaughters.at(1): "; InitDaughters.at(1).LV().Print();
+			   //std::cout << "RefitDaughters.at(0): "; RefitDaughters.at(0).LV().Print();
+			   //std::cout << "RefitDaughters.at(1): "; RefitDaughters.at(1).LV().Print();
+
 			   LorentzVectorParticle TZ=Z2Tau.GetMother();
 			   theZ = Z2Tau.GetMother();
+			   //std::cout << "Mother: "; theZ.LV().Print();
+			   //std::cout << "Mother pt: " << theZ.LV().Pt() << std::endl;
 			   LorentzVectorParticle TauMuInitialEstimate =Z2Tau.GetTauMuEstimate();
-
+			   //std::cout << "TauMuInitialEstimate: "; TauMuInitialEstimate.LV().Print();
+			   //par_0 = Z2Tau.Getpar_0();
+			   //par = Z2Tau.Getpar();
 			   daughter=Z2Tau.GetReFitDaughters();
 			   LC_chi2=Z2Tau.ChiSquare();
 			   Niterat = Z2Tau.NIter();
@@ -508,7 +534,8 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 	   return false;
    }
 
-   bool AmbiguitySolver(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Probs,   int &IndexToReturn, bool &AmbuguityPoint);
+   bool AmbiguitySolver(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Probs, int &IndexToReturn, bool &AmbuguityPoint);
+   bool AmbiguitySolverByChi2(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Chi2s, int &IndexToReturn, bool &AmbuguityPoint);
 
    ////////////////////////////////////////////////
    // wrapper for backwards compatibility to KFit do not use in new code!!!
