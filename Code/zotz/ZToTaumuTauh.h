@@ -48,7 +48,7 @@ class ZToTaumuTauh : public Selection {
   int Charge;
   double SB_lowerLimit, SB_upperLimit;
   bool Scaleby_Counting;
-  bool verbose, Use_Embedded;
+  bool selection_verbose, Use_Embedded;
 
   // Histograms
 
@@ -62,7 +62,8 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> NSignal_SB_WJets;
   std::vector<TH1D> NSB_Data;
   std::vector<TH1D> NSB;
-  std::vector<TH1D> Mu_pt, Mu_eta, Mu_phi, Tau_pt, Tau_eta, Tau_phi, Tau_Mass_Inclusive, Tau_Mass_sq_Inclusive, Tau_Mass_Inclusive_NoTLV, Tau_Mass_Inclusive_UnFitTracks, Tau_Mass_Inclusive_ReFitTracks, Tau_Mass_Difference_PFTau_UnFitTracks_3PS, MET_phi;
+  std::vector<TH1D> Mu_pt, Mu_eta, Mu_phi, Tau_pt, Tau_eta, Tau_phi, Tau_Mass_Inclusive, Tau_Mass_sq_Inclusive, Tau_Mass_Inclusive_NoTLV, Tau_Mass_Inclusive_UnFitTracks, Tau_Mass_Inclusive_ReFitTracks, Tau_Mass_Difference_PFTau_UnFitTracks_3PS, Tau_Mass_Difference_PFTau_ReFitTracks_3PS;
+  std::vector<TH1D> MET_phi;
   std::vector<TH1D> TauFL_NoTauFLSigmaCut, TauFLSigned_NoTauFLSigmaCut, TauFLSigmaSigned, TauFLSigmaUnsigned;
   std::vector<TH1D> A1mass, A1mass10GeV;
 
@@ -75,6 +76,10 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH2D> dPhi_SVPV_genTauh_vs_TauFL, dPhi_SVPV_genTauhPlus_vs_TauFL, dPhi_SVPV_genTauhMinus_vs_TauFL;
   std::vector<TH1D> Phi_POCAPV, Phi_genTaumu, Theta_POCAPV, Theta_genTaumu, dPhi_POCAPV_genTaumu, dTheta_POCAPV_genTaumu;
   std::vector<TH1D> dPhi_MinusSVPV_genTaumu, dTheta_MinusSVPV_genTaumu, Angle_MinusSVPV_genTaumu;
+
+  std::vector<TH1D> dGJAngle_GJAngleMAX_StraightTau, dGJAngle_GJAngleMAX_HelixTau, Angle_HelixTau_StraightTau, dGJAngle_HelixTau_StraightTau, dGJAngle_HelixTau_StraightTauOverGJAngle, TauA1_Reco_Solution_StraightTau, TauA1_Reco_Solution_HelixTau;
+  std::vector<TH1D> NUnphysical_StraightTau_HelixTau;
+
   std::vector<TH1D> Gen_TauA1_GJ, Gen_TauMu_GJ;
   std::vector<TH1D> Gen_DiTau_dPhi, Gen_DiTau_Pt, Gen_Z_Pt, Gen_Z_M, Gen_DiTau_PtBalance_M, Gen_DiTau_PtBalance_dM, Gen_TauMu_PtBalance_Pt, Gen_TauMu_PtBalance_dP, Gen_TauA1_dP;
   std::vector<TH1D> Gen_TPTF_TauA1_Solution_NoSelection, Gen_TPTF_TauA1_Solution_WithSelection;
@@ -131,9 +136,10 @@ class ZToTaumuTauh : public Selection {
   bool selectPFTau_Isolation(unsigned i);
   bool selectPFTau_Kinematics(unsigned i);
   double Reconstruct_hadronicTauEnergy(unsigned i);
+  double GJAngleMax(TLorentzVector A1);
   LorentzVectorParticle CorrectRecoTauMomentumBias(LorentzVectorParticle RecoTau, TLorentzVector RecoA1, std::vector<double> BiasInGJAngleBins);
   TLorentzVector BoostToRestFrame(TLorentzVector TLV1, TLorentzVector TLV2);
-  TLorentzVector TauHelixP4AtSV(unsigned int selTau, TLorentzVector Tau, TVector3 PV, TVector3 SV);
+  TLorentzVector TauHelixP4AtSV(unsigned int selTau, TLorentzVector Tau);
  private:
 
 };

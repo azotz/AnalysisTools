@@ -1450,7 +1450,7 @@ std::vector<TVector3> Ntuple_Controller::PFTau_daughterTracks_poca(unsigned int 
 std::vector<TLorentzVector> Ntuple_Controller::PFTau_daughterReFitTracks_p4(unsigned int i){
   std::vector<TLorentzVector> refittracks_p4;
   for(unsigned int d=0; d<Ntp->PFTau_PionsP4->at(i).size(); d++){
-    TLorentzVector TLV(Ntp->PFTau_PionsP4->at(i).at(d).at(0), Ntp->PFTau_PionsP4->at(i).at(d).at(1), Ntp->PFTau_PionsP4->at(i).at(d).at(2), Ntp->PFTau_PionsP4->at(i).at(d).at(3));
+    TLorentzVector TLV(Ntp->PFTau_PionsP4->at(i).at(d).at(1), Ntp->PFTau_PionsP4->at(i).at(d).at(2), Ntp->PFTau_PionsP4->at(i).at(d).at(3), Ntp->PFTau_PionsP4->at(i).at(d).at(0));
     refittracks_p4.push_back(TLV);
   }
   return refittracks_p4;

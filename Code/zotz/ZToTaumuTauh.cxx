@@ -15,6 +15,7 @@
 #include "SimpleFits/FitSoftware/interface/TauA1NuConstrainedFitter.h"
 #include "SimpleFits/FitSoftware/interface/TrackTools.h"
 #include "SimpleFits/FitSoftware/interface/DiTauConstrainedFitter.h"
+#include "SimpleFits/FitSoftware/interface/Logger.h"
 
 ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 	Selection(Name_,id_),
@@ -54,18 +55,21 @@ ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 	Scaleby_Counting = true; // = false --> Scale by Integral
 
 	//Set verbose boolean
-	verbose = false;
+	selection_verbose = false;
 
 	Use_Embedded = true;
+
+	Logger::Instance()->SetLevel(Logger::Debug);
 }
 
 ZToTaumuTauh::~ZToTaumuTauh(){
 	for(unsigned int j=0; j<Npassed.size(); j++){
-		std::cout << "ZToTaumuTauh::~ZToTaumuTauh Selection Summary before: "
+		Logger(Logger::Info) << "ZToTaumuTauh::~ZToTaumuTauh Selection Summary before: "
 		<< Npassed.at(j).GetBinContent(1)     << " +/- " << Npassed.at(j).GetBinError(1)     << " after: "
 		<< Npassed.at(j).GetBinContent(NCuts+1) << " +/- " << Npassed.at(j).GetBinError(NCuts+1) << std::endl;
 	}
-	std::cout << "ZToTaumuTauh::~ZToTaumuTauh()" << std::endl;
+	Logger(Logger::Info) << "ZToTaumuTauh::~ZToTaumuTauh()" << std::endl;
+	Logger::Instance()->SetLevel(Logger::Info);
 }
 
 void  ZToTaumuTauh::Configure(){
@@ -254,6 +258,7 @@ void  ZToTaumuTauh::Configure(){
 	Tau_Mass_Inclusive_ReFitTracks=HConfig.GetTH1D(Name+"_Tau_Mass_Inclusive_ReFitTracks","Tau_Mass_Inclusive_ReFitTracks",170,-0.2,1.5,"Tau_Mass_Inclusive_ReFitTracks","Events");
 
 	Tau_Mass_Difference_PFTau_UnFitTracks_3PS=HConfig.GetTH1D(Name+"_Tau_Mass_Difference_PFTau_UnFitTracks_3PS","Tau_Mass_Difference_PFTau_UnFitTracks_3PS",50,-0.1,0.1,"Tau_Mass_Difference_PFTau_UnFitTracks_3PS","Events");
+	Tau_Mass_Difference_PFTau_ReFitTracks_3PS=HConfig.GetTH1D(Name+"_Tau_Mass_Difference_PFTau_ReFitTracks_3PS","Tau_Mass_Difference_PFTau_ReFitTracks_3PS",50,-0.1,0.1,"Tau_Mass_Difference_PFTau_ReFitTracks_3PS","Events");
 
 	MET_phi=HConfig.GetTH1D(Name+"_MET_phi","MET_phi",30,-3.14159265359,3.14159265359,"MET #phi","Events");
 
@@ -308,6 +313,20 @@ void  ZToTaumuTauh::Configure(){
 	dPhi_MinusSVPV_genTaumu=HConfig.GetTH1D(Name+"_dPhi_MinusSVPV_genTaumu","dPhi_MinusSVPV_genTaumu",128,-3.14159265359/2,3.14159265359/2,"dPhi_MinusSVPV_genTaumu","Events");
 	dTheta_MinusSVPV_genTaumu=HConfig.GetTH1D(Name+"_dTheta_MinusSVPV_genTaumu","dTheta_MinusSVPV_genTaumu",128,-3.14159265359/2,3.14159265359/2,"dTheta_MinusSVPV_genTaumu","Events");
 	Angle_MinusSVPV_genTaumu=HConfig.GetTH1D(Name+"_Angle_MinusSVPV_genTaumu","Angle_MinusSVPV_genTaumu",128,0,3.14159265359,"Angle_MinusSVPV_genTaumu","Events");
+
+	dGJAngle_GJAngleMAX_StraightTau=HConfig.GetTH1D(Name+"_dGJAngle_GJAngleMAX_StraightTau","dGJAngle_GJAngleMAX_StraightTau",50,-0.01,0.01,"dGJAngle_GJAngleMAX_StraightTau","Events");
+	dGJAngle_GJAngleMAX_HelixTau=HConfig.GetTH1D(Name+"_dGJAngle_GJAngleMAX_HelixTau","dGJAngle_GJAngleMAX_HelixTau",50,-0.01,0.01,"dGJAngle_GJAngleMAX_HelixTau","Events");
+	dGJAngle_HelixTau_StraightTau=HConfig.GetTH1D(Name+"_dGJAngle_HelixTau_StraightTau","dGJAngle_HelixTau_StraightTau",51,-0.0001,0.0001,"dGJAngle_HelixTau_StraightTau","Events");
+	dGJAngle_HelixTau_StraightTauOverGJAngle=HConfig.GetTH1D(Name+"_dGJAngle_HelixTau_StraightTauOverGJAngle","dGJAngle_HelixTau_StraightTauOverGJAngle",51,-0.04,0.04,"dGJAngle_HelixTau_StraightTauOverGJAngle","Events");
+	Angle_HelixTau_StraightTau=HConfig.GetTH1D(Name+"_Angle_HelixTau_StraightTau","Angle_HelixTau_StraightTau",100,-0.00005,0.0002,"Angle_HelixTau_StraightTau","Events");
+
+	NUnphysical_StraightTau_HelixTau=HConfig.GetTH1D(Name+"_NUnphysical_StraightTau_HelixTau","NUnphysical_StraightTau_HelixTau",7,-2.5,4.5,"NUnphysical_StraightTau_HelixTau","Events");
+
+	//dGJAngle_StraightTau_Gen
+	//dGJAngle_HelixTau_Gen
+
+	TauA1_Reco_Solution_StraightTau=HConfig.GetTH1D(Name+"_TauA1_Reco_Solution_StraightTau","TauA1_Reco_Solution_StraightTau",5,-2.5,2.5,"TauA1_Reco_Solution_StraightTau","Events");
+	TauA1_Reco_Solution_HelixTau=HConfig.GetTH1D(Name+"_TauA1_Reco_Solution_HelixTau","TauA1_Reco_Solution_HelixTau",5,-2.5,2.5,"TauA1_Reco_Solution_HelixTau","Events");
 
 	Gen_TauA1_GJ=HConfig.GetTH1D(Name+"_Gen_TauA1_GJ","Gen_TauA1_GJ",100,0,.05,"Gen_TauA1_GJ","Events");
 	Gen_TauMu_GJ=HConfig.GetTH1D(Name+"_Gen_TauMu_GJ","Gen_TauMu_GJ",100,0,.05,"Gen_TauMu_GJ","Events");
@@ -498,6 +517,7 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&Tau_Mass_Inclusive_UnFitTracks);
 	Extradist1d.push_back(&Tau_Mass_Inclusive_ReFitTracks);
 	Extradist1d.push_back(&Tau_Mass_Difference_PFTau_UnFitTracks_3PS);
+	Extradist1d.push_back(&Tau_Mass_Difference_PFTau_ReFitTracks_3PS);
 	Extradist1d.push_back(&MET_phi);
 	Extradist1d.push_back(&TauFL_NoTauFLSigmaCut);
 	Extradist1d.push_back(&TauFLSigned_NoTauFLSigmaCut);
@@ -526,6 +546,16 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist2d.push_back(&dPhi_SVPV_genTauhMinus_vs_TauFL);
 	Extradist1d.push_back(&dTheta_SVPV_genTauh);
 	Extradist1d.push_back(&Angle_SVPV_genTauh);
+
+	Extradist1d.push_back(&dGJAngle_GJAngleMAX_StraightTau);
+	Extradist1d.push_back(&dGJAngle_GJAngleMAX_HelixTau);
+	Extradist1d.push_back(&dGJAngle_HelixTau_StraightTau);
+	Extradist1d.push_back(&dGJAngle_HelixTau_StraightTauOverGJAngle);
+	Extradist1d.push_back(&Angle_HelixTau_StraightTau);
+	Extradist1d.push_back(&NUnphysical_StraightTau_HelixTau);
+	Extradist1d.push_back(&TauA1_Reco_Solution_StraightTau);
+	Extradist1d.push_back(&TauA1_Reco_Solution_HelixTau);
+
 	Extradist1d.push_back(&Phi_POCAPV);
 	Extradist1d.push_back(&Phi_genTaumu);
 	Extradist1d.push_back(&Theta_POCAPV);
@@ -787,7 +817,7 @@ void  ZToTaumuTauh::doEvent(){
 	if(Ntp->GetMCID() == DataMCType::DY_tautau || (Ntp->GetMCID()>=10 && Ntp->GetMCID()<= 13)) Ntp->SetTauCorrections("scalecorr");
 
 	// Apply Selection
-	if(verbose) std::cout << "Cut on good vertex" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on good vertex" << std::endl;
 	unsigned int nGoodVtx=0;
 	for(unsigned int i_vtx=0;i_vtx<Ntp->NVtx();i_vtx++){
 		if(Ntp->isVtxGood(i_vtx)){
@@ -797,13 +827,13 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	value.at(PrimeVtx)=nGoodVtx;
 	pass.at(PrimeVtx)=(value.at(PrimeVtx)>=cut.at(PrimeVtx));
-	if(verbose){
-		std::cout << "value at Primevtx: " <<value.at(PrimeVtx) << std::endl;
-		std::cout << "pass at Primevtx: " <<pass.at(PrimeVtx) << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "value at Primevtx: " <<value.at(PrimeVtx) << std::endl;
+		Logger(Logger::Verbose) << "pass at Primevtx: " <<pass.at(PrimeVtx) << std::endl;
 	}
 
 	// Trigger
-	if(verbose) std::cout << "Cut on Trigger" << std::endl;
+	if(verbose) Logger(Logger::Verbose) << "Cut on Trigger" << std::endl;
 	value.at(TriggerOk) = TriggerOkDummy;
 	for (std::vector<TString>::iterator it_trig = cTriggerNames.begin(); it_trig != cTriggerNames.end(); ++it_trig){
 		if(Ntp->TriggerAccept(*it_trig)){
@@ -816,12 +846,12 @@ void  ZToTaumuTauh::doEvent(){
 	pass.at(TriggerOk) = (value.at(TriggerOk) >= cut.at(TriggerOk));
 	if(id == DataMCType::DY_mutau_embedded) pass.at(TriggerOk) = true;
 	if(verbose){
-		std::cout << "value at TriggerOk: " <<value.at(TriggerOk) << std::endl;
-		std::cout << "pass at TriggerOk: " <<pass.at(TriggerOk) << std::endl;
+		Logger(Logger::Verbose) << "value at TriggerOk: " <<value.at(TriggerOk) << std::endl;
+		Logger(Logger::Verbose) << "pass at TriggerOk: " <<pass.at(TriggerOk) << std::endl;
 	}
 
 	// Muon cuts
-	if(verbose) std::cout << "Cut on MuonID" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on MuonID" << std::endl;
 	std::vector<int> selectedMuonsId;
 	selectedMuonsId.clear();
 	for(unsigned i_mu=0;i_mu<Ntp->NMuons();i_mu++){
@@ -831,13 +861,13 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	value.at(NMuId)=selectedMuonsId.size();
 	pass.at(NMuId)=(value.at(NMuId)>=cut.at(NMuId));
-	if(verbose){
-		std::cout << "Number of Muons: " << Ntp->NMuons() << std::endl;
-		std::cout << "value at NMuId: " <<value.at(NMuId) << std::endl;
-		std::cout << "pass at NMuId: " <<pass.at(NMuId) << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "Number of Muons: " << Ntp->NMuons() << std::endl;
+		Logger(Logger::Verbose) << "value at NMuId: " <<value.at(NMuId) << std::endl;
+		Logger(Logger::Verbose) << "pass at NMuId: " <<pass.at(NMuId) << std::endl;
 	}
 
-	if(verbose) std::cout << "Cut on Muon Kinematics" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Muon Kinematics" << std::endl;
 	std::vector<int> selectedMuonsKin;
 	selectedMuonsKin.clear();
 	for(std::vector<int>::iterator it_mu = selectedMuonsId.begin(); it_mu != selectedMuonsId.end(); ++it_mu){
@@ -847,12 +877,12 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	value.at(NMuKin)=selectedMuonsKin.size();
 	pass.at(NMuKin)=(value.at(NMuKin)>=cut.at(NMuKin));
-	if(verbose){
-		std::cout << "value at NMuKin: " <<value.at(NMuKin) << std::endl;
-		std::cout << "pass at NMuKin: " <<pass.at(NMuKin) << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "value at NMuKin: " <<value.at(NMuKin) << std::endl;
+		Logger(Logger::Verbose) << "pass at NMuKin: " <<pass.at(NMuKin) << std::endl;
 	}
 
-	if(verbose) std::cout << "Cut on Muon Isolation (Iso)" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Muon Isolation (Iso)" << std::endl;
 	std::vector<int> selectedMuonsIso;
 	selectedMuonsIso.clear();
 	for(std::vector<int>::iterator it_mu = selectedMuonsKin.begin(); it_mu != selectedMuonsKin.end(); ++it_mu){
@@ -863,12 +893,12 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	value.at(NMuIso)=selectedMuonsIso.size();
 	pass.at(NMuIso)=(value.at(NMuIso)>=cut.at(NMuIso));
-	if(verbose){
-		std::cout << "value at NMuIso: " <<value.at(NMuIso) << std::endl;
-		std::cout << "pass at NMuIso: " <<pass.at(NMuIso) << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "value at NMuIso: " <<value.at(NMuIso) << std::endl;
+		Logger(Logger::Verbose) << "pass at NMuIso: " <<pass.at(NMuIso) << std::endl;
 	}
 
-	if(verbose) std::cout << "Cut on Muon Isolation (Anti Iso)" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Muon Isolation (Anti Iso)" << std::endl;
 	std::vector<int> selectedMuonsAntiIso;
 	selectedMuonsAntiIso.clear();
 	for(std::vector<int>::iterator it_mu = selectedMuonsKin.begin(); it_mu != selectedMuonsKin.end(); ++it_mu){
@@ -878,14 +908,14 @@ void  ZToTaumuTauh::doEvent(){
 		}
 	}
 	if(selMuon_Iso != selMuonDummy && selMuon_AntiIso != selMuonDummy){
-		std::cout << "CRITICAL: SELECTED MUON PASSED ISOLATION AND ANTI-ISOLATION CUT --> FIX" << std::endl;
+		Logger(Logger::Error) << "CRITICAL: SELECTED MUON PASSED ISOLATION AND ANTI-ISOLATION CUT --> FIX" << std::endl;
 		return;
 	}
 	if(id == DataMCType::Data && selMuon_AntiIso != selMuonDummy) selMuon = selMuon_AntiIso;
 	else selMuon = selMuon_Iso;
 
 	// Tau cuts
-	if(verbose) std::cout << "Cut on TauID" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on TauID" << std::endl;
 	std::vector<int> selectedTausId;
 	selectedTausId.clear();
 	for(unsigned i_tau=0; i_tau < Ntp->NPFTaus(); i_tau++){
@@ -895,12 +925,12 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	value.at(NTauId)=selectedTausId.size();
 	pass.at(NTauId)=(value.at(NTauId)>=cut.at(NTauId));
-	if(verbose){
-		std::cout << "value at NTauId: " <<value.at(NTauId) << std::endl;
-		std::cout << "pass at NTauId: " <<pass.at(NTauId) << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "value at NTauId: " <<value.at(NTauId) << std::endl;
+		Logger(Logger::Verbose) << "pass at NTauId: " <<pass.at(NTauId) << std::endl;
 	}
 
-	if(verbose) std::cout << "Cut on Tau Kinematics" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Tau Kinematics" << std::endl;
 	std::vector<int> selectedTausKin;
 	selectedTausKin.clear();
 	for(std::vector<int>::iterator it_tau = selectedTausId.begin(); it_tau != selectedTausId.end(); ++it_tau){
@@ -910,12 +940,12 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	value.at(NTauKin)=selectedTausKin.size();
 	pass.at(NTauKin)=(value.at(NTauKin)>=cut.at(NTauKin));
-	if(verbose){
-		std::cout << "value at NTauKin: " <<value.at(NTauKin) << std::endl;
-		std::cout << "pass at NTauKin: " <<pass.at(NTauKin) << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "value at NTauKin: " <<value.at(NTauKin) << std::endl;
+		Logger(Logger::Verbose) << "pass at NTauKin: " <<pass.at(NTauKin) << std::endl;
 	}
 
-	if(verbose) std::cout << "Cut on Tau Isolation" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Tau Isolation" << std::endl;
 	std::vector<int> selectedTausIso;
 	selectedTausIso.clear();
 	for(std::vector<int>::iterator it_tau = selectedTausKin.begin(); it_tau != selectedTausKin.end(); ++it_tau){
@@ -926,13 +956,13 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	value.at(NTauIso)=selectedTausIso.size();
 	pass.at(NTauIso)=(value.at(NTauIso)>=cut.at(NTauIso));
-	if(verbose){
-		std::cout << "value at NTauIso: " <<value.at(NTauIso) << std::endl;
-		std::cout << "pass at NTauIso: " <<pass.at(NTauIso) << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "value at NTauIso: " <<value.at(NTauIso) << std::endl;
+		Logger(Logger::Verbose) << "pass at NTauIso: " <<pass.at(NTauIso) << std::endl;
 	}
 
 	// Charge of MuTau
-	if(verbose) std::cout << "Cut on Charge of MuTau System" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Charge of MuTau System" << std::endl;
 	value.at(ChargeSum) = ChargeSumDummy;
 	if(selTau != selTauDummy && selMuon != selMuonDummy){
 		Charge = Ntp->Muon_Charge(selMuon) + Ntp->PFTau_Charge(selTau);
@@ -943,23 +973,23 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	pass.at(ChargeSum)=(value.at(ChargeSum)==cut.at(ChargeSum));
 	if(verbose){
-		std::cout << "value at ChargeSum: " <<value.at(ChargeSum) << std::endl;
-		std::cout << "pass at ChargeSum: " <<pass.at(ChargeSum) << std::endl;
+		Logger(Logger::Verbose) << "value at ChargeSum: " <<value.at(ChargeSum) << std::endl;
+		Logger(Logger::Verbose) << "pass at ChargeSum: " <<pass.at(ChargeSum) << std::endl;
 	}
 
 	// Tau Decay Mode
-	if(verbose) std::cout << "Cut on Tau Decay Mode" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Tau Decay Mode" << std::endl;
 	if(selTau != selTauDummy){
 		value.at(TauDecayMode) = Ntp->PFTau_hpsDecayMode(selTau);
 	}
 	pass.at(TauDecayMode)= (value.at(TauDecayMode)>=cut.at(TauDecayMode));
 	if(verbose){
-		std::cout << "value at TauDecayMode: " <<value.at(TauDecayMode) << std::endl;
-		std::cout << "pass at TauDecayMode: " <<pass.at(TauDecayMode) << std::endl;
+		Logger(Logger::Verbose) << "value at TauDecayMode: " <<value.at(TauDecayMode) << std::endl;
+		Logger(Logger::Verbose) << "pass at TauDecayMode: " <<pass.at(TauDecayMode) << std::endl;
 	}
 
 	// Tau FlightLength Significance
-	if(verbose) std::cout << "Cut on Tau Flight Length Significance" << std::endl;
+	if(verbose) Logger(Logger::Verbose) << "Cut on Tau Flight Length Significance" << std::endl;
 	value.at(TauFLSigma) = TauFLSigmaDummy;
 	if(pass.at(TauDecayMode) && selTau != selTauDummy){
 		//std::cout << "selTau" << selTau << std::endl;
@@ -989,23 +1019,23 @@ void  ZToTaumuTauh::doEvent(){
 	}
 
 	pass.at(TauFLSigma) = (value.at(TauFLSigma)>=cut.at(TauFLSigma));
-	if(verbose){
-		std::cout << "value at TauFLSigma: " <<value.at(TauFLSigma) << std::endl;
-		std::cout << "pass at TauFLSigma: " <<pass.at(TauFLSigma) << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "value at TauFLSigma: " <<value.at(TauFLSigma) << std::endl;
+		Logger(Logger::Verbose) << "pass at TauFLSigma: " <<pass.at(TauFLSigma) << std::endl;
 	}
 
 	// MT calculation
-	if(verbose) std::cout << "Calculation and Cut on MT distribution" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Calculation and Cut on MT distribution" << std::endl;
 	double pT,phi,eTmiss,eTmPhi;
 	double MT_TauMET;
 
 	if(selMuon == selMuonDummy){
 		value.at(MT_MuMET) = MTDummy;
-		if(verbose) std::cout << "No Muon selected: neither isolated or anti isolated" << std::endl;
+		if(selection_verbose) Logger(Logger::Verbose) << "No Muon selected: neither isolated nor anti isolated" << std::endl;
 	}
 	else if(selMuon_Iso != selMuonDummy && selMuon_AntiIso != selMuonDummy){
 		value.at(MT_MuMET) = MTDummy;
-		std::cout << "CRITICAL: SELECTED MUON PASSED ISOLATION AND ANTI-ISOLATION CUT --> FIX" << std::endl;
+		Logger(Logger::Error) << "CRITICAL: SELECTED MUON PASSED ISOLATION AND ANTI-ISOLATION CUT --> FIX" << std::endl;
 	}
 	else if(selMuon != selMuonDummy){
 		eTmiss					= Ntp->MET_CorrMVAMuTau_et();
@@ -1016,8 +1046,8 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	if(value.at(MT_MuMET) != MTDummy) pass.at(MT_MuMET)=(value.at(MT_MuMET)<cut.at(MT_MuMET));
 	if(verbose){
-		std::cout << "value at MT_MuMET: " <<value.at(MT_MuMET) << std::endl;
-		std::cout << "pass at MT_MuMET: " <<pass.at(MT_MuMET) << std::endl;
+		Logger(Logger::Verbose) << "value at MT_MuMET: " <<value.at(MT_MuMET) << std::endl;
+		Logger(Logger::Verbose) << "pass at MT_MuMET: " <<pass.at(MT_MuMET) << std::endl;
 	}
 
 	//////////////////////////////////////////////////////////////////////
@@ -1035,7 +1065,7 @@ void  ZToTaumuTauh::doEvent(){
 	}
 
 	// Mvis
-	if(verbose) std::cout << "Calculation of Mvis" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Calculation of Mvis" << std::endl;
 	double Mvis;
 
 	if(selTau != selTauDummy){
@@ -1084,7 +1114,7 @@ void  ZToTaumuTauh::doEvent(){
 	else{w=1;}
 
 	// W+Jets BG Method
-	if(verbose) std::cout << "W+Jets BG Method" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "W+Jets BG Method" << std::endl;
 	std::vector<unsigned int> exclude_cuts;
 	exclude_cuts.clear();
 	exclude_cuts.push_back(ChargeSum);
@@ -1128,7 +1158,7 @@ void  ZToTaumuTauh::doEvent(){
 			}
 		}
 	}
-	if(verbose) std::cout << "QCD ABCD BG Method" << std::endl;
+	if(selection_verbose) std::cout << "QCD ABCD BG Method" << std::endl;
 	exclude_cuts.push_back(NMuIso);
 	if(passAllBut(exclude_cuts)){
 		if(pass.at(NMuIso) && selMuon_Iso != selMuonDummy){
@@ -1171,15 +1201,15 @@ void  ZToTaumuTauh::doEvent(){
 
 	bool status = AnalysisCuts(t,w,wobs);
 
-	if(verbose){
-		std::cout << "------------------------" << std::endl;
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "------------------------" << std::endl;
 		if(status){
-			std::cout << "!!!!!!!!!!!!!!!!!!!!!" << std::endl;
-			std::cout << "Event passed all cuts" << std::endl;
-			std::cout << "!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+			Logger(Logger::Verbose) << "!!!!!!!!!!!!!!!!!!!!!" << std::endl;
+			Logger(Logger::Verbose) << "Event passed all cuts" << std::endl;
+			Logger(Logger::Verbose) << "!!!!!!!!!!!!!!!!!!!!!" << std::endl;
 		}
-		else std::cout << "Event failed selection" << std::endl;
-		std::cout << "------------------------" << std::endl;
+		else Logger(Logger::Verbose) << "Event failed selection" << std::endl;
+		Logger(Logger::Verbose) << "------------------------" << std::endl;
 	}
 
 	//DiTau Reco
@@ -1196,6 +1226,8 @@ void  ZToTaumuTauh::doEvent(){
 	//std::vector<TVectorD> par_0, par; par_0.clear(), par.clear();
 
 	if(status && value.at(TauFLSigma) != TauFLSigmaDummy){
+		std::cout << "\n" << std::endl;
+		Logger(Logger::Verbose) << "Starting Constrained DiTau Fit \n" << std::endl;
 		for(unsigned Ambiguity=0; Ambiguity<3; Ambiguity++){
 			double LC_chi2(-1), phisign(0), csum(-1);
 			LorentzVectorParticle Reco_TauA1, CorrectedReco_TauA1, Reco_Z;
@@ -1207,7 +1239,7 @@ void  ZToTaumuTauh::doEvent(){
 			TPTF_TausA1.push_back(Reco_TauA1);
 			if(A1Fit.at(Ambiguity)){
 				Reco_A1Fit_Solution.at(t).Fill(Ambiguity, w);
-				std::cout << "Chi2 for ambiguity " << Ambiguity << " : " << LC_chi2 << std::endl;
+				Logger(Logger::Debug) << "Chi2 for ambiguity " << Ambiguity << " : " << LC_chi2 << std::endl;
 				bool EventFit_bool = Ntp->EventFit(selTau, selMuon, TPTF_TausA1.at(Ambiguity), Reco_Z, tmp_Daughters, tmp_Daughters0, LC_chi2, Niterat, csum, 91.5);//, tmp_par_0, tmp_par);
 				//if(LC_chi2>= 0) EventFit.push_back(EventFit_bool);
 				//else EventFit.push_back(false);
@@ -1242,20 +1274,20 @@ void  ZToTaumuTauh::doEvent(){
 				Reco_A1Fit_Solution.at(t).Fill(-2, w);
 			}
 		}
-		std::cout << "Ambiguitysolver: " << std::endl;
+		Logger(Logger::Verbose) << "Ambiguitysolver: " << std::endl;
 		if(Ntp->AmbiguitySolverByChi2(A1Fit, EventFit, Chi2s, IndexToReturn, AmbiguityPoint)){
 			int IndexToReturnTEST(-1); bool AmbiguityPointTEST(false);
 			Ntp->AmbiguitySolver(A1Fit, EventFit, Probs, IndexToReturnTEST, AmbiguityPointTEST);
 			AmbiguitySolvable = true;
 			if(ZFits.at(IndexToReturn).Mass() >=0) Reco_ZMass.at(t).Fill(ZFits.at(IndexToReturn).LV().M(), w);
+			Logger(Logger::Verbose) << "Single Mass Fit; Fit Mass:  "<< ZFits.at(IndexToReturn).LV().M() << std::endl;
+			Logger(Logger::Verbose) << "Picked Solution with Chi2 for ambiguity " << IndexToReturn << " : " << Chi2s.at(IndexToReturn) << std::endl;
+			Logger(Logger::Verbose) << "Picked Solution with Ambiguity value (by Chi2s): " << IndexToReturn << std::endl;
+			Logger(Logger::Verbose) << "Picked Solution with Ambiguity value (by probs): " << IndexToReturnTEST << std::endl;
 			Reco_EventFit_Solution.at(t).Fill(IndexToReturn, w);
 			Reco_EventFit_Solution.at(t).Fill(-1, w); //all solutions
 			Reco_ConstrainedDeltaSum.at(t).Fill(Csums.at(IndexToReturn), w);
 			Reco_Chi2_FitSolutionOnly.at(t).Fill(Chi2s.at(IndexToReturn), w);
-			std::cout << "Single Mass Fit; Fit Mass:  "<< ZFits.at(IndexToReturn).LV().M() << std::endl;
-			std::cout << "Picked Solution with Chi2 for ambiguity " << IndexToReturn << " : " << Chi2s.at(IndexToReturn) << std::endl;
-			std::cout << "Picked Solution with Ambiguity value (by Chi2s): " << IndexToReturn << std::endl;
-			std::cout << "Picked Solution with Ambiguity value (by probs): " << IndexToReturnTEST << std::endl;
 			Reco_TauMu_DeltaPX_FitImpact.at(t).Fill(RefitDaughters.at(IndexToReturn).at(1).LV().Px() - InitDaughters.at(IndexToReturn).at(1).LV().Px(), w);
 			Reco_TauMu_DeltaPY_FitImpact.at(t).Fill(RefitDaughters.at(IndexToReturn).at(1).LV().Py() - InitDaughters.at(IndexToReturn).at(1).LV().Py(), w);
 			Reco_TauMu_DeltaPZ_FitImpact.at(t).Fill(RefitDaughters.at(IndexToReturn).at(1).LV().Pz() - InitDaughters.at(IndexToReturn).at(1).LV().Pz(), w);
@@ -1274,7 +1306,6 @@ void  ZToTaumuTauh::doEvent(){
 			std::cout << "Failed" << std::endl;
 			Reco_EventFit_Solution.at(t).Fill(-2, w); //not able to solve ambiguity/no solution
 		}
-		std::cout << "-----------------End of Fit-----------------" << std::endl;
 		if(id == DataMCType::DY_mutau_embedded){
 			if(IndexToReturn == 0){
 				TauFLSigma_vs_UnphysicalAll.at(t).Fill(value.at(TauFLSigma), 0);
@@ -1374,11 +1405,12 @@ void  ZToTaumuTauh::doEvent(){
 			if(ZFits_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)).Mass() >=0){
 				Reco_ZMass_MassScan.at(t).Fill(ZFits_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)).Mass(), w);
 				Reco_ZMasswithProbWeight_MassScan.at(t).Fill(ZFits_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)).Mass(),w*Probs_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)));
-				std::cout << "Multiple Masses Fit; Fit Mass:  " << ZFits_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)).Mass() << std::endl;
-				std::cout << "Picked Solution with Chi2 for ambiguity " << IndicesToReturn.at(FinalIndex) << " : " << Chi2s_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)) << std::endl;
-				std::cout << "Picked Solution with Ambiguity value: " << IndicesToReturn.at(FinalIndex) << std::endl;
+				Logger(Logger::Verbose) << "Multiple Masses Fit; Fit Mass:  " << ZFits_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)).Mass() << std::endl;
+				Logger(Logger::Verbose) << "Picked Solution with Chi2 for ambiguity " << IndicesToReturn.at(FinalIndex) << " : " << Chi2s_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)) << std::endl;
+				Logger(Logger::Verbose) << "Picked Solution with Ambiguity value: " << IndicesToReturn.at(FinalIndex) << std::endl;
 			}
 		}
+		Logger(Logger::Verbose) << "-----------------End of Fit-----------------" << std::endl;
 	}
 
 	///////////////////////////////////////////////////////////
@@ -1410,6 +1442,19 @@ void  ZToTaumuTauh::doEvent(){
 
 		TLorentzVector PFTau_UnFitTracks;
 		(Ntp->PFTau_NdaughterTracks(selTau) == 3) ? TransTrk_Failure_withSelection.at(t).Fill(0.,w) : TransTrk_Failure_withSelection.at(t).Fill(1.,w);
+		if(Ntp->PFTau_NdaughterTracks(selTau) == 3){
+			for(unsigned i = 0; i<Ntp->PFTau_daughterTracks(selTau).size(); i++){
+				//std::cout << "Ntp->PFTau_daughterTracks(selTau).size()" << Ntp->PFTau_daughterTracks(selTau).size() << std::endl;
+				TrackParticle tmpTP = Ntp->PFTau_daughterTracks(selTau).at(i);
+				TVector3 SV = Ntp->PFTau_TIP_secondaryVertex_pos(selTau);
+				TLorentzVector tmpLV = (TrackTools::LorentzParticleAtPosition(tmpTP, SV)).LV();
+				PFTau_UnFitTracks += tmpLV;
+			}
+		}
+		Tau_Mass_Difference_PFTau_UnFitTracks_3PS.at(t).Fill(PFTau_UnFitTracks.M() - Ntp->PFTau_p4(selTau).M(), w);
+
+		TLorentzVector PFTau_ReFitTracks;
+		(Ntp->PFTau_NdaughtersReFitTracks_p4(selTau) == 3) ? TransTrk_Failure_withSelection.at(t).Fill(0.,w) : TransTrk_Failure_withSelection.at(t).Fill(1.,w);
 		if(Ntp->PFTau_NdaughterTracks(selTau) == 3){
 			for(unsigned i = 0; i<Ntp->PFTau_daughterTracks(selTau).size(); i++){
 				//std::cout << "Ntp->PFTau_daughterTracks(selTau).size()" << Ntp->PFTau_daughterTracks(selTau).size() << std::endl;
@@ -1583,6 +1628,51 @@ void  ZToTaumuTauh::doEvent(){
 					dTheta_MinusSVPV_genTaumu.at(t).Fill(dTheta, w);
 					Angle_MinusSVPV_genTaumu.at(t).Fill(MinusPFTau_FlightLength3d.Angle(GenTaumu.Vect()));
 
+					std::vector< bool > TauA1Reco_StraightTau;
+					std::vector< bool > TauA1Reco_HelixTau;
+					for(unsigned Ambiguity=0; Ambiguity<3; Ambiguity++){
+						double tmp_LC_chi2(-1), tmp_phisign(0);
+						LorentzVectorParticle Reco_TauA1, Reco_Z;
+						std::vector<LorentzVectorParticle> tmp_daughter;
+						TVectorD tmp_par(3), tmp_par_0(3);
+						TauA1Reco_StraightTau.push_back(Ntp->ThreeProngTauFit(selTau, Ambiguity, Reco_TauA1, tmp_daughter, tmp_LC_chi2, tmp_phisign));
+						if(TauA1Reco_StraightTau.at(Ambiguity)){
+							TLorentzVector Reco_TauA1HelixAtSV = TauHelixP4AtSV(selTau, Reco_TauA1.LV());
+							TVector3 SVPV = TVector3(Ntp->PFTau_FlightLength3d(selTau));
+							double GJAngleStraight = Ntp->PFTau_p4(selTau).Angle(SVPV);
+							double GJAngleHelix = Ntp->PFTau_p4(selTau).Angle(Reco_TauA1HelixAtSV.Vect());
+							double MaxGJAngle = GJAngleMax(Ntp->PFTau_p4(selTau));
+							Logger(Logger::Debug) << "GJAngleStraight " << GJAngleStraight << std::endl;
+							Logger(Logger::Debug) << "GJAngleHelix " << GJAngleHelix << std::endl;
+							Logger(Logger::Debug) << "GJAngleMax " << MaxGJAngle << std::endl;
+							Logger(Logger::Debug) << "TauCharge " << Ntp->PFTau_Charge(selTau) << std::endl;
+							double dGJAngleStraight = GJAngleStraight - MaxGJAngle;
+							double dGJAngleHelix = GJAngleHelix - MaxGJAngle;
+							dGJAngle_GJAngleMAX_StraightTau.at(t).Fill(dGJAngleStraight, w);
+							dGJAngle_GJAngleMAX_HelixTau.at(t).Fill(dGJAngleHelix, w);
+							Angle_HelixTau_StraightTau.at(t).Fill(Reco_TauA1.LV().Angle(Reco_TauA1HelixAtSV.Vect()), w);
+							dGJAngle_HelixTau_StraightTau.at(t).Fill(GJAngleHelix - GJAngleStraight, w);
+							dGJAngle_HelixTau_StraightTauOverGJAngle.at(t).Fill((GJAngleHelix - GJAngleStraight)/GJAngleStraight, w);
+							if(Ambiguity != 0) NUnphysical_StraightTau_HelixTau.at(t).Fill(Ambiguity, w);
+							if(GJAngleStraight > MaxGJAngle){
+								NUnphysical_StraightTau_HelixTau.at(t).Fill(3., w);
+							}
+							if(GJAngleHelix > MaxGJAngle){
+								NUnphysical_StraightTau_HelixTau.at(t).Fill(4., w);
+							}
+						}
+					}
+					for(unsigned int i=0;i<TauA1Reco_StraightTau.size();i++){
+						if(TauA1Reco_StraightTau.at(i)){
+							TauA1_Reco_Solution_StraightTau.at(t).Fill(-1, w);
+							NUnphysical_StraightTau_HelixTau.at(t).Fill(-1., w);
+							break;
+						}
+						if(i==2){
+							TauA1_Reco_Solution_StraightTau.at(t).Fill(-2, w);
+							NUnphysical_StraightTau_HelixTau.at(t).Fill(-2., w);
+						}
+					}
 					/*
 					if(status && value.at(TauFLSigma) != TauFLSigmaDummy){
 						for(unsigned Ambiguity=0; Ambiguity<3; Ambiguity++){
@@ -1824,9 +1914,9 @@ void  ZToTaumuTauh::doEvent(){
 			Tau_Mass_Inclusive.at(t).Fill(Ntp->PFTau_p4(selTau).M(), w);
 			Tau_Mass_sq_Inclusive.at(t).Fill(Ntp->PFTau_p4(selTau).M2(), w);
 			Tau_Mass_Inclusive_NoTLV.at(t).Fill(Ntp->PFTau_Mass(selTau), w);
-			std::cout << "Ntp->PFTau_NdaughtersReFitTracks_p4(selTau) " << Ntp->PFTau_NdaughtersReFitTracks_p4(selTau) << std::endl;
+			//std::cout << "Ntp->PFTau_NdaughtersReFitTracks_p4(selTau) " << Ntp->PFTau_NdaughtersReFitTracks_p4(selTau) << std::endl;
 			for(unsigned int i=0; i<Ntp->PFTau_NdaughtersReFitTracks_p4(selTau);i++){
-				std::cout << "Ntp->PFTau_daughterReFitTracks_p4(selTau).at(i).M() " << Ntp->PFTau_daughterReFitTracks_p4(selTau).at(i).M() << std::endl;
+				//std::cout << "Ntp->PFTau_daughterReFitTracks_p4(selTau).at(i).M() " << Ntp->PFTau_daughterReFitTracks_p4(selTau).at(i).M() << std::endl;
 				Tau_Mass_Inclusive_ReFitTracks.at(t).Fill(Ntp->PFTau_daughterReFitTracks_p4(selTau).at(i).M(), w);
 
 			TLorentzVector PFTau_UnFitTracks;
@@ -2153,15 +2243,34 @@ bool ZToTaumuTauh::selectPFTau_Kinematics(unsigned i){
 	}
 	return false;
 }
-double ZToTaumuTauh::Reconstruct_hadronicTauEnergy(unsigned i){
+/*
+LorentzVectorParticle ZToTaumuTauh::Reconstruct_hadronicTau(unsigned i, unsigned int Ambiguity){
+
+}
+TMatrixT<double> ZToTaumuTauh::ComputeTauDirection(TMatrixT<double> inpar){
+  TMatrixT<double> outpar(3,1);
+
+}
+double ZToTaumuTauh::Reconstruct_hadronicTauEnergy(unsigned i, unsigned int Ambiguity, bool UseHelix){
 	double TauEnergy,TauMomentumPlus, TauMomentumMinus;
-	TLorentzVector a1 = Ntp->PFTau_p4(i);
-	double GJ_angle = a1.Angle(Ntp->PFTau_FlightLength3d(i));
-	double val1 = (pow(PDG_Var::Tau_mass(),2.) + pow(a1.M(),2.))*a1.P()*cos(GJ_angle);
-	double val2 = a1.Energy()*sqrt(pow(pow(PDG_Var::Tau_mass(),2.) - pow(a1.M(),2.),2.) - 4.*pow(a1.P()*PDG_Var::Tau_mass()*sin(GJ_angle),2.));
-	TauMomentumPlus = (val1 + val2)/2./(pow(a1.M(),2) + pow(a1.P()*sin(GJ_angle),2.));
-	TauMomentumMinus = (val1 - val2)/2./(pow(a1.M(),2) + pow(a1.P()*sin(GJ_angle),2.));
+	TLorentzVector A1 = Ntp->PFTau_p4(i);
+	double GJ_angle = A1.Angle(Ntp->PFTau_FlightLength3d(i));
+	double GJ_angleMax = GJAngleMax(A1);
+	if(GJ_angle > GJ_angleMax){
+
+	}
+	else{
+		double val1 = (pow(PDG_Var::Tau_mass(),2.) + pow(A1.M(),2.))*A1.P()*cos(GJ_angle);
+		double val2 = A1.Energy()*sqrt(pow(pow(PDG_Var::Tau_mass(),2.) - pow(A1.M(),2.),2.) - 4.*pow(A1.P()*PDG_Var::Tau_mass()*sin(GJ_angle),2.));
+		TauMomentumPlus = (val1 + val2)/2./(pow(A1.M(),2) + pow(A1.P()*sin(GJ_angle),2.));
+		TauMomentumMinus = (val1 - val2)/2./(pow(A1.M(),2) + pow(A1.P()*sin(GJ_angle),2.));
+	}
 	return TauEnergy;
+}
+*/
+double ZToTaumuTauh::GJAngleMax(TLorentzVector A1){
+	double arg = (pow(PDGInfo::tau_mass(),2.) - A1.M2())/2./A1.P()/PDGInfo::tau_mass();
+	return asin(arg);
 }
 LorentzVectorParticle ZToTaumuTauh::CorrectRecoTauMomentumBias(LorentzVectorParticle RecoTau, TLorentzVector RecoA1, std::vector<double> BiasInGJAngleBins){
 	double Angle = RecoA1.Vect().Angle(RecoTau.LV().Vect());
@@ -2185,18 +2294,20 @@ TLorentzVector ZToTaumuTauh::BoostToRestFrame(TLorentzVector TLV1, TLorentzVecto
 	boosted_TLV2.Boost(-boostvector);
 	return boosted_TLV2;
 }
-TLorentzVector ZToTaumuTauh::TauHelixP4AtSV(unsigned int selTau, TLorentzVector Tau, TVector3 PV, TVector3 SV){
-	TLorentzVector Helix_TLV(Tau);
+TLorentzVector ZToTaumuTauh::TauHelixP4AtSV(unsigned int selTau, TLorentzVector Tau){
 	double pTau = Tau.P();
+	TVector3 PV = Ntp->PFTau_TIP_primaryVertex_pos(selTau);
+	TVector3 SV = Ntp->PFTau_TIP_secondaryVertex_pos(selTau);
 	TVector3 PVSV = TVector3(SV - PV);
 	TVector3 p0 = TVector3(PVSV); double p0Mag = p0.Mag(); double p0Scale = pTau/p0Mag; p0 = p0*p0Scale;
-	double Tau_SinLambda = p0.Pt()/p0.Mag();
-	double Tau_Lambda = asin(Tau_SinLambda);
-	double alpha = -Ntp->PFTau_Charge(selTau)*3*10**(-3)*3.8;
-	double Tau_R = pTau/alpha;
+	//TVector3 p0 = TVector3(Tau.Vect());
+	double charge = ((double)Ntp->PFTau_Charge(selTau));
+	double alpha = -charge*3*pow(10.,-3.)*3.8;
+	double Tau_R = Tau.Pt()/alpha;
 	double kappa = 1/Tau_R/2.;
-	double Tau_Phi0 = atan(p0.Y()/p0.X()) - (TMath::PiOver2() - acos(PVSV.Mag()*kappa));
-	double Tau_Phi02 = atan(p0.Y()/p0.X()) + (TMath::PiOver2() - acos(PVSV.Mag()*kappa));
+	double Tau_Phi0 = atan2(p0.Y(),p0.X()) + charge*(TMath::PiOver2() - acos(PVSV.Mag()*kappa));
+	double Tau_Phi02 = atan2(p0.Y(),p0.X()) - charge*(TMath::PiOver2() - acos(PVSV.Mag()*kappa));
 	TLorentzVector Helix_TLV = TLorentzVector(p0.Pt()*cos(Tau_Phi02), p0.Pt()*sin(Tau_Phi02), p0.Z(), Tau.E());
+	Logger(Logger::Debug) << "Helix_TLV.M(): " << Helix_TLV.M() << std::endl;
 	return Helix_TLV;
 }
