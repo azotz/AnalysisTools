@@ -65,7 +65,8 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> Mu_pt, Mu_eta, Mu_phi, Tau_pt, Tau_eta, Tau_phi, Tau_Mass_Inclusive, Tau_Mass_sq_Inclusive, Tau_Mass_Inclusive_NoTLV, Tau_Mass_Inclusive_UnFitTracks, Tau_Mass_Inclusive_ReFitTracks, Tau_Mass_Difference_PFTau_UnFitTracks_3PS, Tau_Mass_Difference_PFTau_ReFitTracks_3PS;
   std::vector<TH1D> MET_phi;
   std::vector<TH1D> TauFL_NoTauFLSigmaCut, TauFLSigned_NoTauFLSigmaCut, TauFLSigmaSigned, TauFLSigmaUnsigned;
-  std::vector<TH1D> A1mass, A1mass10GeV;
+  std::vector<TH1D> A1mass, A1mass10GeV, A1massRefit, dA1mass_PFTau_Refit;
+  std::vector<TH1D> A1_Phi_Res, A1_Theta_Res;
 
   std::vector<TH1D> Mvis3Prong, Mvis1Prong, MvisIncl;
   std::vector<TH1D> MTMuMET3Prong, MTMuMET1Prong, MTMuMETIncl;
@@ -76,13 +77,19 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH2D> dPhi_SVPV_genTauh_vs_TauFL, dPhi_SVPV_genTauhPlus_vs_TauFL, dPhi_SVPV_genTauhMinus_vs_TauFL;
   std::vector<TH1D> Phi_POCAPV, Phi_genTaumu, Theta_POCAPV, Theta_genTaumu, dPhi_POCAPV_genTaumu, dTheta_POCAPV_genTaumu;
   std::vector<TH1D> dPhi_MinusSVPV_genTaumu, dTheta_MinusSVPV_genTaumu, Angle_MinusSVPV_genTaumu;
+  std::vector<TH1D> dPhi_GenTauMu_GenMu, dPhi_GenTauMu_RecoMu, dTheta_GenTauMu_GenMu, dTheta_GenTauMu_RecoMu;
 
+  std::vector<TH1D> GJAngle_Over_GJAngleMax_StraightTau, GJAngle_Over_GJAngleMax_HelixTau;
   std::vector<TH1D> dGJAngle_GJAngleMAX_StraightTau, dGJAngle_GJAngleMAX_HelixTau, Angle_HelixTau_StraightTau, dGJAngle_HelixTau_StraightTau, dGJAngle_HelixTau_StraightTauOverGJAngle, TauA1_Reco_Solution_StraightTau, TauA1_Reco_Solution_HelixTau;
   std::vector<TH1D> NUnphysical_StraightTau_HelixTau;
 
   std::vector<TH1D> Gen_TauA1_GJ, Gen_TauMu_GJ;
   std::vector<TH1D> Gen_DiTau_dPhi, Gen_DiTau_Pt, Gen_Z_Pt, Gen_Z_M, Gen_DiTau_PtBalance_M, Gen_DiTau_PtBalance_dM, Gen_TauMu_PtBalance_Pt, Gen_TauMu_PtBalance_dP, Gen_TauA1_dP;
   std::vector<TH1D> Gen_TPTF_TauA1_Solution_NoSelection, Gen_TPTF_TauA1_Solution_WithSelection;
+  std::vector<TH2D> Gen_Z_Pt_vs_MET;
+  std::vector<TH2D> Gen_Z_Pt_vs_VtxTracksPt;
+  std::vector<TH2D> Gen_Z_Phi_vs_VtxTracksPhi;
+  std::vector<TH1D> VtxTracksPtRes, VtxTracksPhiCorrectedRes;
   std::vector<TH2D> dP_GenTauMuPtBalance_vs_dPTauh, Pt_vs_dPhi_DiTauGen;
   std::vector<TH1D> TauFL_WithTauFLSigmaCut;
   std::vector<TH2D> TauFLSigmaCut_vs_Res, TauFLSigma_vs_Res, TauFLSigma_vs_UnphysicalAll, TauFL_vs_UnphysicalAll;
@@ -106,8 +113,20 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH2D> TPTF_Neutrino_ReFitTracks_Mass_vs_TauFL;
   std::vector<TH1D> TPTF_Neutrino_PFTau_Mass;
   std::vector<TH2D> TPTF_Neutrino_PFTau_Mass_vs_TauFL;
+  std::vector<TH1D> TPTF_Neutrino_RefitPFTau_HelixGenTau_Mass;
+  std::vector<TH1D> TPTF_Neutrino_GenA1_StraightGenTau_Mass;
+  std::vector<TH1D> TPTF_Neutrino_GenA1_HelixGenTau_Mass;
 
   std::vector<TH1D> TransTrk_Failure_withSelection, TransTrk_Failure_noSelection;
+
+  std::vector<TH1D> Estimated_Z_Pt_wTruth, Estimated_Z_PtRes_wTruth;
+  std::vector<TH2D> Estimated_Z_Pt_wTruth_vs_GenZ_Pt;
+  std::vector<TH1D> Estimated_Z_Pt_alwaysMinus, Estimated_Z_PtRes_alwaysMinus;
+  std::vector<TH2D> Estimated_Z_Pt_alwaysMinus_vs_GenZ_Pt;
+  std::vector<TH1D> Estimated_Z_Energy_wTruth, Estimated_Z_Energy_alwaysMinus;
+  std::vector<TH1D> Estimated_Z_EnergyRes_wTruth, Estimated_Z_EnergyRes_alwaysMinus;
+  std::vector<TH1D> Estimated_Z_EnergyRes_wTruth2, Estimated_Z_EnergyRes_alwaysMinus2;
+  std::vector<TH1D> Estimated_TauMu_PtRes_wTruth, Estimated_TauMu_PtRes_wTruth2;
 
   std::vector<TH1D> Reco_ZMass, Reco_ZMass_UnboostedGenZ, Reco_EventFit_Solution, Reco_A1Fit_Solution, Reco_Chi2, Reco_Chi2_FitSolutionOnly, Reco_Chi2_FitSolutionOnlyLargeScale, Reco_ConstrainedDeltaSum, Reco_ConstrainedDeltaMass, Reco_ConstrainedDeltaPt, Reco_NIter;
   std::vector<TH1D> Reco_Z_Energy_Res, RecoZ_Pt;
@@ -140,6 +159,10 @@ class ZToTaumuTauh : public Selection {
   LorentzVectorParticle CorrectRecoTauMomentumBias(LorentzVectorParticle RecoTau, TLorentzVector RecoA1, std::vector<double> BiasInGJAngleBins);
   TLorentzVector BoostToRestFrame(TLorentzVector TLV1, TLorentzVector TLV2);
   TLorentzVector TauHelixP4AtSV(unsigned int selTau, TLorentzVector Tau);
+  TLorentzVector GenTauHelixP4AtSV(unsigned int selTau, TLorentzVector Tau);
+  TVector2 ZPtCollinearTauMuEstimator(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
+  TLorentzVector TauMuEstimator(TLorentzVector Tauh, TLorentzVector Muon);
+  TLorentzVector TauMuEstimator2(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
  private:
 
 };

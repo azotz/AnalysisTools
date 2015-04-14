@@ -428,9 +428,9 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
    bool PFTau_TIP_hasA1Momentum(unsigned int i){if(Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar)return true; return false;}
    LorentzVectorParticle PFTau_a1_lvp(unsigned int i);
    TLorentzVector PFTau_3PS_A1_LV(unsigned int i){return PFTau_a1_lvp(i).LV();}
-   int PFTau_NdaughterTracks(unsigned int i){return Ntp->PFTau_daughterTracks_M->at(i).size();}
+   unsigned int PFTau_NdaughterTracks(unsigned int i){return Ntp->PFTau_daughterTracks_M->at(i).size();}
    std::vector<TrackParticle> PFTau_daughterTracks(unsigned int i);
-   int PFTau_NdaughtersReFitTracks_p4(unsigned int i) {return Ntp->PFTau_PionsP4->at(i).size();};
+   unsigned int PFTau_NdaughtersReFitTracks_p4(unsigned int i) {return Ntp->PFTau_PionsP4->at(i).size();};
    std::vector<TLorentzVector> PFTau_daughterReFitTracks_p4(unsigned int i);
    std::vector<TVector3> PFTau_daughterTracks_poca(unsigned int i);   
    TMatrixTSym<double> PFTau_FlightLength3d_cov(unsigned int i){return  PFTau_TIP_secondaryVertex_cov(i)+PFTau_TIP_primaryVertex_cov(i);}
@@ -500,6 +500,9 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 		   //pvcov.Print();
 		   TVector3 MuonPoca(Ntp->Muon_Poca->at(MuonIndex).at(0),Ntp->Muon_Poca->at(MuonIndex).at(1),Ntp->Muon_Poca->at(MuonIndex).at(2));
 		   DiTauConstrainedFitter Z2Tau(TauA1, Muon, pv, pvcov);
+
+		   InitDaughters = Z2Tau.GetInitialDaughters();
+
 		   Z2Tau.SetMassConstraint(MassConstraint);
 		   Z2Tau.SetMaxDelta(1.0);
 		   Z2Tau.SetNIterMax(100);
@@ -509,7 +512,6 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 		   //std::cout << "DEBUG 7" << std::endl;
 		   if(fitStatus && Z2Tau.isConverged()){
 			   RefitDaughters = Z2Tau.GetReFitDaughters();
-			   InitDaughters = Z2Tau.GetInitialDaughters();
 			   //std::cout << "InitDaughters.at(0): "; InitDaughters.at(0).LV().Print();
 			   //std::cout << "InitDaughters.at(1): "; InitDaughters.at(1).LV().Print();
 			   //std::cout << "RefitDaughters.at(0): "; RefitDaughters.at(0).LV().Print();
