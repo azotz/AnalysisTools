@@ -119,14 +119,16 @@ class ZToTaumuTauh : public Selection {
 
   std::vector<TH1D> TransTrk_Failure_withSelection, TransTrk_Failure_noSelection;
 
-  std::vector<TH1D> Estimated_Z_Pt_wTruth, Estimated_Z_PtRes_wTruth;
-  std::vector<TH2D> Estimated_Z_Pt_wTruth_vs_GenZ_Pt;
-  std::vector<TH1D> Estimated_Z_Pt_alwaysMinus, Estimated_Z_PtRes_alwaysMinus;
-  std::vector<TH2D> Estimated_Z_Pt_alwaysMinus_vs_GenZ_Pt;
-  std::vector<TH1D> Estimated_Z_Energy_wTruth, Estimated_Z_Energy_alwaysMinus;
-  std::vector<TH1D> Estimated_Z_EnergyRes_wTruth, Estimated_Z_EnergyRes_alwaysMinus;
-  std::vector<TH1D> Estimated_Z_EnergyRes_wTruth2, Estimated_Z_EnergyRes_alwaysMinus2;
-  std::vector<TH1D> Estimated_TauMu_PtRes_wTruth, Estimated_TauMu_PtRes_wTruth2;
+  std::vector<TH1D> Est_Z_Pt_wTruth, Est_Z_PtRes_wTruth;
+  std::vector<TH2D> Est_Z_Pt_wTruth_vs_GenZ_Pt;
+  std::vector<TH1D> Est_Z_Pt_alwaysMinus, Est_Z_PtRes_alwaysMinus;
+  std::vector<TH2D> Est_Z_Pt_alwaysMinus_vs_GenZ_Pt;
+  std::vector<TH1D> Est_Z_Energy_wTruth, Est_Z_Energy_alwaysMinus;
+  std::vector<TH1D> Est_Z_EnergyRes_wTruth, Est_Z_EnergyRes_alwaysMinus;
+  std::vector<TH1D> Est_Z_EnergyRes_wTruth2, Est_Z_EnergyRes_alwaysMinus2;
+  std::vector<TH1D> Est_TauMu_PtRes_wTruth, Est_TauMu_PtRes_wTruth2;
+  std::vector<TH1D> Est_TauMu_PtRes_wTruth_NoZMass, Est_Z_M_wTruth_NoZMass, Est_Z_EnergyRes_wTruth_NoZMass;
+  std::vector<TH1D> Est_Z_M_wTruth2;
 
   std::vector<TH1D> Reco_ZMass, Reco_ZMass_UnboostedGenZ, Reco_EventFit_Solution, Reco_A1Fit_Solution, Reco_Chi2, Reco_Chi2_FitSolutionOnly, Reco_Chi2_FitSolutionOnlyLargeScale, Reco_ConstrainedDeltaSum, Reco_ConstrainedDeltaMass, Reco_ConstrainedDeltaPt, Reco_NIter;
   std::vector<TH1D> Reco_Z_Energy_Res, RecoZ_Pt;
@@ -163,6 +165,7 @@ class ZToTaumuTauh : public Selection {
   TVector2 ZPtCollinearTauMuEstimator(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
   TLorentzVector TauMuEstimator(TLorentzVector Tauh, TLorentzVector Muon);
   TLorentzVector TauMuEstimator2(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
+  TLorentzVector TauMuEstimatorNoZMass(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
  private:
 
 };

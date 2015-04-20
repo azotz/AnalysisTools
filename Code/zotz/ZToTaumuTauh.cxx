@@ -59,7 +59,7 @@ ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 
 	Use_Embedded = true;
 
-	Logger::Instance()->SetLevel(Logger::Debug);
+	Logger::Instance()->SetLevel(Logger::Info);
 }
 
 ZToTaumuTauh::~ZToTaumuTauh(){
@@ -432,21 +432,29 @@ void  ZToTaumuTauh::Configure(){
 	TransTrk_Failure_withSelection=HConfig.GetTH1D(Name+"_TransTrk_Failure_withSelection","TransTrk_Failure_withSelection",2,-0.5,1.5,"TransTrk_Failure_withSelection","Events");
 	TransTrk_Failure_noSelection=HConfig.GetTH1D(Name+"_TransTrk_Failure_noSelection","TransTrk_Failure_noSelection",2,-0.5,1.5,"TransTrk_Failure_noSelection","Events");
 
-	Estimated_Z_Pt_wTruth=HConfig.GetTH1D(Name+"_Estimated_Z_Pt_wTruth","Estimated_Z_Pt_wTruth",40,0,40,"Estimated_Z_Pt_wTruth","Events");
-	Estimated_Z_PtRes_wTruth=HConfig.GetTH1D(Name+"_Estimated_Z_PtRes_wTruth","Estimated_Z_PtRes_wTruth",80,-40,40,"Estimated_Z_PtRes_wTruth","Events");
-	Estimated_Z_Pt_wTruth_vs_GenZ_Pt=HConfig.GetTH2D(Name+"_Estimated_Z_Pt_wTruth_vs_GenZ_Pt","Estimated_Z_Pt_wTruth_vs_GenZ_Pt",40,0,40,40,0,40,"Estimated_Z_Pt_wTruth","GenZ_Pt");
-	Estimated_Z_Pt_alwaysMinus=HConfig.GetTH1D(Name+"_Estimated_Z_Pt_alwaysMinus","Estimated_Z_Pt_alwaysMinus",40,0,40,"Estimated_Z_Pt_alwaysMinus","Events");
-	Estimated_Z_PtRes_alwaysMinus=HConfig.GetTH1D(Name+"_Estimated_Z_PtRes_alwaysMinus","Estimated_Z_PtRes_alwaysMinus",80,-40,40,"Estimated_Z_PtRes_alwaysMinus","Events");
-	Estimated_Z_Pt_alwaysMinus_vs_GenZ_Pt=HConfig.GetTH2D(Name+"_Estimated_Z_Pt_alwaysMinus_vs_GenZ_Pt","Estimated_Z_Pt_alwaysMinus_vs_GenZ_Pt",40,0,40,40,0,40,"Estimated_Z_Pt_alwaysMinus","GenZ_Pt");
-	Estimated_Z_Energy_wTruth=HConfig.GetTH1D(Name+"_Estimated_Z_Energy_wTruth","Estimated_Z_Energy_wTruth",100,0,1000,"Estimated_Z_Energy_wTruth","Events");
-	Estimated_Z_Energy_alwaysMinus=HConfig.GetTH1D(Name+"_Estimated_Z_Energy_alwaysMinus","Estimated_Z_Energy_alwaysMinus",100,0,1000,"Estimated_Z_Energy_alwaysMinus","Events");
-	Estimated_Z_EnergyRes_wTruth=HConfig.GetTH1D(Name+"_Estimated_Z_EnergyRes_wTruth","Estimated_Z_EnergyRes_wTruth",100,-100,100,"Estimated_Z_EnergyRes_wTruth","Events");
-	Estimated_Z_EnergyRes_alwaysMinus=HConfig.GetTH1D(Name+"_Estimated_Z_EnergyRes_alwaysMinus","Estimated_Z_EnergyRes_alwaysMinus",100,-100,100,"Estimated_Z_EnergyRes_alwaysMinus","Events");
-	Estimated_Z_EnergyRes_wTruth2=HConfig.GetTH1D(Name+"_Estimated_Z_EnergyRes_wTruth2","Estimated_Z_EnergyRes_wTruth2",100,-100,100,"Estimated_Z_EnergyRes_wTruth2","Events");
-	Estimated_Z_EnergyRes_alwaysMinus2=HConfig.GetTH1D(Name+"_Estimated_Z_EnergyRes_alwaysMinus2","Estimated_Z_EnergyRes_alwaysMinus2",100,-100,100,"Estimated_Z_EnergyRes_alwaysMinus2","Events");
 
-	Estimated_TauMu_PtRes_wTruth=HConfig.GetTH1D(Name+"_Estimated_TauMu_PtRes_wTruth","Estimated_TauMu_PtRes_wTruth",100,-50,50,"Estimated_TauMu_PtRes_wTruth","Events");
-	Estimated_TauMu_PtRes_wTruth2=HConfig.GetTH1D(Name+"_Estimated_TauMu_PtRes_wTruth2","Estimated_TauMu_PtRes_wTruth2",100,-50,50,"Estimated_TauMu_PtRes_wTruth2","Events");
+
+	Est_Z_Pt_wTruth=HConfig.GetTH1D(Name+"_Est_Z_Pt_wTruth","Est_Z_Pt_wTruth",40,0,40,"Est_Z_Pt_wTruth","Events");
+	Est_Z_PtRes_wTruth=HConfig.GetTH1D(Name+"_Est_Z_PtRes_wTruth","Est_Z_PtRes_wTruth",80,-40,40,"Est_Z_PtRes_wTruth","Events");
+	Est_Z_Pt_wTruth_vs_GenZ_Pt=HConfig.GetTH2D(Name+"_Est_Z_Pt_wTruth_vs_GenZ_Pt","Est_Z_Pt_wTruth_vs_GenZ_Pt",40,0,40,40,0,40,"Est_Z_Pt_wTruth","GenZ_Pt");
+	Est_TauMu_PtRes_wTruth=HConfig.GetTH1D(Name+"_Est_TauMu_PtRes_wTruth","Est_TauMu_PtRes_wTruth",100,-50,50,"Est_TauMu_PtRes_wTruth","Events");
+	Est_Z_Energy_wTruth=HConfig.GetTH1D(Name+"_Est_Z_Energy_wTruth","Est_Z_Energy_wTruth",100,0,1000,"Est_Z_Energy_wTruth","Events");
+	Est_Z_EnergyRes_wTruth=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_wTruth","Est_Z_EnergyRes_wTruth",100,-100,100,"Est_Z_EnergyRes_wTruth","Events");
+	Est_Z_Pt_alwaysMinus=HConfig.GetTH1D(Name+"_Est_Z_Pt_alwaysMinus","Est_Z_Pt_alwaysMinus",40,0,40,"Est_Z_Pt_alwaysMinus","Events");
+	Est_Z_PtRes_alwaysMinus=HConfig.GetTH1D(Name+"_Est_Z_PtRes_alwaysMinus","Est_Z_PtRes_alwaysMinus",80,-40,40,"Est_Z_PtRes_alwaysMinus","Events");
+	Est_Z_Pt_alwaysMinus_vs_GenZ_Pt=HConfig.GetTH2D(Name+"_Est_Z_Pt_alwaysMinus_vs_GenZ_Pt","Est_Z_Pt_alwaysMinus_vs_GenZ_Pt",40,0,40,40,0,40,"Est_Z_Pt_alwaysMinus","GenZ_Pt");
+	Est_Z_Energy_alwaysMinus=HConfig.GetTH1D(Name+"_Est_Z_Energy_alwaysMinus","Est_Z_Energy_alwaysMinus",100,0,1000,"Est_Z_Energy_alwaysMinus","Events");
+	Est_Z_EnergyRes_alwaysMinus=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_alwaysMinus","Est_Z_EnergyRes_alwaysMinus",100,-100,100,"Est_Z_EnergyRes_alwaysMinus","Events");
+
+
+	Est_TauMu_PtRes_wTruth2=HConfig.GetTH1D(Name+"_Est_TauMu_PtRes_wTruth2","Est_TauMu_PtRes_wTruth2",100,-50,50,"Est_TauMu_PtRes_wTruth2","Events");
+	Est_Z_EnergyRes_wTruth2=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_wTruth2","Est_Z_EnergyRes_wTruth2",100,-100,100,"Est_Z_EnergyRes_wTruth2","Events");
+	Est_Z_EnergyRes_alwaysMinus2=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_alwaysMinus2","Est_Z_EnergyRes_alwaysMinus2",100,-100,100,"Est_Z_EnergyRes_alwaysMinus2","Events");
+	Est_Z_M_wTruth2=HConfig.GetTH1D(Name+"_Est_Z_M_wTruth2","Est_Z_M_wTruth2",100,0,300,"Est_Z_M_wTruth2","Events");
+
+	Est_TauMu_PtRes_wTruth_NoZMass=HConfig.GetTH1D(Name+"_Est_TauMu_PtRes_wTruth_NoZMass","Est_TauMu_PtRes_wTruth_NoZMass",100,-100,100,"Est_TauMu_PtRes_wTruth_NoZMass","Events");
+	Est_Z_M_wTruth_NoZMass=HConfig.GetTH1D(Name+"_Est_Z_M_wTruth_NoZMass","Est_Z_M_wTruth_NoZMass",100,0,300,"Est_Z_M_wTruth_NoZMass","Events");
+	Est_Z_EnergyRes_wTruth_NoZMass=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_wTruth_NoZMass","Est_Z_EnergyRes_wTruth_NoZMass",100,-100,100,"Est_Z_EnergyRes_wTruth_NoZMass","Events");
 
 	//DiTau Reco
 	Reco_ZMass=HConfig.GetTH1D(Name+"_Reco_ZMass","Reco_ZMass",180,60,150,"Reco_ZMass","Events");
@@ -688,20 +696,24 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&TransTrk_Failure_withSelection);
 	Extradist1d.push_back(&TransTrk_Failure_noSelection);
 
-	Extradist1d.push_back(&Estimated_Z_Pt_wTruth);
-	Extradist1d.push_back(&Estimated_Z_PtRes_wTruth);
-	Extradist2d.push_back(&Estimated_Z_Pt_wTruth_vs_GenZ_Pt);
-	Extradist1d.push_back(&Estimated_Z_Pt_alwaysMinus);
-	Extradist1d.push_back(&Estimated_Z_PtRes_alwaysMinus);
-	Extradist2d.push_back(&Estimated_Z_Pt_alwaysMinus_vs_GenZ_Pt);
-	Extradist1d.push_back(&Estimated_Z_Energy_wTruth);
-	Extradist1d.push_back(&Estimated_Z_Energy_alwaysMinus);
-	Extradist1d.push_back(&Estimated_Z_EnergyRes_wTruth);
-	Extradist1d.push_back(&Estimated_Z_EnergyRes_alwaysMinus);
-	Extradist1d.push_back(&Estimated_Z_EnergyRes_wTruth2);
-	Extradist1d.push_back(&Estimated_Z_EnergyRes_alwaysMinus2);
-	Extradist1d.push_back(&Estimated_TauMu_PtRes_wTruth);
-	Extradist1d.push_back(&Estimated_TauMu_PtRes_wTruth2);
+	Extradist1d.push_back(&Est_Z_Pt_wTruth);
+	Extradist1d.push_back(&Est_Z_PtRes_wTruth);
+	Extradist2d.push_back(&Est_Z_Pt_wTruth_vs_GenZ_Pt);
+	Extradist1d.push_back(&Est_Z_Pt_alwaysMinus);
+	Extradist1d.push_back(&Est_Z_PtRes_alwaysMinus);
+	Extradist2d.push_back(&Est_Z_Pt_alwaysMinus_vs_GenZ_Pt);
+	Extradist1d.push_back(&Est_Z_Energy_wTruth);
+	Extradist1d.push_back(&Est_Z_Energy_alwaysMinus);
+	Extradist1d.push_back(&Est_Z_EnergyRes_wTruth);
+	Extradist1d.push_back(&Est_Z_EnergyRes_alwaysMinus);
+	Extradist1d.push_back(&Est_Z_EnergyRes_wTruth2);
+	Extradist1d.push_back(&Est_Z_EnergyRes_alwaysMinus2);
+	Extradist1d.push_back(&Est_TauMu_PtRes_wTruth);
+	Extradist1d.push_back(&Est_TauMu_PtRes_wTruth2);
+	Extradist1d.push_back(&Est_Z_M_wTruth2);
+	Extradist1d.push_back(&Est_TauMu_PtRes_wTruth_NoZMass);
+	Extradist1d.push_back(&Est_Z_M_wTruth_NoZMass);
+	Extradist1d.push_back(&Est_Z_EnergyRes_wTruth_NoZMass);
 
 	Extradist1d.push_back(&Reco_ZMass);
 	Extradist1d.push_back(&Reco_ZMass_UnboostedGenZ);
@@ -1734,11 +1746,11 @@ void  ZToTaumuTauh::doEvent(){
 							Logger(Logger::Debug) << "GJAngleMax " << MaxGJAngle << std::endl;
 							Logger(Logger::Debug) << "TauCharge " << Ntp->PFTau_Charge(selTau) << std::endl;
 							if(GenTauhIndex != -1){
-								Logger(Logger::Debug) << "GenTau1 Vertex :" << Ntp->MCTauandProd_Vertex(0,0).X() << " ," << Ntp->MCTauandProd_Vertex(0,0).Y() << " ," << Ntp->MCTauandProd_Vertex(0,0).Z() << std::endl;
-								Logger(Logger::Debug) << "GenTau2 Vertex :" << Ntp->MCTauandProd_Vertex(1,0).X() << " ," << Ntp->MCTauandProd_Vertex(1,0).Y() << " ," << Ntp->MCTauandProd_Vertex(1,0).Z() << std::endl;
-								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,1).X() << " ," << Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Y() << " ," << Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Z() << std::endl;
-								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).X() << " ," << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).Y() << " ," << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).Z() << std::endl;
-								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).X() << " ," << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).Y() << " ," << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).Z() << std::endl;
+								Logger(Logger::Debug) << "GenTau1 Vertex :" << Ntp->MCTauandProd_Vertex(0,0).X() << ", " << Ntp->MCTauandProd_Vertex(0,0).Y() << ", " << Ntp->MCTauandProd_Vertex(0,0).Z() << std::endl;
+								Logger(Logger::Debug) << "GenTau2 Vertex :" << Ntp->MCTauandProd_Vertex(1,0).X() << ", " << Ntp->MCTauandProd_Vertex(1,0).Y() << ", " << Ntp->MCTauandProd_Vertex(1,0).Z() << std::endl;
+								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,1).X() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Y() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Z() << std::endl;
+								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).X() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).Y() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).Z() << std::endl;
+								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).X() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).Y() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).Z() << std::endl;
 							}
 							double dGJAngleStraight = GJAngleStraight - MaxGJAngle;
 							double dGJAngleHelix = GJAngleHelix - MaxGJAngle;
@@ -1925,71 +1937,93 @@ void  ZToTaumuTauh::doEvent(){
 						TrackParticle MuonTP = Ntp->Muon_TrackParticle(selMuon);
 						if(A1Fit.at(0)){
 							TVector2 ZEst = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(0).LV(), Recoil.Phi());
-							Estimated_Z_Pt_wTruth.at(t).Fill(ZEst.Mod(), w);
-							Estimated_Z_PtRes_wTruth.at(t).Fill(ZEst.Mod() - GenZH.Pt(), w);
-							Estimated_Z_Pt_wTruth_vs_GenZ_Pt.at(t).Fill(ZEst.Mod(), GenZH.Pt());
-							Estimated_Z_Pt_alwaysMinus.at(t).Fill(ZEst.Mod(), w);
-							Estimated_Z_PtRes_alwaysMinus.at(t).Fill(ZEst.Mod() - GenZH.Pt(), w);
-							Estimated_Z_Pt_alwaysMinus_vs_GenZ_Pt.at(t).Fill(ZEst.Mod(), GenZH.Pt());
+							Est_Z_Pt_wTruth.at(t).Fill(ZEst.Mod(), w);
+							Est_Z_PtRes_wTruth.at(t).Fill(ZEst.Mod() - GenZH.Pt(), w);
+							Est_Z_Pt_wTruth_vs_GenZ_Pt.at(t).Fill(ZEst.Mod(), GenZH.Pt());
+							Est_Z_Pt_alwaysMinus.at(t).Fill(ZEst.Mod(), w);
+							Est_Z_PtRes_alwaysMinus.at(t).Fill(ZEst.Mod() - GenZH.Pt(), w);
+							Est_Z_Pt_alwaysMinus_vs_GenZ_Pt.at(t).Fill(ZEst.Mod(), GenZH.Pt());
 
 							TLorentzVector TauMuEst = TauMuEstimator(TPTF_TausA1.at(0).LV(), Ntp->Muon_p4(selMuon));
 							TLorentzVector FullZEst = TPTF_TausA1.at(0).LV() + TauMuEst;
-							Estimated_Z_Energy_wTruth.at(t).Fill(FullZEst.E(), w);
-							Estimated_Z_Energy_alwaysMinus.at(t).Fill(FullZEst.E(), w);
-							Estimated_Z_EnergyRes_wTruth.at(t).Fill(FullZEst.E() - GenZH.E(), w);
-							Estimated_Z_EnergyRes_alwaysMinus.at(t).Fill(FullZEst.E() - GenZH.E(), w);
-							Estimated_TauMu_PtRes_wTruth.at(t).Fill(TauMuEst.Pt() - GenTaumu.Pt(), w);
+							Est_Z_Energy_wTruth.at(t).Fill(FullZEst.E(), w);
+							Est_Z_Energy_alwaysMinus.at(t).Fill(FullZEst.E(), w);
+							Est_Z_EnergyRes_wTruth.at(t).Fill(FullZEst.E() - GenZH.E(), w);
+							Est_Z_EnergyRes_alwaysMinus.at(t).Fill(FullZEst.E() - GenZH.E(), w);
+							Est_TauMu_PtRes_wTruth.at(t).Fill(TauMuEst.Pt() - GenTaumu.Pt(), w);
 
 							TLorentzVector TauMuEst2 = TauMuEstimator2(MuonTP, TPTF_TausA1.at(0).LV(), Recoil.Phi());
 							TLorentzVector FullZEst2 = TPTF_TausA1.at(0).LV() + TauMuEst2;
-							Estimated_Z_EnergyRes_wTruth2.at(t).Fill(FullZEst2.E() - GenZH.E(), w);
-							Estimated_Z_EnergyRes_alwaysMinus2.at(t).Fill(FullZEst2.E() - GenZH.E(), w);
-							Estimated_TauMu_PtRes_wTruth2.at(t).Fill(TauMuEst2.Pt() - GenTaumu.Pt(), w);
+							Est_Z_EnergyRes_wTruth2.at(t).Fill(FullZEst2.E() - GenZH.E(), w);
+							Est_Z_EnergyRes_alwaysMinus2.at(t).Fill(FullZEst2.E() - GenZH.E(), w);
+							Est_TauMu_PtRes_wTruth2.at(t).Fill(TauMuEst2.Pt() - GenTaumu.Pt(), w);
+							Est_Z_M_wTruth2.at(t).Fill(FullZEst2.M(), w);
+
+							TLorentzVector TauMuEst_NoZMass = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(0).LV(), Recoil.Phi());
+							TLorentzVector FullZEst_NoZMass = TPTF_TausA1.at(0).LV() + TauMuEst_NoZMass;
+							Est_TauMu_PtRes_wTruth_NoZMass.at(t).Fill(TauMuEst_NoZMass.Pt() - GenTaumu.Pt(), w);
+							Est_Z_EnergyRes_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMass.E() - GenZH.E(), w);
+							Est_Z_M_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMass.M(), w);
 						}
 						else if(A1Fit.at(1) && A1Fit.at(2)){
 							TVector2 ZEstMinus = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(1).LV(), Recoil.Phi());
-							Estimated_Z_Pt_alwaysMinus.at(t).Fill(ZEstMinus.Mod(), w);
-							Estimated_Z_PtRes_alwaysMinus.at(t).Fill(ZEstMinus.Mod() - GenZH.Pt(), w);
-							Estimated_Z_Pt_alwaysMinus_vs_GenZ_Pt.at(t).Fill(ZEstMinus.Mod(), GenZH.Pt());
+							Est_Z_Pt_alwaysMinus.at(t).Fill(ZEstMinus.Mod(), w);
+							Est_Z_PtRes_alwaysMinus.at(t).Fill(ZEstMinus.Mod() - GenZH.Pt(), w);
+							Est_Z_Pt_alwaysMinus_vs_GenZ_Pt.at(t).Fill(ZEstMinus.Mod(), GenZH.Pt());
 
 							TLorentzVector TauMuEstMinus = TauMuEstimator(TPTF_TausA1.at(1).LV(), Ntp->Muon_p4(selMuon));
 							TLorentzVector FullZEstMinus = TPTF_TausA1.at(1).LV() + TauMuEstMinus;
-							Estimated_Z_Energy_alwaysMinus.at(t).Fill(FullZEstMinus.E(), w);
-							Estimated_Z_EnergyRes_alwaysMinus.at(t).Fill(FullZEstMinus.E() - GenZH.E(), w);
+							Est_Z_Energy_alwaysMinus.at(t).Fill(FullZEstMinus.E(), w);
+							Est_Z_EnergyRes_alwaysMinus.at(t).Fill(FullZEstMinus.E() - GenZH.E(), w);
 
 							TLorentzVector TauMuEst2Minus = TauMuEstimator2(MuonTP, TPTF_TausA1.at(1).LV(), Recoil.Phi());
 							TLorentzVector FullZEst2Minus = TPTF_TausA1.at(1).LV() + TauMuEst2Minus;
-							Estimated_Z_EnergyRes_alwaysMinus2.at(t).Fill(FullZEst2Minus.E() - GenZH.E(), w);
+							Est_Z_EnergyRes_alwaysMinus2.at(t).Fill(FullZEst2Minus.E() - GenZH.E(), w);
 
+							TLorentzVector TauMuEst_NoZMassMinus = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(1).LV(), Recoil.Phi());
+							TLorentzVector FullZEst_NoZMassMinus = TPTF_TausA1.at(1).LV() + TauMuEst_NoZMassMinus;
 
 							if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) < 0){
 								TVector2 ZEstPlus = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(2).LV(), Recoil.Phi());
-								Estimated_Z_Pt_wTruth.at(t).Fill(ZEstPlus.Mod(), w);
-								Estimated_Z_PtRes_wTruth.at(t).Fill(ZEstPlus.Mod() - GenZH.Pt(), w);
-								Estimated_Z_Pt_wTruth_vs_GenZ_Pt.at(t).Fill(ZEstPlus.Mod(), GenZH.Pt());
+								Est_Z_Pt_wTruth.at(t).Fill(ZEstPlus.Mod(), w);
+								Est_Z_PtRes_wTruth.at(t).Fill(ZEstPlus.Mod() - GenZH.Pt(), w);
+								Est_Z_Pt_wTruth_vs_GenZ_Pt.at(t).Fill(ZEstPlus.Mod(), GenZH.Pt());
 
 								TLorentzVector TauMuEstPlus = TauMuEstimator(TPTF_TausA1.at(2).LV(), Ntp->Muon_p4(selMuon));
 								TLorentzVector FullZEstPlus = TPTF_TausA1.at(2).LV() + TauMuEstPlus;
-								Estimated_Z_Energy_wTruth.at(t).Fill(FullZEstPlus.E(), w);
-								Estimated_Z_EnergyRes_wTruth.at(t).Fill(FullZEstPlus.E() - GenZH.E(), w);
-								Estimated_TauMu_PtRes_wTruth.at(t).Fill(TauMuEstPlus.Pt() - GenTaumu.Pt(), w);
+								Est_Z_Energy_wTruth.at(t).Fill(FullZEstPlus.E(), w);
+								Est_Z_EnergyRes_wTruth.at(t).Fill(FullZEstPlus.E() - GenZH.E(), w);
+								Est_TauMu_PtRes_wTruth.at(t).Fill(TauMuEstPlus.Pt() - GenTaumu.Pt(), w);
 
 								TLorentzVector TauMuEst2Plus = TauMuEstimator2(MuonTP, TPTF_TausA1.at(2).LV(), Recoil.Phi());
 								TLorentzVector FullZEst2Plus = TPTF_TausA1.at(2).LV() + TauMuEst2Plus;
-								Estimated_Z_EnergyRes_wTruth2.at(t).Fill(FullZEst2Plus.E() - GenZH.E(), w);
-								Estimated_TauMu_PtRes_wTruth2.at(t).Fill(TauMuEst2Plus.Pt() - GenTaumu.Pt(), w);
+								Est_Z_EnergyRes_wTruth2.at(t).Fill(FullZEst2Plus.E() - GenZH.E(), w);
+								Est_TauMu_PtRes_wTruth2.at(t).Fill(TauMuEst2Plus.Pt() - GenTaumu.Pt(), w);
+								Est_Z_M_wTruth2.at(t).Fill(FullZEst2Plus.M(), w);
+
+								TLorentzVector TauMuEst_NoZMassPlus = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(2).LV(), Recoil.Phi());
+								TLorentzVector FullZEst_NoZMassPlus = TPTF_TausA1.at(2).LV() + TauMuEst_NoZMassPlus;
+								Est_TauMu_PtRes_wTruth_NoZMass.at(t).Fill(TauMuEst_NoZMassPlus.Pt() - GenTaumu.Pt(), w);
+								Est_Z_EnergyRes_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMassPlus.E() - GenZH.E(), w);
+								Est_Z_M_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMassPlus.M(), w);
+
 							}
 							else if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) > 0){
-								Estimated_Z_Pt_wTruth.at(t).Fill(ZEstMinus.Mod(), w);
-								Estimated_Z_PtRes_wTruth.at(t).Fill(ZEstMinus.Mod() - GenZH.Pt(), w);
-								Estimated_Z_Pt_wTruth_vs_GenZ_Pt.at(t).Fill(ZEstMinus.Mod(), GenZH.Pt());
+								Est_Z_Pt_wTruth.at(t).Fill(ZEstMinus.Mod(), w);
+								Est_Z_PtRes_wTruth.at(t).Fill(ZEstMinus.Mod() - GenZH.Pt(), w);
+								Est_Z_Pt_wTruth_vs_GenZ_Pt.at(t).Fill(ZEstMinus.Mod(), GenZH.Pt());
 
-								Estimated_Z_Energy_wTruth.at(t).Fill(FullZEstMinus.E(), w);
-								Estimated_Z_EnergyRes_wTruth.at(t).Fill(FullZEstMinus.E() - GenZH.E(), w);
-								Estimated_TauMu_PtRes_wTruth.at(t).Fill(TauMuEstMinus.Pt() - GenTaumu.Pt(), w);
+								Est_Z_Energy_wTruth.at(t).Fill(FullZEstMinus.E(), w);
+								Est_Z_EnergyRes_wTruth.at(t).Fill(FullZEstMinus.E() - GenZH.E(), w);
+								Est_TauMu_PtRes_wTruth.at(t).Fill(TauMuEstMinus.Pt() - GenTaumu.Pt(), w);
 
-								Estimated_Z_EnergyRes_wTruth2.at(t).Fill(FullZEst2Minus.E() - GenZH.E(), w);
-								Estimated_TauMu_PtRes_wTruth2.at(t).Fill(TauMuEst2Minus.Pt() - GenTaumu.Pt(), w);
+								Est_Z_EnergyRes_wTruth2.at(t).Fill(FullZEst2Minus.E() - GenZH.E(), w);
+								Est_TauMu_PtRes_wTruth2.at(t).Fill(TauMuEst2Minus.Pt() - GenTaumu.Pt(), w);
+								Est_Z_M_wTruth2.at(t).Fill(FullZEst2Minus.M(), w);
+
+								Est_TauMu_PtRes_wTruth_NoZMass.at(t).Fill(TauMuEst_NoZMassMinus.Pt() - GenTaumu.Pt(), w);
+								Est_Z_EnergyRes_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMassMinus.E() - GenZH.E(), w);
+								Est_Z_M_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMassMinus.M(), w);
 
 							}
 						}
@@ -2562,5 +2596,24 @@ TLorentzVector ZToTaumuTauh::TauMuEstimator2(TrackParticle Muon, TLorentzVector 
 	double Pz_TauMu = sqrt(pow(P_TauMu, 2.) - pow(Pt_TauMu, 2.));
 	Logger(Logger::Debug) << "TauMu2.Pt(): " << Pt_TauMu << std::endl;
 	TLorentzVector TauMu = TLorentzVector(Pt_TauMu*cosphi0, Pt_TauMu*sinphi0, Pz_TauMu, sqrt(pow(P_TauMu, 2.) + pow(PDGInfo::tau_mass(), 2.)));
+	return TauMu;
+}
+TLorentzVector ZToTaumuTauh::TauMuEstimatorNoZMass(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil){
+	double dxy 			= Muon.Parameter(TrackParticle::dxy);
+	double phi0 		= Muon.Parameter(TrackParticle::phi);
+	double lambda 		= Muon.Parameter(TrackParticle::lambda);
+	double dz 			= Muon.Parameter(TrackParticle::dz);
+	double cosphi0 		= cos(phi0); 				double sinphi0 		= sin(phi0);
+
+	TVector3 MuonDir = TVector3(cosphi0, sinphi0, tan(lambda)); // with mag = 1/cos(lambda) for ez scaling
+
+	double PhiR = (PhiRecoil > 0) ? PhiRecoil - TMath::Pi() : PhiRecoil + TMath::Pi();
+	double cosPhiR = cos(PhiR); double sinPhiR = sin(PhiR);
+	double Pt_TauMu = -(Tauh.X()/cosPhiR - Tauh.Y()/sinPhiR)/(cosphi0/cosPhiR - sinphi0/sinPhiR);
+
+	TVector3 TauMuPVec = MuonDir*Pt_TauMu;
+	double TauMuE = sqrt(TauMuPVec.Mag2() + pow(PDGInfo::tau_mass(), 2.));
+	Logger(Logger::Debug) << "TauMu2.Pt(): " << Pt_TauMu << std::endl;
+	TLorentzVector TauMu = TLorentzVector(TauMuPVec, TauMuE);
 	return TauMu;
 }
