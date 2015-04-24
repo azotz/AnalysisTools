@@ -16,6 +16,7 @@
 #include "SimpleFits/FitSoftware/interface/TrackTools.h"
 #include "SimpleFits/FitSoftware/interface/DiTauConstrainedFitter.h"
 #include "SimpleFits/FitSoftware/interface/Logger.h"
+#include "SimpleFits/FitSoftware/interface/GlobalEventFit.h"
 
 ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 	Selection(Name_,id_),
@@ -59,7 +60,7 @@ ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 
 	Use_Embedded = true;
 
-	Logger::Instance()->SetLevel(Logger::Info);
+	Logger::Instance()->SetLevel(Logger::Debug);
 }
 
 ZToTaumuTauh::~ZToTaumuTauh(){
@@ -1295,6 +1296,7 @@ void  ZToTaumuTauh::doEvent(){
 		Logger(Logger::Verbose) << "------------------------" << std::endl;
 	}
 
+
 	//DiTau Reco
 
 	//single fit at default mass = 91.5
@@ -1323,7 +1325,7 @@ void  ZToTaumuTauh::doEvent(){
 			if(A1Fit.at(Ambiguity)){
 				Reco_A1Fit_Solution.at(t).Fill(Ambiguity, w);
 				Logger(Logger::Debug) << "Chi2 for ambiguity " << Ambiguity << " : " << LC_chi2 << std::endl;
-				bool EventFit_bool = Ntp->EventFit(selTau, selMuon, TPTF_TausA1.at(Ambiguity), Reco_Z, tmp_Daughters, tmp_Daughters0, LC_chi2, Niterat, csum, 91.5);//, tmp_par_0, tmp_par);
+				bool EventFit_bool = Ntp->EventFit(selTau, selMuon, selVertex, TPTF_TausA1.at(Ambiguity), Reco_Z, tmp_Daughters, tmp_Daughters0, LC_chi2, Niterat, csum, 91.5);//, tmp_par_0, tmp_par);
 				//if(LC_chi2>= 0) EventFit.push_back(EventFit_bool);
 				//else EventFit.push_back(false);
 				EventFit.push_back(EventFit_bool);
@@ -1433,7 +1435,7 @@ void  ZToTaumuTauh::doEvent(){
 					std::vector<LorentzVectorParticle> RefitDaughters, InitDaughters;
 					int Niterat(-1);
 					//TVectorD tmp1(3),tmp2(3);
-					bool SingleEventFit = Ntp->EventFit(selTau, selMuon, Reco_TauA1, Reco_Z, RefitDaughters, InitDaughters, LC_chi2, Niterat, csum, MassConstraint);//), tmp2, tmp2);
+					bool SingleEventFit = Ntp->EventFit(selTau, selMuon, selVertex, Reco_TauA1, Reco_Z, RefitDaughters, InitDaughters, LC_chi2, Niterat, csum, MassConstraint);//), tmp2, tmp2);
 					if(LC_chi2>= 0) EventFit.push_back(SingleEventFit);
 					else EventFit.push_back(false);
 					//Reco_Chi2.at(t).Fill(LC_chi2, w);
@@ -1496,6 +1498,7 @@ void  ZToTaumuTauh::doEvent(){
 		Logger(Logger::Verbose) << "-----------------End of Fit-----------------" << std::endl;
 	}
 
+
 	///////////////////////////////////////////////////////////
 	// Add plots
 	if(status){
@@ -1547,6 +1550,26 @@ void  ZToTaumuTauh::doEvent(){
 			}
 		}
 		Tau_Mass_Difference_PFTau_UnFitTracks_3PS.at(t).Fill(PFTau_ReFitTracks.M() - Ntp->PFTau_3PS_A1_LV(selTau).M(), w);
+
+		LorentzVectorParticle A1 = Ntp->PFTau_a1_lvp(selTau);
+		TrackParticle MuonTP = Ntp->Muon_TrackParticle(selMuon);
+		TVector3 PV = Ntp->PFTau_TIP_primaryVertex_pos(selTau);
+		TMatrixTSym<double> PVCov = Ntp->PFTau_TIP_primaryVertex_cov(selTau);
+
+		TLorentzVector Recoil;
+		for(unsigned i; i<Ntp->Vtx_nTrk(selVertex); i++){
+			Recoil += Ntp->Vtx_TracksP4(selVertex, i);
+		}
+		Recoil -= Ntp->Muon_p4(selMuon);
+		Recoil -= Ntp->PFTau_p4(selTau);
+		double Phi_Res = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
+
+		GlobalEventFit GEF(MuonTP, A1, Phi_Res, PV, PVCov);
+		TPTRObject TPResults = GEF.getTPTRObject();
+		LorentzVectorParticle test = TPResults.getA1();
+		Logger(Logger::Debug) << test.LV().E() << std::endl;
+		GEFObject Results = GEF.Fit();
+		Logger(Logger::Debug) << Results.getChi2() << std::endl;
 	}
 
 	//single fit at default mass = 91.5 with generator info

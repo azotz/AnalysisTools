@@ -479,7 +479,8 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 /*      } */
 /*      return false; */
 /*    } */
-   bool EventFit(unsigned int i, unsigned int MuonIndex, LorentzVectorParticle TauA1, LorentzVectorParticle &theZ,std::vector<LorentzVectorParticle> &RefitDaughters, std::vector<LorentzVectorParticle> &InitDaughters,double &LC_chi2, int &Niterat, double &csum, double MassConstraint){//, TVectorD &par_0, TVectorD &par){
+
+   bool EventFit(unsigned int TauIndex, unsigned int MuonIndex, unsigned int VertexIndex, LorentzVectorParticle TauA1, LorentzVectorParticle &theZ,std::vector<LorentzVectorParticle> &RefitDaughters, std::vector<LorentzVectorParticle> &InitDaughters,double &LC_chi2, int &Niterat, double &csum, double MassConstraint){//, TVectorD &par_0, TVectorD &par){
 	   TrackParticle Muon = Muon_TrackParticle(MuonIndex);
 	   //std::cout << "Muon Track: Kappa:" << Muon.Parameter(TrackParticle::kappa) << std::endl;
 	   //std::cout << "Muon Track: Lambda:" << Muon.Parameter(TrackParticle::lambda) << std::endl;
@@ -491,19 +492,28 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 
 	   TLorentzVector MuonLV = TLorentzVector(Ntp->Muon_p4->at(MuonIndex).at(1),Ntp->Muon_p4->at(MuonIndex).at(2),Ntp->Muon_p4->at(MuonIndex).at(3),Ntp->Muon_p4->at(MuonIndex).at(0));
 
-	   if(Ntp->PFTau_TIP_secondaryVertex_vtxchi2->at(i).size()==1 &&
-		   Ntp->PFTau_a1_lvp->at(i).size()==LorentzVectorParticle::NLorentzandVertexPar){
+	   if(Ntp->PFTau_TIP_secondaryVertex_vtxchi2->at(TauIndex).size()==1 &&
+		   Ntp->PFTau_a1_lvp->at(TauIndex).size()==LorentzVectorParticle::NLorentzandVertexPar){
 		   // Tau Solver
-		   TVector3 pv=PFTau_TIP_primaryVertex_pos(i);
-		   TMatrixTSym<double> pvcov=PFTau_TIP_primaryVertex_cov(i);
+		   TVector3 pv=PFTau_TIP_primaryVertex_pos(TauIndex);
+		   TMatrixTSym<double> pvcov=PFTau_TIP_primaryVertex_cov(TauIndex);
 		   //std::cout << "Print pvcov" << std::endl;
 		   //pvcov.Print();
+			TLorentzVector Recoil;
+			for(unsigned i; i<Vtx_nTrk(VertexIndex); i++){
+				Recoil += Vtx_TracksP4(VertexIndex, i);
+			}
+			Recoil -= Muon_p4(MuonIndex);
+			Recoil -= PFTau_p4(TauIndex);
+			double Phi_Res = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
+
+
 		   TVector3 MuonPoca(Ntp->Muon_Poca->at(MuonIndex).at(0),Ntp->Muon_Poca->at(MuonIndex).at(1),Ntp->Muon_Poca->at(MuonIndex).at(2));
-		   DiTauConstrainedFitter Z2Tau(TauA1, Muon, pv, pvcov);
+		   DiTauConstrainedFitter Z2Tau(TauA1, Muon, Phi_Res, pv, pvcov);
 
 		   InitDaughters = Z2Tau.GetInitialDaughters();
 
-		   Z2Tau.SetMassConstraint(MassConstraint);
+		   //Z2Tau.SetMassConstraint(MassConstraint);
 		   Z2Tau.SetMaxDelta(1.0);
 		   Z2Tau.SetNIterMax(100);
 		   Z2Tau.SetEpsilon(0.01);

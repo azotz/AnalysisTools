@@ -24,7 +24,7 @@ bool stringCompare(TString left_, TString right_) {
 
 Tables::Tables(TString name) {
 	Name = name;
-	plotCutOptimization = true;
+	plotCutOptimization = false;
 }
 
 Tables::~Tables() {
