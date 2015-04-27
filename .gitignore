@@ -1,0 +1,31 @@
+# User files not be commited
+*.eps
+*.ps
+*.dvi
+*.pdf
+
+# Ntuple production files
+Install_*
+Setup_*
+
+# Editor backups
+*~
+
+# Eclipse settings files
+.cproject
+.project
+.pydevproject
+.settings/
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Root compile stuff
+*.d
+*.so
+
+# Created by framework
+make.inc
