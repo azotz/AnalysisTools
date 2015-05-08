@@ -504,7 +504,7 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 				Recoil += Vtx_TracksP4(VertexIndex, i);
 			}
 			Recoil -= Muon_p4(MuonIndex);
-			Recoil -= PFTau_p4(TauIndex);
+			Recoil -= PFTau_3PS_A1_LV(TauIndex);
 			double Phi_Res = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
 
 
@@ -514,9 +514,9 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 		   InitDaughters = Z2Tau.GetInitialDaughters();
 
 		   //Z2Tau.SetMassConstraint(MassConstraint);
-		   Z2Tau.SetMaxDelta(1.0);
-		   Z2Tau.SetNIterMax(100);
-		   Z2Tau.SetEpsilon(0.01);
+		   Z2Tau.SetMaxDelta(300.0);
+		   //Z2Tau.SetNIterMax(100);
+		   //Z2Tau.SetEpsilon(0.001);
 		   //std::cout << "DEBUG 6" << std::endl;
 		   bool fitStatus= Z2Tau.Fit();
 		   //std::cout << "DEBUG 7" << std::endl;

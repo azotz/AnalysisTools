@@ -26,6 +26,11 @@ ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 	cMu_pt(20.),
 	cMu_eta(2.1),
 	cMu_dRHltMatch(0.5),
+	cDiMuVeto_pt(15.),
+	cDiMuVeto_eta(2.4),
+	cDiMuVeto_dz(0.2),
+	cDiMuVeto_dBetaCombIso(0.3),
+	cDiMuVeto_dR(0.15),
 	cTau_pt(20.),//20: Recommended by Tau POG
 	cTau_eta(2.3),
 	cMuTau_dR(0.3),
@@ -60,7 +65,7 @@ ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 
 	Use_Embedded = true;
 
-	Logger::Instance()->SetLevel(Logger::Debug);
+	Logger::Instance()->SetLevel(Logger::Info);
 }
 
 ZToTaumuTauh::~ZToTaumuTauh(){
@@ -84,6 +89,7 @@ void  ZToTaumuTauh::Configure(){
 		if(i==NMuId)			cut.at(NMuId)=1;
 		if(i==NMuKin)			cut.at(NMuKin)=1;
 		if(i==NMuIso)			cut.at(NMuIso)=1;
+		if(i==DiMuonVeto)		cut.at(DiMuonVeto)=0.15;
 		if(i==NTauId)			cut.at(NTauId)=1;
 		if(i==NTauKin)			cut.at(NTauKin)=1;
 		if(i==NTauIso)			cut.at(NTauIso)=1;
@@ -161,6 +167,18 @@ void  ZToTaumuTauh::Configure(){
 			Nminus1.push_back(HConfig.GetTH1D(Name+c+"_Nminus1_NMuIso_",htitle,6,-0.5,5.5,hlabel,"Events"));
 			Nminus0.push_back(HConfig.GetTH1D(Name+c+"_Nminus0_NMuIso_",htitle,6,-0.5,5.5,hlabel,"Events"));
 		}
+		else if(i_cut==DiMuonVeto){
+			title.at(i_cut)="Di muon veto $\\Delta R <$";
+	        char buffer[50];
+	        sprintf(buffer,"%5.2f",cut.at(DiMuonVeto));
+	    	title.at(i_cut)+=buffer;
+			htitle=title.at(i_cut);
+			htitle.ReplaceAll("$","");
+			htitle.ReplaceAll("\\","#");
+			hlabel="#Delta R(#mu_{veto}^{+},#mu_{veto}^{-})";
+			Nminus1.push_back(HConfig.GetTH1D(Name+c+"_Nminus1_DiMuonVeto_",htitle,100,-1.,4.,hlabel,"Events"));
+			Nminus0.push_back(HConfig.GetTH1D(Name+c+"_Nminus0_DiMuonVeto_",htitle,100,-1.,4,hlabel,"Events"));
+		}
 		else if(i_cut==NTauId){
 			title.at(i_cut)="Number $\\tau_{ID} >=$";
 			title.at(i_cut)+=cut.at(NTauId);
@@ -212,7 +230,7 @@ void  ZToTaumuTauh::Configure(){
 			Nminus0.push_back(HConfig.GetTH1D(Name+c+"_Nminus0_TauDecayMode_",htitle,15,0,15,hlabel,"Events"));
 		}
 		else if(i_cut==TauFLSigma){
-			title.at(i_cut)="TauFLSigma >= ";
+			title.at(i_cut)="TauFLSigma $>=$";
 			title.at(i_cut)+=cut.at(TauFLSigma);
 			htitle=title.at(i_cut);
 			htitle.ReplaceAll("$","");
@@ -465,7 +483,7 @@ void  ZToTaumuTauh::Configure(){
 	Reco_Chi2=HConfig.GetTH1D(Name+"_Reco_Chi2","Reco_Chi2",30,0,30,"Reco_Chi2","Events");
 	Reco_Chi2_FitSolutionOnly=HConfig.GetTH1D(Name+"_Reco_Chi2_FitSolutionOnly","Reco_Chi2_FitSolutionOnly",30,0,30,"Reco_Chi2_FitSolutionOnly","Events");
 	Reco_Chi2_FitSolutionOnlyLargeScale=HConfig.GetTH1D(Name+"_Reco_Chi2_FitSolutionOnlyLargeScale","Reco_Chi2_FitSolutionOnlyLargeScale",100,0,500000,"Reco_Chi2_FitSolutionOnlyLargeScale","Events");
-	Reco_ConstrainedDeltaSum=HConfig.GetTH1D(Name+"_Reco_ConstrainedDeltaSum","Reco_ConstrainedDeltaSum",50,0,0.1,"Reco_ConstrainedDeltaSum","Events");
+	Reco_ConstrainedDeltaSum=HConfig.GetTH1D(Name+"_Reco_ConstrainedDeltaSum","Reco_ConstrainedDeltaSum",150,0,300,"Reco_ConstrainedDeltaSum","Events");
 	Reco_ConstrainedDeltaMass=HConfig.GetTH1D(Name+"_Reco_ConstrainedDeltaMass","Reco_ConstrainedDeltaMass",100,0,40,"Reco_ConstrainedDeltaMass","Events");
 	Reco_ConstrainedDeltaPt=HConfig.GetTH1D(Name+"_Reco_ConstrainedDeltaPt","Reco_ConstrainedDeltaPt",100,0,1,"Reco_ConstrainedDeltaPt","Events");
 	Reco_NIter=HConfig.GetTH1D(Name+"_Reco_NIter","Reco_NIter",100,0,100,"Reco_NIter","Events");
@@ -904,7 +922,7 @@ void  ZToTaumuTauh::doEvent(){
 	if(selection_verbose) Logger(Logger::Verbose) << "Cut on good vertex" << std::endl;
 	unsigned int nGoodVtx=0;
 	for(unsigned int i_vtx=0;i_vtx<Ntp->NVtx();i_vtx++){
-		if(Ntp->isVtxGood(i_vtx)){
+		if(Ntp->isGoodVtx(i_vtx)){
 			if(selVertex == selVertexDummy) selVertex = i_vtx; // selected vertex = first vertex (highest sum[pT^2]) to fulfill vertex requirements
 			nGoodVtx++;
 		}
@@ -997,6 +1015,32 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	if(id == DataMCType::Data && selMuon_AntiIso != selMuonDummy) selMuon = selMuon_AntiIso;
 	else selMuon = selMuon_Iso;
+
+	//Di muon veto
+	if(selection_verbose) Logger(Logger::Verbose) << "Di Muon Veto" << std::endl;
+	std::vector<int> PosMu_DiMuVeto;
+	PosMu_DiMuVeto.clear();
+	std::vector<int> NegMu_DiMuVeto;
+	NegMu_DiMuVeto.clear();
+	for(unsigned i_mu=0; i_mu<Ntp->NMuons(); i_mu++){
+		if(selectMuon_DiMuonVeto(i_mu, selVertex)){
+			if(Ntp->Muon_Charge(i_mu) == -1) NegMu_DiMuVeto.push_back(i_mu);
+			else if(Ntp->Muon_Charge(i_mu) == 1) PosMu_DiMuVeto.push_back(i_mu);
+		}
+	}
+	double dRMax(-1.);
+	for(unsigned i_posmu = 0; i_posmu < PosMu_DiMuVeto.size(); i_posmu++){
+		for(unsigned i_negmu = 0; i_negmu < NegMu_DiMuVeto.size(); i_negmu++){
+			double dR_tmp = Ntp->Muon_p4(PosMu_DiMuVeto.at(i_posmu)).DeltaR(Ntp->Muon_p4(NegMu_DiMuVeto.at(i_negmu)));
+			if(dR_tmp > dRMax) dRMax = dR_tmp;
+		}
+	}
+	value.at(DiMuonVeto) = dRMax;
+	pass.at(DiMuonVeto) = (value.at(DiMuonVeto)<cut.at(DiMuonVeto));
+	if(selection_verbose){
+		Logger(Logger::Verbose) << "value at DiMuonVeto: " <<value.at(DiMuonVeto) << std::endl;
+		Logger(Logger::Verbose) << "pass at DiMuonVeto: " <<pass.at(DiMuonVeto) << std::endl;
+	}
 
 	// Tau cuts
 	if(selection_verbose) Logger(Logger::Verbose) << "Cut on TauID" << std::endl;
@@ -1093,7 +1137,7 @@ void  ZToTaumuTauh::doEvent(){
 			//std::cout << "Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength_error(selTau) << std::endl;
 			//std::cout << "Ntp->PFTau_FlightLength(selTau)/Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength(selTau)/Ntp->PFTau_FlightLength_error(selTau) << std::endl;
 			//std::cout << "Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength_error(selTau) << std::endl;
-			if(Ntp->PFTau_p4(selTau).Vect().Dot(Ntp->PFTau_FlightLength3d(selTau)) < 0){
+			if(Ntp->PFTau_3PS_A1_LV(selTau).Vect().Dot(Ntp->PFTau_FlightLength3d(selTau)) < 0){
 				value.at(TauFLSigma) = -Ntp->PFTau_FlightLength_significance(selTau);
 			}
 			else{
@@ -1412,6 +1456,7 @@ void  ZToTaumuTauh::doEvent(){
 	std::vector<bool> AmbiguitySolver_MassScan; AmbiguitySolver_MassScan.clear();
 	int FinalIndex(-1);
 
+	/*
 	unsigned N_mass = 50;
 	std::vector<double> Masses;
 	Masses.push_back(91.5);Masses.push_back(125.0);
@@ -1497,7 +1542,7 @@ void  ZToTaumuTauh::doEvent(){
 		}
 		Logger(Logger::Verbose) << "-----------------End of Fit-----------------" << std::endl;
 	}
-
+	 */
 
 	///////////////////////////////////////////////////////////
 	// Add plots
@@ -1561,7 +1606,7 @@ void  ZToTaumuTauh::doEvent(){
 			Recoil += Ntp->Vtx_TracksP4(selVertex, i);
 		}
 		Recoil -= Ntp->Muon_p4(selMuon);
-		Recoil -= Ntp->PFTau_p4(selTau);
+		Recoil -= Ntp->PFTau_3PS_A1_LV(selTau);
 		double Phi_Res = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
 
 		GlobalEventFit GEF(MuonTP, A1, Phi_Res, PV, PVCov);
@@ -2493,6 +2538,18 @@ bool ZToTaumuTauh::selectPFTau_Kinematics(unsigned i){
 	if(		Ntp->PFTau_p4(i).Pt() >= cTau_pt &&
 			fabs(Ntp->PFTau_p4(i).Eta()) <= cTau_eta
 			){
+		return true;
+	}
+	return false;
+}
+bool ZToTaumuTauh::selectMuon_DiMuonVeto(unsigned i, unsigned i_vtx){
+	if(	Ntp->Muon_isGlobalMuon(i) &&
+		Ntp->Muon_isPFMuon(i) &&
+		Ntp->Muon_p4(i).Pt() >= cDiMuVeto_pt &&
+		fabs(Ntp->Muon_p4(i).Eta()) <= cDiMuVeto_eta &&
+		Ntp->Muon_isTrackerMuon(i) &&
+		Ntp->Muon_RelIso(i) < cDiMuVeto_dBetaCombIso &&
+		Ntp->dz(Ntp->Muon_p4(i),Ntp->Muon_Poca(i),Ntp->Vtx(i_vtx)) < cDiMuVeto_dz){
 		return true;
 	}
 	return false;

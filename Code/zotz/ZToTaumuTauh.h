@@ -20,6 +20,7 @@ class ZToTaumuTauh : public Selection {
 	  NMuId,
 	  NMuKin,
 	  NMuIso,
+	  DiMuonVeto,
 	  NTauId,
 	  NTauKin,
 	  NTauIso,
@@ -37,6 +38,7 @@ class ZToTaumuTauh : public Selection {
 
   // cut values
   double cMu_dxy, cMu_dz, cMu_relIso, cMu_pt, cMu_eta, cMu_dRHltMatch;
+  double cDiMuVeto_pt, cDiMuVeto_eta, cDiMuVeto_dz, cDiMuVeto_dBetaCombIso, cDiMuVeto_dR;
   double cTau_pt, cTau_eta, cMuTau_dR, cTau_IsoRaw, cTau_dRHltMatch;
   std::vector<TString> cTriggerNames;
 
@@ -156,6 +158,8 @@ class ZToTaumuTauh : public Selection {
   bool selectPFTau_Id(unsigned i, std::vector<int> muonCollection);
   bool selectPFTau_Isolation(unsigned i);
   bool selectPFTau_Kinematics(unsigned i);
+  bool selectMuon_DiMuonVeto(unsigned i, unsigned i_vtx);
+
   double Reconstruct_hadronicTauEnergy(unsigned i);
   double GJAngleMax(TLorentzVector A1);
   LorentzVectorParticle CorrectRecoTauMomentumBias(LorentzVectorParticle RecoTau, TLorentzVector RecoA1, std::vector<double> BiasInGJAngleBins);
