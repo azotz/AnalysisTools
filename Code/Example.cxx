@@ -84,7 +84,7 @@ void  Example::doEvent(){
   // Apply Selection
   unsigned int nGoodVtx=0;
   for(unsigned int i=0;i<Ntp->NVtx();i++){
-    if(Ntp->isVtxGood(i))nGoodVtx++;
+    if(Ntp->isGoodVtx(i))nGoodVtx++;
   }
 
 
