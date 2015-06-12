@@ -514,7 +514,7 @@ TauSpinerInt.SetTauSignalCharge(signalcharge);
 		   InitDaughters = Z2Tau.GetInitialDaughters();
 
 		   //Z2Tau.SetMassConstraint(MassConstraint);
-		   Z2Tau.SetMaxDelta(300.0);
+		   Z2Tau.SetMaxDelta(30.0);
 		   //Z2Tau.SetNIterMax(100);
 		   //Z2Tau.SetEpsilon(0.001);
 		   //std::cout << "DEBUG 6" << std::endl;

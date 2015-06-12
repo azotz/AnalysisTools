@@ -131,6 +131,7 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> Est_TauMu_PtRes_wTruth, Est_TauMu_PtRes_wTruth2;
   std::vector<TH1D> Est_TauMu_PtRes_wTruth_NoZMass, Est_Z_M_wTruth_NoZMass, Est_Z_EnergyRes_wTruth_NoZMass;
   std::vector<TH1D> Est_Z_M_wTruth2;
+  std::vector<TH1D> Est_TauMu_wMET_PtRes, Est_TauMu_wMET_PhiRes, Est_TauMu_wMET_EtaRes, Est_Z_wMET_PtRes, Est_Z_wMET_PhiRes;
 
   std::vector<TH1D> Reco_ZMass, Reco_ZMass_UnboostedGenZ, Reco_EventFit_Solution, Reco_A1Fit_Solution, Reco_Chi2, Reco_Chi2_FitSolutionOnly, Reco_Chi2_FitSolutionOnlyLargeScale, Reco_ConstrainedDeltaSum, Reco_ConstrainedDeltaMass, Reco_ConstrainedDeltaPt, Reco_NIter;
   std::vector<TH1D> Reco_Z_Energy_Res, RecoZ_Pt;
@@ -138,12 +139,26 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> Reco_PtRes_TauA1, Reco_PtRes_TauA1_AmbPoint0, Reco_PtRes_TauA1_AmbPoint12, Reco_PtRes_TauA1_AmbPoint1, Reco_PtRes_TauMu, Reco_PtRes_TauMu_AmbPoint0, Reco_PtRes_TauMu_AmbPoint12, Reco_PtRes_TauMu_AmbPoint1;
   std::vector<TH1D> Reco_PtRes_TauA1_LowZPt, Reco_PtRes_TauMu_LowZPt;
   std::vector<TH1D> Reco_PtRes_TauA1_NoFit, Reco_PtRes_TauA1_AmbPoint0_NoFit, Reco_PtRes_TauA1_AmbPoint12_NoFit, Reco_PtRes_TauMu_NoFit, Reco_PtRes_TauMu_AmbPoint0_NoFit, Reco_PtRes_TauMu_AmbPoint12_NoFit;
+  std::vector<TH1D> Reco_PhiRes_TauMu_PreFit, Reco_ThetaRes_TauMu_PreFit;
   std::vector<TH1D> Reco_TauMu_DeltaPX_FitImpact, Reco_TauMu_DeltaPY_FitImpact, Reco_TauMu_DeltaPZ_FitImpact;
   std::vector<TH1D> Reco_TauA1_DeltaPX_FitImpact, Reco_TauA1_DeltaPY_FitImpact, Reco_TauA1_DeltaPZ_FitImpact;
-  std::vector<TH1D> Reco_TauMu_ResCosTheta, Reco_TauMu_ResPhi;
+  std::vector<TH1D> Reco_TauMu_ResCosTheta, Reco_TauMu_DeltaPhi_FitImpact;
   std::vector<TH1D> Reco_dPhi_TauMuTauA1_AfterFit, Reco_dPhi_TauMuTauA1_BeforeFit;
+  std::vector<TH1D> Reco_dPhi_TauMuTauA1_AfterFit_lowBoost, Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost;
   std::vector<TH1D> Reco_ZMass_MassScan, Reco_ZMass_MassScanUnboosted, Reco_ZMasswithProbWeight_MassScan, Reco_ProbStack_MassScan, Reco_ZMass_PDF;
   std::vector<TH1D> GenZ_Pt_Unboosted, RecoZ_Pt_Unboosted;
+
+  std::vector<TH1D> TauMu_Start_Collinear_PtRes, TauMu_Start_MET_PtRes, TauMu_Start_PtBalance_PtRes, TauMu_Start_EventRecoil_PtRes;
+  std::vector<TH2D> TauMu_Start_Collinear_PtReco_vs_PtGen, TauMu_Start_MET_PtReco_vs_PtGen, TauMu_Start_PtBalance_PtReco_vs_PtGen, TauMu_Start_EventRecoil_PtReco_vs_PtGen;
+
+  std::vector<TH1D> TauMu_Start_MET_PtRes_AfterMC, TauMu_Start_PtBalance_PtRes_AfterMC, TauMu_Start_EventRecoil_PtRes_AfterMC;
+  std::vector<TH1D> TauMu_Start_dPhi_TauMuTauH_MET, TauMu_Start_dPhi_TauMuTauH_EventRecoil, TauMu_Start_dPhi_TauMuTauH_PtBalance;
+  std::vector<TH1D> Z_Start_MET_PtRes, Z_Start_PtBalance_PtRes, Z_Start_EventRecoil_PtRes, Z_Start_MET_PhiRes, Z_Start_PtBalance_PhiRes, Z_Start_EventRecoil_PhiRes;
+
+  std::vector<TH1D> Mu_TP_phi0, Mu_TP_lambda, Mu_TP_dxy, Mu_TP_dz, Mu_TP_kappa, Mu_TP_POCA_quadrant, Mu_TP_POCA_quadrantVlad, Mu_TP_POCA_quadrantby_dxyphi0;
+  std::vector<TH1D> Mu_TP_Poca_quadrantData;
+  std::vector<TH1D> Mu_TP_Poca_quadrantMCDY;
+  std::vector<TH2D> Mu_TP_Poca_xy, Mu_TP_Vertex_xy, Mu_TP_RefitVertex_xy, Mu_TP_BeamSpot_xy, Mu_TP_NTP_Poca_xy;
 
   std::vector<TH1D> NQCD;
   std::vector<TH1D> QCD_MT_MuMET_A, QCD_MT_MuMET_B, QCD_MT_MuMET_C, QCD_MT_MuMET_D;
@@ -170,6 +185,7 @@ class ZToTaumuTauh : public Selection {
   TLorentzVector TauMuEstimator(TLorentzVector Tauh, TLorentzVector Muon);
   TLorentzVector TauMuEstimator2(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
   TLorentzVector TauMuEstimatorNoZMass(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
+  TLorentzVector TauMuFullEstimate(TVector3 PV, TrackParticle Muon, LorentzVectorParticle Tauh, TVector2 TauMuPt, TVector3 &Intersection);
  private:
 
 };

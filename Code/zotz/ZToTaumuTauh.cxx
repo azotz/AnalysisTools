@@ -65,7 +65,7 @@ ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 
 	Use_Embedded = true;
 
-	Logger::Instance()->SetLevel(Logger::Info);
+	Logger::Instance()->SetLevel(Logger::Debug);
 }
 
 ZToTaumuTauh::~ZToTaumuTauh(){
@@ -75,7 +75,7 @@ ZToTaumuTauh::~ZToTaumuTauh(){
 		<< Npassed.at(j).GetBinContent(NCuts+1) << " +/- " << Npassed.at(j).GetBinError(NCuts+1) << std::endl;
 	}
 	Logger(Logger::Info) << "" << std::endl;
-	Logger::Instance()->SetLevel(Logger::Info);
+	Logger::Instance()->SetLevel(Logger::Debug);
 }
 
 void  ZToTaumuTauh::Configure(){
@@ -360,7 +360,7 @@ void  ZToTaumuTauh::Configure(){
 	Gen_TauA1_GJ=HConfig.GetTH1D(Name+"_Gen_TauA1_GJ","Gen_TauA1_GJ",100,0,.05,"Gen_TauA1_GJ","Events");
 	Gen_TauMu_GJ=HConfig.GetTH1D(Name+"_Gen_TauMu_GJ","Gen_TauMu_GJ",100,0,.05,"Gen_TauMu_GJ","Events");
 
-	Gen_DiTau_dPhi=HConfig.GetTH1D(Name+"_Gen_DiTau_dPhi","Gen_DiTau_dPhi",256,0,2*3.14159265359,"Gen_DiTau_dPhi","Events");
+	Gen_DiTau_dPhi=HConfig.GetTH1D(Name+"_Gen_DiTau_dPhi","Gen_DiTau_dPhi",256,-2*3.14159265359,2*3.14159265359,"Gen_DiTau_dPhi","Events");
 	Gen_DiTau_Pt=HConfig.GetTH1D(Name+"_Gen_DiTau_Pt","Gen_DiTau_Pt",30,0,30,"Gen_DiTau_Pt","Events");
 	Gen_Z_Pt=HConfig.GetTH1D(Name+"_Gen_Z_Pt","Gen_Z_Pt",30,0,30,"Gen_Z_Pt","Events");
 	Gen_Z_M=HConfig.GetTH1D(Name+"_Gen_Z_M","Gen_Z_M",180,60,150,"Gen_Z_M","Events");
@@ -451,8 +451,6 @@ void  ZToTaumuTauh::Configure(){
 	TransTrk_Failure_withSelection=HConfig.GetTH1D(Name+"_TransTrk_Failure_withSelection","TransTrk_Failure_withSelection",2,-0.5,1.5,"TransTrk_Failure_withSelection","Events");
 	TransTrk_Failure_noSelection=HConfig.GetTH1D(Name+"_TransTrk_Failure_noSelection","TransTrk_Failure_noSelection",2,-0.5,1.5,"TransTrk_Failure_noSelection","Events");
 
-
-
 	Est_Z_Pt_wTruth=HConfig.GetTH1D(Name+"_Est_Z_Pt_wTruth","Est_Z_Pt_wTruth",40,0,40,"Est_Z_Pt_wTruth","Events");
 	Est_Z_PtRes_wTruth=HConfig.GetTH1D(Name+"_Est_Z_PtRes_wTruth","Est_Z_PtRes_wTruth",80,-40,40,"Est_Z_PtRes_wTruth","Events");
 	Est_Z_Pt_wTruth_vs_GenZ_Pt=HConfig.GetTH2D(Name+"_Est_Z_Pt_wTruth_vs_GenZ_Pt","Est_Z_Pt_wTruth_vs_GenZ_Pt",40,0,40,40,0,40,"Est_Z_Pt_wTruth","GenZ_Pt");
@@ -474,6 +472,13 @@ void  ZToTaumuTauh::Configure(){
 	Est_TauMu_PtRes_wTruth_NoZMass=HConfig.GetTH1D(Name+"_Est_TauMu_PtRes_wTruth_NoZMass","Est_TauMu_PtRes_wTruth_NoZMass",100,-100,100,"Est_TauMu_PtRes_wTruth_NoZMass","Events");
 	Est_Z_M_wTruth_NoZMass=HConfig.GetTH1D(Name+"_Est_Z_M_wTruth_NoZMass","Est_Z_M_wTruth_NoZMass",100,0,300,"Est_Z_M_wTruth_NoZMass","Events");
 	Est_Z_EnergyRes_wTruth_NoZMass=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_wTruth_NoZMass","Est_Z_EnergyRes_wTruth_NoZMass",100,-100,100,"Est_Z_EnergyRes_wTruth_NoZMass","Events");
+
+	Est_TauMu_wMET_PtRes=HConfig.GetTH1D(Name+"_Est_TauMu_wMET_PtRes","Est_TauMu_wMET_PtRes",100,-40,40,"Est_TauMu_wMET_PtRes","Events");
+	Est_TauMu_wMET_PhiRes=HConfig.GetTH1D(Name+"_Est_TauMu_wMET_PhiRes","Est_TauMu_wMET_PhiRes",100,-7,7,"Est_TauMu_wMET_PhiRes","Events");
+	Est_TauMu_wMET_EtaRes=HConfig.GetTH1D(Name+"_Est_TauMu_wMET_EtaRes","Est_TauMu_wMET_EtaRes",100,-5,5,"Est_TauMu_wMET_EtaRes","Events");
+
+	Est_Z_wMET_PtRes=HConfig.GetTH1D(Name+"_Est_Z_wMET_PtRes","Est_Z_wMET_PtRes",100,-40,40,"Est_Z_wMET_PtRes","Events");
+	Est_Z_wMET_PhiRes=HConfig.GetTH1D(Name+"_Est_Z_wMET_PhiRes","Est_Z_wMET_PhiRes",100,-7,7,"Est_Z_wMET_PhiRes","Events");
 
 	//DiTau Reco
 	Reco_ZMass=HConfig.GetTH1D(Name+"_Reco_ZMass","Reco_ZMass",180,60,150,"Reco_ZMass","Events");
@@ -508,6 +513,10 @@ void  ZToTaumuTauh::Configure(){
 	Reco_dPhi_TauMuTauA1_AfterFit=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_AfterFit","Reco_dPhi_TauMuTauA1_AfterFit",100,-7,7,"Reco_dPhi_TauMuTauA1_AfterFit","Events");
 	Reco_dPhi_TauMuTauA1_BeforeFit=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_BeforeFit","Reco_dPhi_TauMuTauA1_BeforeFit",100,-7,7,"Reco_dPhi_TauMuTauA1_BeforeFit","Events");
 
+	Reco_dPhi_TauMuTauA1_AfterFit_lowBoost=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_AfterFit_lowBoost","Reco_dPhi_TauMuTauA1_AfterFit_lowBoost",100,-7,7,"Reco_dPhi_TauMuTauA1_AfterFit_lowBoost","Events");
+	Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost","Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost",100,-7,7,"Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost","Events");
+
+
 	Reco_PtRes_TauA1_NoFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_NoFit","Reco_PtRes_TauA1_NoFit",100,-50,50,"Reco_PtRes_TauA1_NoFit","Events");
 	Reco_PtRes_TauA1_AmbPoint0_NoFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_AmbPoint0_NoFit","Reco_PtRes_TauA1_AmbPoint0_NoFit",100,-50,50,"Reco_PtRes_TauA1_AmbPoint0_NoFit","Events");
 	Reco_PtRes_TauA1_AmbPoint12_NoFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_AmbPoint12_NoFit","Reco_PtRes_TauA1_AmbPoint12_NoFit",100,-50,50,"Reco_PtRes_TauA1_AmbPoint12_NoFit","Events");
@@ -515,6 +524,8 @@ void  ZToTaumuTauh::Configure(){
 	Reco_PtRes_TauMu_NoFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_NoFit","Reco_PtRes_TauMu_NoFit",100,-50,50,"Reco_PtRes_TauMu_NoFit","Events");
 	Reco_PtRes_TauMu_AmbPoint0_NoFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_AmbPoint0_NoFit","Reco_PtRes_TauMu_AmbPoint0_NoFit",100,-50,50,"Reco_PtRes_TauMu_AmbPoint0_NoFit","Events");
 	Reco_PtRes_TauMu_AmbPoint12_NoFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_AmbPoint12_NoFit","Reco_PtRes_TauMu_AmbPoint12_NoFit",100,-50,50,"Reco_PtRes_TauMu_AmbPoint12_NoFit","Events");
+	Reco_PhiRes_TauMu_PreFit=HConfig.GetTH1D(Name+"_Reco_PhiRes_TauMu_PreFit","Reco_PhiRes_TauMu_PreFit",64,-2*3.14159265359,2*3.14159265359,"Reco_PhiRes_TauMu_PreFit","Events");
+	Reco_ThetaRes_TauMu_PreFit=HConfig.GetTH1D(Name+"_Reco_ThetaRes_TauMu_PreFit","Reco_ThetaRes_TauMu_PreFit",64,-2*3.14159265359,2*3.14159265359,"Reco_ThetaRes_TauMu_PreFit","Events");
 
 	Reco_ZMass_MassScan=HConfig.GetTH1D(Name+"_Reco_ZMass_MassScan","Reco_ZMass_MassScan",50,0,250,"Reco_ZMass_MassScan","Events");
 	Reco_ZMass_MassScanUnboosted=HConfig.GetTH1D(Name+"_Reco_ZMass_MassScanUnboosted","Reco_ZMass_MassScanUnboosted",50,0,250,"Reco_ZMass_MassScanUnboosted","Events");
@@ -526,7 +537,7 @@ void  ZToTaumuTauh::Configure(){
 	RecoZ_Pt_Unboosted=HConfig.GetTH1D(Name+"_RecoZ_Pt_Unboosted","RecoZ_Pt_Unboosted",40,0,40,"RecoZ_Pt_Unboosted","Events");
 
 	Reco_TauMu_ResCosTheta=HConfig.GetTH1D(Name+"_RecoTaumu_ResCosTheta","RecoTaumu_ResCosTheta",31,-2,2,"RecoTaumu_ResCosTheta","Events");
-	Reco_TauMu_ResPhi=HConfig.GetTH1D(Name+"_Reco_Taumu_ResPhi","Reco_Taumu_ResPhi",31,-3.14159265359*2,3.14159265359*2,"Reco_Taumu_ResPhi","Events");
+	Reco_TauMu_DeltaPhi_FitImpact=HConfig.GetTH1D(Name+"_Reco_TauMu_DeltaPhi_FitImpact","Reco_TauMu_DeltaPhi_FitImpact",31,-3.14159265359*2,3.14159265359*2,"Reco_TauMu_DeltaPhi_FitImpact","Events");
 
 	//DiTau Reco with generator information/particles
 	GenReco_ZMass=HConfig.GetTH1D(Name+"_GenReco_ZMass","GenReco_ZMass",180,60,150,"GenReco_ZMass","Events");
@@ -536,6 +547,57 @@ void  ZToTaumuTauh::Configure(){
 	GenReco_Chi2_FitSolutionOnly=HConfig.GetTH1D(Name+"_GenReco_Chi2_FitSolutionOnly","GenReco_Chi2_FitSolutionOnly",30,0,30,"GenReco_Chi2_FitSolutionOnly","Events");
 	GenReco_ConstrainedDeltaSum=HConfig.GetTH1D(Name+"_GenReco_ConstrainedDeltaSum","GenReco_ConstrainedDeltaSum",50,0,0.1,"GenReco_ConstrainedDeltaSum","Events");
 	GenReco_NIter=HConfig.GetTH1D(Name+"_GenReco_NIter","GenReco_NIter",100,0,100,"GenReco_NIter","Events");
+
+	//TauMu starting point
+	TauMu_Start_Collinear_PtRes=HConfig.GetTH1D(Name+"_TauMu_Start_Collinear_PtRes","TauMu_Start_Collinear_PtRes",100,-40,40,"TauMu_Start_Collinear_PtRes","Events");
+	TauMu_Start_Collinear_PtReco_vs_PtGen=HConfig.GetTH2D(Name+"_TauMu_Start_Collinear_PtReco_vs_PtGen","TauMu_Start_Collinear_PtReco_vs_PtGen",50,10.,50,50,0.0,50,"TauMu_Start_Collinear_PtReco","PtGen");
+
+	TauMu_Start_MET_PtRes=HConfig.GetTH1D(Name+"_TauMu_Start_MET_PtRes","TauMu_Start_MET_PtRes",100,-40,40,"TauMu_Start_MET_PtRes","Events");
+	TauMu_Start_MET_PtReco_vs_PtGen=HConfig.GetTH2D(Name+"_TauMu_Start_MET_PtReco_vs_PtGen","TauMu_Start_MET_PtReco_vs_PtGen",50,0.,50,50,0.0,50,"TauMu_Start_MET_PtReco","PtGen");
+
+	TauMu_Start_PtBalance_PtRes=HConfig.GetTH1D(Name+"_TauMu_Start_PtBalance_PtRes","TauMu_Start_PtBalance_PtRes",100,-40,40,"TauMu_Start_PtBalance_PtRes","Events");
+	TauMu_Start_PtBalance_PtReco_vs_PtGen=HConfig.GetTH2D(Name+"_TauMu_Start_PtBalance_PtReco_vs_PtGen","TauMu_Start_PtBalance_PtReco_vs_PtGen",50,0.,50,50,0.0,50,"TauMu_Start_PtBalance_PtReco","PtGen");
+
+	TauMu_Start_EventRecoil_PtRes=HConfig.GetTH1D(Name+"_TauMu_Start_EventRecoil_PtRes","TauMu_Start_EventRecoil_PtRes",100,-40,40,"TauMu_Start_EventRecoil_PtRes","Events");
+	TauMu_Start_EventRecoil_PtReco_vs_PtGen=HConfig.GetTH2D(Name+"_TauMu_Start_EventRecoil_PtReco_vs_PtGen","TauMu_Start_EventRecoil_PtReco_vs_PtGen",50,0.,50,50,0.0,50,"TauMu_Start_EventRecoil_PtReco","PtGen");
+
+	TauMu_Start_MET_PtRes_AfterMC=HConfig.GetTH1D(Name+"_TauMu_Start_MET_PtRes_AfterMC","TauMu_Start_MET_PtRes_AfterMC",100,-40,40,"TauMu_Start_MET_PtRes_AfterMC","Events");
+	TauMu_Start_PtBalance_PtRes_AfterMC=HConfig.GetTH1D(Name+"_TauMu_Start_PtBalance_PtRes_AfterMC","TauMu_Start_PtBalance_PtRes_AfterMC",100,-40,40,"TauMu_Start_PtBalance_PtRes_AfterMC","Events");
+	TauMu_Start_EventRecoil_PtRes_AfterMC=HConfig.GetTH1D(Name+"_TauMu_Start_EventRecoil_PtRes_AfterMC","TauMu_Start_EventRecoil_PtRes_AfterMC",100,-40,40,"TauMu_Start_EventRecoil_PtRes_AfterMC","Events");
+
+	TauMu_Start_dPhi_TauMuTauH_MET=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_MET","TauMu_Start_dPhi_TauMuTauH_MET",100,-7,7,"TauMu_Start_dPhi_TauMuTauH_MET","Events");
+	TauMu_Start_dPhi_TauMuTauH_EventRecoil=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_EventRecoil","TauMu_Start_dPhi_TauMuTauH_EventRecoil",100,-7,7,"TauMu_Start_dPhi_TauMuTauH_EventRecoil","Events");
+	TauMu_Start_dPhi_TauMuTauH_PtBalance=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_PtBalance","TauMu_Start_dPhi_TauMuTauH_PtBalance",100,-7,7,"TauMu_Start_dPhi_TauMuTauH_PtBalance","Events");
+
+	Z_Start_MET_PtRes=HConfig.GetTH1D(Name+"_Z_Start_MET_PtRes","Z_Start_MET_PtRes",100,-40,40,"Z_Start_MET_PtRes","Events");
+	Z_Start_MET_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_MET_PhiRes","Z_Start_MET_PhiRes",100,-7,7,"Z_Start_MET_PhiRes","Events");
+
+	Z_Start_PtBalance_PtRes=HConfig.GetTH1D(Name+"_Z_Start_PtBalance_PtRes","Z_Start_PtBalance_PtRes",100,-40,40,"Z_Start_PtBalance_PtRes","Events");
+	Z_Start_PtBalance_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_PtBalance_PhiRes","Z_Start_PtBalance_PhiRes",100,-7,7,"Z_Start_PtBalance_PhiRes","Events");
+
+	Z_Start_EventRecoil_PtRes=HConfig.GetTH1D(Name+"_Z_Start_EventRecoil_PtRes","Z_Start_EventRecoil_PtRes",100,-40,40,"Z_Start_EventRecoil_PtRes","Events");
+	Z_Start_EventRecoil_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_EventRecoil_PhiRes","Z_Start_EventRecoil_PhiRes",100,-7,7,"Z_Start_EventRecoil_PhiRes","Events");
+
+	//Muon Track Parameters
+
+	Mu_TP_phi0=HConfig.GetTH1D(Name+"_Mu_TP_phi0","Mu_TP_phi0",100,-7,7,"Mu_TP_phi0","Events");
+	Mu_TP_lambda=HConfig.GetTH1D(Name+"_Mu_TP_lambda","Mu_TP_lambda",100,-7,7,"Mu_TP_lambda","Events");
+	Mu_TP_dxy=HConfig.GetTH1D(Name+"_Mu_TP_dxy","Mu_TP_dxy",100,-1,1,"Mu_TP_dxy","Events");
+	Mu_TP_dz=HConfig.GetTH1D(Name+"_Mu_TP_dz","Mu_TP_dz",100,-20,20,"Mu_TP_dz","Events");
+	Mu_TP_kappa=HConfig.GetTH1D(Name+"_Mu_TP_kappa","Mu_TP_kappa",100,-0.001,0.001,"Mu_TP_kappa","Events");
+	Mu_TP_POCA_quadrant=HConfig.GetTH1D(Name+"_Mu_TP_POCA_quadrant","Mu_TP_POCA_quadrant",4,0.5,4.5,"Mu_TP_POCA_quadrant","Events");
+	Mu_TP_POCA_quadrantVlad=HConfig.GetTH1D(Name+"_Mu_TP_POCA_quadrantVlad","Mu_TP_POCA_quadrantVlad",4,0.5,4.5,"Mu_TP_POCA_quadrantVlad","Events");
+	Mu_TP_POCA_quadrantby_dxyphi0=HConfig.GetTH1D(Name+"_Mu_TP_POCA_quadrantby_dxyphi0","Mu_TP_POCA_quadrantby_dxyphi0",4,0.5,4.5,"Mu_TP_POCA_quadrantby_dxyphi0","Events");
+
+	Mu_TP_Poca_quadrantData=HConfig.GetTH1D(Name+"_Mu_TP_Poca_quadrantData","Mu_TP_Poca_quadrantData",4,0.5,4.5,"Mu_TP_Poca_quadrantData","Events");
+	Mu_TP_Poca_quadrantMCDY=HConfig.GetTH1D(Name+"_Mu_TP_Poca_quadrantMCDY","Mu_TP_Poca_quadrantMCDY",4,0.5,4.5,"Mu_TP_Poca_quadrantMCDY","Events");
+
+	Mu_TP_Poca_xy=HConfig.GetTH2D(Name+"_Mu_TP_Poca_xy","Mu_TP_Poca_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_Poca_x","Mu_TP_Poca_y");
+	Mu_TP_Vertex_xy=HConfig.GetTH2D(Name+"_Mu_TP_Vertex_xy","Vertex_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_Vertex_x","Mu_TP_Vertex_y");
+	Mu_TP_RefitVertex_xy=HConfig.GetTH2D(Name+"_Mu_TP_RefitVertex_xy","Mu_TP_RefitVertex_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_RefitVertex_x","Mu_TP_RefitVertex_y");
+	Mu_TP_BeamSpot_xy=HConfig.GetTH2D(Name+"_Mu_TP_BeamSpot_xy","Vertex_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_BeamSpot_x","Mu_TP_BeamSpot_y");
+	Mu_TP_NTP_Poca_xy=HConfig.GetTH2D(Name+"_Mu_TP_NTP_Poca_xy","Mu_TP_NTP_Poca_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_NTP_Poca_x","Mu_TP_NTP_Poca_y");
+
 
 	//QCD Histos
 	NQCD=HConfig.GetTH1D(Name+"_NQCD","NQCD",4,0.5,4.5,"NQCD in ABCD","Events");
@@ -733,6 +795,11 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&Est_TauMu_PtRes_wTruth_NoZMass);
 	Extradist1d.push_back(&Est_Z_M_wTruth_NoZMass);
 	Extradist1d.push_back(&Est_Z_EnergyRes_wTruth_NoZMass);
+	Extradist1d.push_back(&Est_TauMu_wMET_PtRes);
+	Extradist1d.push_back(&Est_TauMu_wMET_PhiRes);
+	Extradist1d.push_back(&Est_TauMu_wMET_EtaRes);
+	Extradist1d.push_back(&Est_Z_wMET_PtRes);
+	Extradist1d.push_back(&Est_Z_wMET_PhiRes);
 
 	Extradist1d.push_back(&Reco_ZMass);
 	Extradist1d.push_back(&Reco_ZMass_UnboostedGenZ);
@@ -762,6 +829,9 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&Reco_dPhi_TauMuTauA1_AfterFit);
 	Extradist1d.push_back(&Reco_dPhi_TauMuTauA1_BeforeFit);
 
+	Extradist1d.push_back(&Reco_dPhi_TauMuTauA1_AfterFit_lowBoost);
+	Extradist1d.push_back(&Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost);
+
 	Extradist1d.push_back(&Reco_PtRes_TauA1_NoFit);
 	Extradist1d.push_back(&Reco_PtRes_TauA1_AmbPoint0_NoFit);
 	Extradist1d.push_back(&Reco_PtRes_TauA1_AmbPoint12_NoFit);
@@ -769,6 +839,9 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&Reco_PtRes_TauMu_NoFit);
 	Extradist1d.push_back(&Reco_PtRes_TauMu_AmbPoint0_NoFit);
 	Extradist1d.push_back(&Reco_PtRes_TauMu_AmbPoint12_NoFit);
+
+	Extradist1d.push_back(&Reco_PhiRes_TauMu_PreFit);
+	Extradist1d.push_back(&Reco_ThetaRes_TauMu_PreFit);
 
 	Extradist1d.push_back(&Reco_TauMu_DeltaPX_FitImpact);
 	Extradist1d.push_back(&Reco_TauMu_DeltaPY_FitImpact);
@@ -779,7 +852,7 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&GenZ_Pt_Unboosted);
 	Extradist1d.push_back(&RecoZ_Pt_Unboosted);
 	Extradist1d.push_back(&Reco_TauMu_ResCosTheta);
-	Extradist1d.push_back(&Reco_TauMu_ResPhi);
+	Extradist1d.push_back(&Reco_TauMu_DeltaPhi_FitImpact);
 
 	Extradist1d.push_back(&Reco_ZMass_PDF);
 	Extradist1d.push_back(&Reco_Z_Energy_Res);
@@ -792,6 +865,45 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&GenReco_Chi2_FitSolutionOnly);
 	Extradist1d.push_back(&GenReco_ConstrainedDeltaSum);
 	Extradist1d.push_back(&GenReco_NIter);
+
+	Extradist1d.push_back(&TauMu_Start_Collinear_PtRes);
+	Extradist1d.push_back(&TauMu_Start_MET_PtRes);
+	Extradist1d.push_back(&TauMu_Start_PtBalance_PtRes);
+	Extradist1d.push_back(&TauMu_Start_EventRecoil_PtRes);
+	Extradist2d.push_back(&TauMu_Start_Collinear_PtReco_vs_PtGen);
+	Extradist2d.push_back(&TauMu_Start_MET_PtReco_vs_PtGen);
+	Extradist2d.push_back(&TauMu_Start_PtBalance_PtReco_vs_PtGen);
+	Extradist2d.push_back(&TauMu_Start_EventRecoil_PtReco_vs_PtGen);
+
+	Extradist1d.push_back(&Z_Start_MET_PtRes);
+	Extradist1d.push_back(&Z_Start_MET_PhiRes);
+	Extradist1d.push_back(&Z_Start_PtBalance_PtRes);
+	Extradist1d.push_back(&Z_Start_PtBalance_PhiRes);
+	Extradist1d.push_back(&Z_Start_EventRecoil_PtRes);
+	Extradist1d.push_back(&Z_Start_EventRecoil_PhiRes);
+
+	Extradist1d.push_back(&TauMu_Start_MET_PtRes_AfterMC);
+	Extradist1d.push_back(&TauMu_Start_PtBalance_PtRes_AfterMC);
+	Extradist1d.push_back(&TauMu_Start_EventRecoil_PtRes_AfterMC);
+
+	Extradist1d.push_back(&TauMu_Start_dPhi_TauMuTauH_MET);
+	Extradist1d.push_back(&TauMu_Start_dPhi_TauMuTauH_EventRecoil);
+	Extradist1d.push_back(&TauMu_Start_dPhi_TauMuTauH_PtBalance);
+
+	Extradist1d.push_back(&Mu_TP_phi0);
+	Extradist1d.push_back(&Mu_TP_lambda);
+	Extradist1d.push_back(&Mu_TP_dxy);
+	Extradist1d.push_back(&Mu_TP_dz);
+	Extradist1d.push_back(&Mu_TP_kappa);
+	Extradist1d.push_back(&Mu_TP_POCA_quadrant);
+	Extradist1d.push_back(&Mu_TP_POCA_quadrantVlad);
+	Extradist1d.push_back(&Mu_TP_POCA_quadrantby_dxyphi0);
+
+	Extradist2d.push_back(&Mu_TP_Poca_xy);
+	Extradist2d.push_back(&Mu_TP_Vertex_xy);
+	Extradist2d.push_back(&Mu_TP_RefitVertex_xy);
+	Extradist2d.push_back(&Mu_TP_BeamSpot_xy);
+	Extradist2d.push_back(&Mu_TP_NTP_Poca_xy);
 
 	Extradist1d.push_back(&NQCD);
 	Extradist1d.push_back(&QCD_MT_MuMET_A);
@@ -1341,7 +1453,62 @@ void  ZToTaumuTauh::doEvent(){
 	}
 
 
-	//DiTau Reco
+	GEFObject FitResults, FitResultswithFullRecoil;
+	TPTRObject TPResults;
+	TVector2 Pt_Z;
+	TLorentzVector Recoil;
+
+	if(status && value.at(TauFLSigma) != TauFLSigmaDummy){
+		LorentzVectorParticle A1 = Ntp->PFTau_a1_lvp(selTau);
+		TrackParticle MuonTP = Ntp->Muon_TrackParticle(selMuon);
+		TVector3 PV = Ntp->PFTau_TIP_primaryVertex_pos(selTau);
+		TMatrixTSym<double> PVCov = Ntp->PFTau_TIP_primaryVertex_cov(selTau);
+
+		for(unsigned i; i<Ntp->Vtx_nTrk(selVertex); i++){
+			Recoil += Ntp->Vtx_TracksP4(selVertex, i);
+		}
+		Recoil -= Ntp->Muon_p4(selMuon);
+		Recoil -= Ntp->PFTau_3PS_A1_LV(selTau);
+		double Phi_Res = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
+		Pt_Z = Recoil.Vect().XYvector();
+		Pt_Z.Set(-Pt_Z.X(), -Pt_Z.Y()); //rotation by pi
+
+		GlobalEventFit GEF(MuonTP, A1, Phi_Res, PV, PVCov);
+		//GEF.setMaxDelta(30.);
+		//GEF.setMassConstraint(90.);
+		TPResults = GEF.getTPTRObject();
+		FitResults = GEF.Fit();
+
+		GlobalEventFit GEFwithFullRecoil(MuonTP, A1, Pt_Z, PV, PVCov);
+		FitResultswithFullRecoil = GEFwithFullRecoil.Fit();
+
+		Logger(Logger::Debug) << "Results.getTauH().LV().Pt(): " << FitResults.getTauH().LV().Pt() << std::endl;
+		Logger(Logger::Debug) << "ResultswithFullRecoil.getTauH().LV().Pt(): " << FitResultswithFullRecoil.getTauH().LV().Pt() << std::endl;
+
+		Logger(Logger::Debug) << "Results.getTauMu().LV().Pt(): " << FitResults.getTauMu().LV().Pt() << std::endl;
+		Logger(Logger::Debug) << "ResultswithFullRecoil.getTauMu().LV().Pt(): " << FitResultswithFullRecoil.getTauMu().LV().Pt() << std::endl;
+
+		if(FitResults.Fitconverged()){
+			Reco_EventFit_Solution.at(t).Fill(FitResults.getIndex(), w);
+			Reco_EventFit_Solution.at(t).Fill(-1, w); //all solutions
+			Reco_ConstrainedDeltaSum.at(t).Fill(FitResults.getCsum(), w);
+			Reco_Chi2_FitSolutionOnly.at(t).Fill(FitResults.getChi2(), w);
+			Reco_TauMu_DeltaPX_FitImpact.at(t).Fill(FitResults.getInitTauMu().LV().Px() - FitResults.getTauMu().LV().Px(), w);
+			Reco_TauMu_DeltaPY_FitImpact.at(t).Fill(FitResults.getInitTauMu().LV().Py() - FitResults.getTauMu().LV().Py(), w);
+			Reco_TauMu_DeltaPZ_FitImpact.at(t).Fill(FitResults.getInitTauMu().LV().Pz() - FitResults.getTauMu().LV().Pz(), w);
+			Reco_TauA1_DeltaPX_FitImpact.at(t).Fill(FitResults.getInitTauH().LV().Px() - FitResults.getTauH().LV().Px(), w);
+			Reco_TauA1_DeltaPY_FitImpact.at(t).Fill(FitResults.getInitTauH().LV().Py() - FitResults.getTauH().LV().Py(), w);
+			Reco_TauA1_DeltaPZ_FitImpact.at(t).Fill(FitResults.getInitTauH().LV().Pz() - FitResults.getTauH().LV().Pz(), w);
+
+			Reco_TauMu_DeltaPhi_FitImpact.at(t).Fill(FitResults.getTauMu().LV().Phi() - FitResults.getInitTauMu().LV().Phi(), w);
+			Reco_TauMu_ResCosTheta.at(t).Fill(FitResults.getTauMu().LV().CosTheta() - FitResults.getInitTauMu().LV().CosTheta(), w);
+			RecoZ_Pt.at(t).Fill(FitResults.getResonance().LV().Pt(), w);
+			Reco_dPhi_TauMuTauA1_AfterFit.at(t).Fill(FitResults.getTauMu().LV().Phi() - FitResults.getTauH().LV().Phi(), w);
+			Reco_dPhi_TauMuTauA1_BeforeFit.at(t).Fill(FitResults.getInitTauMu().LV().Phi() - FitResults.getInitTauH().LV().Phi(), w);
+		}
+	}
+	/*
+	//DiTau Fit
 
 	//single fit at default mass = 91.5
 	std::vector<bool> A1Fit, EventFit; A1Fit.clear(); EventFit.clear();
@@ -1456,7 +1623,6 @@ void  ZToTaumuTauh::doEvent(){
 	std::vector<bool> AmbiguitySolver_MassScan; AmbiguitySolver_MassScan.clear();
 	int FinalIndex(-1);
 
-	/*
 	unsigned N_mass = 50;
 	std::vector<double> Masses;
 	Masses.push_back(91.5);Masses.push_back(125.0);
@@ -1596,25 +1762,76 @@ void  ZToTaumuTauh::doEvent(){
 		}
 		Tau_Mass_Difference_PFTau_UnFitTracks_3PS.at(t).Fill(PFTau_ReFitTracks.M() - Ntp->PFTau_3PS_A1_LV(selTau).M(), w);
 
-		LorentzVectorParticle A1 = Ntp->PFTau_a1_lvp(selTau);
 		TrackParticle MuonTP = Ntp->Muon_TrackParticle(selMuon);
-		TVector3 PV = Ntp->PFTau_TIP_primaryVertex_pos(selTau);
-		TMatrixTSym<double> PVCov = Ntp->PFTau_TIP_primaryVertex_cov(selTau);
 
-		TLorentzVector Recoil;
-		for(unsigned i; i<Ntp->Vtx_nTrk(selVertex); i++){
-			Recoil += Ntp->Vtx_TracksP4(selVertex, i);
+		double dxy   =fabs(Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::dxy));
+		double phi0  = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::phi);
+		double lam   = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::lambda);
+		double dz   = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::dz);
+		double signed_dxy = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::dxy);
+
+		Mu_TP_phi0.at(t).Fill(MuonTP.Parameter(TrackParticle::phi));
+		Mu_TP_lambda.at(t).Fill(MuonTP.Parameter(TrackParticle::lambda));
+		Mu_TP_dxy.at(t).Fill(MuonTP.Parameter(TrackParticle::dxy));
+		Mu_TP_dz.at(t).Fill(MuonTP.Parameter(TrackParticle::dz));
+		Mu_TP_kappa.at(t).Fill(MuonTP.Parameter(TrackParticle::kappa));
+
+		double xPoca = -signed_dxy*sin(phi0);
+		double yPoca = signed_dxy*cos(phi0);
+		double xPocaVlad = dxy*sin(phi0);
+		double yPocaVlad = dxy*cos(phi0);
+
+		Mu_TP_Poca_xy.at(t).Fill(xPoca, yPoca);
+		Mu_TP_Vertex_xy.at(t).Fill(Ntp->Vtx(selVertex).X(), Ntp->Vtx(selVertex).Y());
+		Mu_TP_RefitVertex_xy.at(t).Fill(Ntp->PFTau_TIP_primaryVertex_pos(selTau).X(), Ntp->PFTau_TIP_primaryVertex_pos(selTau).Y());
+		Mu_TP_BeamSpot_xy.at(t).Fill(Ntp->beamspot_par()(0), Ntp->beamspot_par()(1));
+		Mu_TP_NTP_Poca_xy.at(t).Fill(Ntp->Muon_Poca(selMuon).X(), Ntp->Muon_Poca(selMuon).Y());
+
+		if(xPoca >= 0){
+			if(yPoca >= 0) Mu_TP_POCA_quadrant.at(t).Fill(1);
+			else Mu_TP_POCA_quadrant.at(t).Fill(4);
 		}
-		Recoil -= Ntp->Muon_p4(selMuon);
-		Recoil -= Ntp->PFTau_3PS_A1_LV(selTau);
-		double Phi_Res = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
+		else {
+			if(yPoca >= 0) Mu_TP_POCA_quadrant.at(t).Fill(2);
+			else Mu_TP_POCA_quadrant.at(t).Fill(3);
+		}
+		if(xPocaVlad >= 0){
+			if(yPocaVlad >= 0) Mu_TP_POCA_quadrantVlad.at(t).Fill(1);
+			else Mu_TP_POCA_quadrantVlad.at(t).Fill(4);
+		}
+		else {
+			if(yPocaVlad >= 0) Mu_TP_POCA_quadrantVlad.at(t).Fill(2);
+			else Mu_TP_POCA_quadrantVlad.at(t).Fill(3);
+		}
 
-		GlobalEventFit GEF(MuonTP, A1, Phi_Res, PV, PVCov);
-		TPTRObject TPResults = GEF.getTPTRObject();
-		LorentzVectorParticle test = TPResults.getA1();
-		Logger(Logger::Debug) << test.LV().E() << std::endl;
-		GEFObject Results = GEF.Fit();
-		Logger(Logger::Debug) << Results.getChi2() << std::endl;
+		double pi = TMath::Pi();
+		if(signed_dxy > 0){
+		  if(phi0 > -pi && phi0 < -pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(4);
+		  if(phi0 > -pi/2 && phi0 < 0) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(1);
+		  if(phi0 > 0 && phi0 < pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(2);
+		  if(phi0 > pi/2 && phi0 < pi) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(3);
+		}
+		else{
+		  if(phi0 > -pi && phi0 < -pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(2);
+		  if(phi0 > -pi/2 && phi0 < 0) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(3);
+		  if(phi0 > 0 && phi0 < pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(4);
+		  if(phi0 > pi/2 && phi0 < pi) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(1);
+		}
+		//Mu_TP_POCA_quadrantby_dxyphi0
+
+		TVector3 MuonDir(cos(phi0)*cos(lam), sin(phi0)*cos(lam), sin(lam));
+		TVector3 Muon0(-sin(phi0)*signed_dxy,cos(phi0)*signed_dxy,dz);
+
+		TVector3 MuonPocaNTP = Ntp->Muon_Poca(selMuon);
+		TVector3 Muon0PocaNTP = MuonPocaNTP - Muon0;
+		TVector3 MinusMuon0PocaNTP = Muon0 - MuonPocaNTP;
+		TVector3 Muon0PV = Muon0 - Ntp->Vtx(selVertex);
+		/*
+		Logger(Logger::Debug) << "------MUON POCA:------" << std::endl;
+		MuonDir.Print();
+		Muon0PocaNTP.Print();
+		MinusMuon0PocaNTP.Print();
+		*/
 	}
 
 	//single fit at default mass = 91.5 with generator info
@@ -1750,6 +1967,18 @@ void  ZToTaumuTauh::doEvent(){
 				dTheta_GenTauMu_GenMu.at(t).Fill(GenTaumu.Theta() - GenMu.Theta(), w);
 
 				if(status && value.at(TauFLSigma) != TauFLSigmaDummy){
+
+					int GenIndex;
+					if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) < 0){
+						GenIndex = 2;
+					}
+					else if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) > 0){
+						GenIndex = 1;
+					}
+					else if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) == 0){
+						GenIndex = 0;
+					}
+
 					TVector3 POCAPV_dir = Ntp->Muon_Poca(selMuon_Iso) - Ntp->PFTau_TIP_primaryVertex_pos(selTau);
 					POCAPV_Mag.at(t).Fill(POCAPV_dir.Mag());
 					double Mvis_recoA1genMu = (Ntp->PFTau_p4(selTau) + GenMu).M();
@@ -1809,10 +2038,13 @@ void  ZToTaumuTauh::doEvent(){
 							double MaxGJAngle = GJAngleMax(Ntp->PFTau_3PS_A1_LV(selTau));
 							double GJAngleStraightOverGJAngleMax = GJAngleStraight/MaxGJAngle;
 							double GJAngleHelixOverGJAngleMax = GJAngleHelix/MaxGJAngle;
+							/*
 							Logger(Logger::Debug) << "GJAngleStraight " << GJAngleStraight << std::endl;
 							Logger(Logger::Debug) << "GJAngleHelix " << GJAngleHelix << std::endl;
 							Logger(Logger::Debug) << "GJAngleMax " << MaxGJAngle << std::endl;
 							Logger(Logger::Debug) << "TauCharge " << Ntp->PFTau_Charge(selTau) << std::endl;
+							*/
+							/*
 							if(GenTauhIndex != -1){
 								Logger(Logger::Debug) << "GenTau1 Vertex :" << Ntp->MCTauandProd_Vertex(0,0).X() << ", " << Ntp->MCTauandProd_Vertex(0,0).Y() << ", " << Ntp->MCTauandProd_Vertex(0,0).Z() << std::endl;
 								Logger(Logger::Debug) << "GenTau2 Vertex :" << Ntp->MCTauandProd_Vertex(1,0).X() << ", " << Ntp->MCTauandProd_Vertex(1,0).Y() << ", " << Ntp->MCTauandProd_Vertex(1,0).Z() << std::endl;
@@ -1820,6 +2052,7 @@ void  ZToTaumuTauh::doEvent(){
 								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).X() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).Y() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).Z() << std::endl;
 								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).X() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).Y() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).Z() << std::endl;
 							}
+							*/
 							double dGJAngleStraight = GJAngleStraight - MaxGJAngle;
 							double dGJAngleHelix = GJAngleHelix - MaxGJAngle;
 							dGJAngle_GJAngleMAX_StraightTau.at(t).Fill(dGJAngleStraight, w);
@@ -1850,8 +2083,6 @@ void  ZToTaumuTauh::doEvent(){
 						}
 					}
 
-
-
 					TLorentzVector Neutrino_UnFitTracks(GenTauh);
 					(Ntp->PFTau_NdaughterTracks(selTau) == 3) ? TransTrk_Failure_withSelection.at(t).Fill(0.,w) : TransTrk_Failure_withSelection.at(t).Fill(1.,w);
 					if(Ntp->PFTau_NdaughterTracks(selTau) == 3){
@@ -1881,17 +2112,11 @@ void  ZToTaumuTauh::doEvent(){
 					TPTF_Neutrino_PFTau_Mass.at(t).Fill(Neutrino_PFTau.M(), w);
 					TPTF_Neutrino_PFTau_Mass_vs_TauFL.at(t).Fill(Neutrino_PFTau.M(), Ntp->PFTau_FlightLength(selTau));
 
-					TLorentzVector Recoil;
-					for(unsigned i; i<Ntp->Vtx_nTrk(selVertex); i++){
-						Recoil += Ntp->Vtx_TracksP4(selVertex, i);
-					}
-					Recoil -= Ntp->Muon_p4(selMuon);
-					Recoil -= Ntp->PFTau_p4(selTau);
-					Gen_Z_Pt_vs_VtxTracksPt.at(t).Fill(GenZH.Pt(),Recoil.Pt());
-					Gen_Z_Phi_vs_VtxTracksPhi.at(t).Fill(GenZH.Phi(),Recoil.Phi());
-					VtxTracksPtRes.at(t).Fill(Recoil.Pt() - GenZH.Pt(), w);
-					double phinew = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
-					VtxTracksPhiCorrectedRes.at(t).Fill(phinew - GenZH.Phi(), w);
+					Gen_Z_Pt_vs_VtxTracksPt.at(t).Fill(GenZH.Pt(),Pt_Z.Mod());
+					Gen_Z_Phi_vs_VtxTracksPhi.at(t).Fill(GenZH.Phi(),Pt_Z.Phi());
+					VtxTracksPtRes.at(t).Fill(Pt_Z.Mod() - GenZH.Pt(), w);
+					//double phinew = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
+					VtxTracksPhiCorrectedRes.at(t).Fill(Pt_Z.Phi_mpi_pi(Pt_Z.Phi()) - GenZH.Phi(), w);
 					dPhi_GenTauMu_RecoMu.at(t).Fill(GenTaumu.Phi() - Ntp->Muon_p4(selMuon).Phi());
 					dTheta_GenTauMu_RecoMu.at(t).Fill(GenTaumu.Theta() - Ntp->Muon_p4(selMuon).Theta());
 
@@ -1956,30 +2181,192 @@ void  ZToTaumuTauh::doEvent(){
 					}
 					*/
 
-					if(AmbiguitySolvable){
+
+					double dxy   =fabs(Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::dxy));
+					double phi0  = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::phi);
+					double lam   = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::lambda);
+					double dz   = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::dz);
+					double signed_dxy = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::dxy);
+					//  double phiAnot = inpar(4,0);
+
+					TVector3 MuonDir(cos(phi0)*cos(lam), sin(phi0)*cos(lam), sin(lam));
+					TVector3 Muon0(-sin(phi0)*signed_dxy,cos(phi0)*signed_dxy,dz);
+					TVector3 PV = Ntp->PFTau_TIP_primaryVertex_pos(selTau);
+					TVector3 Muon0PV = Muon0 - Ntp->Vtx(selVertex);
+
+					//Logger(Logger::Debug) << "Lambda: " << lam << std::endl;
+					//Logger(Logger::Debug) << "phi0: " << phi0 << std::endl;
+					//MuonDir.Print();
+					TVector3 PFMuonDir = Ntp->Muon_p4(selMuon).Vect();
+					PFMuonDir.SetMag(1.);
+					//PFMuonDir.Print();
+					//Muon0.Print();
+					//Muon0PV.Print();
+					//Ntp->PFTau_Poca(selTau).Print();
+					//Ntp->Muon_Poca(selMuon).Print();
+					//Ntp->Vtx(selVertex).Print();
+					/*
+					std::cout << "--------------" << std::endl;
+					for(unsigned i_vtx = 0; i_vtx<Ntp->NVtx(); i_vtx++){
+					  Ntp->Vtx(i_vtx).Print();
+					}
+					std::cout << "--------------" << std::endl;
+					*/
+					//Ntp->PFTau_TIP_primaryVertex_pos(selTau).Print();
+
+
+					double dxy_ntp = -Ntp->Muon_p4(selMuon).Py()/Ntp->Muon_p4(selMuon).Pt()*Ntp->Muon_Poca(selMuon).X() + Ntp->Muon_p4(selMuon).Px()/Ntp->Muon_p4(selMuon).Pt()*Ntp->Muon_Poca(selMuon).Y();
+
+					double alphaTP = Ntp->Muon_TrackParticle(selMuon).BField();
+
+					//Logger(Logger::Debug) << "dxy_ntp: " << dxy_ntp << std::endl;
+					//Logger(Logger::Debug) << "dxy trackparticle: " << signed_dxy << std::endl;
+					//Logger(Logger::Debug) << "phi0_ntp with x: " << acos(Ntp->Muon_p4(selMuon).Px()/Ntp->Muon_p4(selMuon).Pt())*180/TMath::Pi() << std::endl;
+					//Logger(Logger::Debug) << "phi0_ntp with y: " << asin(Ntp->Muon_p4(selMuon).Py()/Ntp->Muon_p4(selMuon).Pt())*180/TMath::Pi() << std::endl;
+					//Logger(Logger::Debug) << "phi0 trackparticle: " << phi0*180/TMath::Pi() << std::endl;
+					//Logger(Logger::Debug) << "kappa: " << Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::kappa) << "; 1/kappa: " << 1/Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::kappa) << std::endl;
+					Logger(Logger::Debug) << "Muon Pt: " << Ntp->Muon_p4(selMuon).Pt() << "; Muon P: " << Ntp->Muon_p4(selMuon).P() << std::endl;
+					Logger(Logger::Debug) << "alpha/kappa: " << alphaTP/Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::kappa) << std::endl;
+					Logger(Logger::Debug) << "muonTP x, y: " << alphaTP/Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::kappa)*cos(Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::phi)) << ", " << alphaTP/Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::kappa)*sin(Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::phi)) << std::endl;
+					Logger(Logger::Debug) << "Muon x, y: " << Ntp->Muon_p4(selMuon).X() << ", " << Ntp->Muon_p4(selMuon).Y() << std::endl;
+
+					//Logger(Logger::Debug) << "alpha: " << alphaTP << std::endl;
+
+					TVector3 SV_Ntp = Ntp->PFTau_TIP_secondaryVertex_pos(selTau);
+					TVector3 SV = TPResults.getA1().Vertex();
+
+					TVector3 TauDir = SV - PV;
+					double TauA1OppositePhi = atan2(-TauDir.Y(), -TauDir.X());
+
+
+					// reconstruct line of 1st tau
+					double aPVSV = (PV.Y() - SV.Y())/(PV.X() - SV.X());
+					double bPVSV = (PV.X()*SV.Y() - SV.X()*PV.Y())/(PV.X() - SV.X());
+
+					double tmu  = (dxy*(cos(phi0) - aPVSV*sin(phi0)) - bPVSV)  / (aPVSV*cos(phi0) - sin(phi0)); //projection onto XY plane
+
+					double xdoc = dxy*sin(phi0) + tmu*cos(phi0);
+					double ydoc = dxy*cos(phi0) + tmu*sin(phi0);
+					double zdoc = dz + tmu*tan(lam);
+
+					TVector3 PointGuess(xdoc, ydoc, zdoc);
+					TVector3 TauMuDir = PV - PointGuess;
+
+					double tNEW2  = (signed_dxy*(cos(phi0) + aPVSV*sin(phi0)) - bPVSV)  / (aPVSV*cos(phi0) - sin(phi0)); //projection onto XY plane
+
+					double xdocNEW2 = -signed_dxy*sin(phi0) + tNEW2*cos(phi0);
+					double ydocNEW2 = signed_dxy*cos(phi0) + tNEW2*sin(phi0);
+					double zdocNEW2 = dz + tNEW2*tan(lam);
+
+					TVector3 PointGuessNEW2(xdocNEW2, ydocNEW2, zdocNEW2);
+					TVector3 TauMuDirNEW2 = PointGuessNEW2 - PV;
+
+					LorentzVectorParticle RecoTauh_wTruth;
+					RecoTauh_wTruth = (TPResults.isAmbiguous()) ? TPResults.getTaus().at(GenIndex) : TPResults.getTauZero();
+					LorentzVectorParticle RecoNeutrino_wTruth;
+					RecoNeutrino_wTruth = (TPResults.isAmbiguous()) ? TPResults.getNeutrinos().at(GenIndex) : TPResults.getNeutrinoZero();
+
+					TrackParticle Muon = Ntp->Muon_TrackParticle(selMuon);
+
+					TLorentzVector MET(Ntp->MET_CorrMVAMuTau_ex(), Ntp->MET_CorrMVAMuTau_ey(), 0, Ntp->MET_CorrMVAMuTau_et());
+					TLorentzVector TauMu_wMET = MET - RecoNeutrino_wTruth.LV() + Ntp->Muon_p4(selMuon);
+					TVector2 TauMu_wMETPtVec = TauMu_wMET.Vect().XYvector();
+					TVector3 IS_wMET;
+					TLorentzVector TauMu_wMET_afterMC = TauMuFullEstimate(PV, Muon, RecoTauh_wTruth, TauMu_wMETPtVec, IS_wMET);
+
+					Est_TauMu_wMET_PtRes.at(t).Fill(TauMu_wMET.Pt() - GenTaumu.Pt());
+					Est_TauMu_wMET_PhiRes.at(t).Fill(TauMu_wMET.Phi() - GenTaumu.Phi());
+
+					TLorentzVector Z_wMET = RecoTauh_wTruth.LV() + TauMu_wMET;
+					Est_Z_wMET_PtRes.at(t).Fill(Z_wMET.Pt() - GenZH.Pt());
+					Est_Z_wMET_PhiRes.at(t).Fill(Z_wMET.Phi() - GenZH.Phi());
+
+					TLorentzVector TauMuPtfromEventRecoil = Recoil - RecoTauh_wTruth.LV();
+					TVector2 TauMu_EventRecoil_PtVec = TauMuPtfromEventRecoil.Vect().XYvector();
+					TVector3 IS_EventRecoil;
+					TLorentzVector TauMu_EventRecoil_afterMC = TauMuFullEstimate(PV, Muon, RecoTauh_wTruth, TauMu_EventRecoil_PtVec, IS_EventRecoil);
+
+					TVector2 TauMu_PtBalance_PtVec(-RecoTauh_wTruth.LV().X(), -RecoTauh_wTruth.LV().Y());
+					TVector3 IS_PtBalance;
+					TLorentzVector TauMu_PtBalance_afterMC = TauMuFullEstimate(PV, Muon, RecoTauh_wTruth, TauMu_PtBalance_PtVec, IS_PtBalance);
+
+					//TauMu_Start_Collinear_PtRes.at(t).Fill
+					TauMu_Start_MET_PtRes.at(t).Fill(TauMu_wMET.Pt() - GenTaumu.Pt());
+					TauMu_Start_PtBalance_PtRes.at(t).Fill(RecoTauh_wTruth.LV().Pt() - GenTaumu.Pt());
+					TauMu_Start_EventRecoil_PtRes.at(t).Fill(TauMuPtfromEventRecoil.Pt() - GenTaumu.Pt());
+					//TauMu_Start_Collinear_PtReco_vs_PtGen.at(t).Fill
+					TauMu_Start_MET_PtReco_vs_PtGen.at(t).Fill(TauMu_wMET.Pt(), GenTaumu.Pt());
+					TauMu_Start_PtBalance_PtReco_vs_PtGen.at(t).Fill(RecoTauh_wTruth.LV().Pt(), GenTaumu.Pt());
+					TauMu_Start_EventRecoil_PtReco_vs_PtGen.at(t).Fill(TauMuPtfromEventRecoil.Pt(), GenTaumu.Pt());
+
+					TauMu_Start_MET_PtRes_AfterMC.at(t).Fill(TauMu_wMET_afterMC.Pt() - GenTaumu.Pt());
+					TauMu_Start_PtBalance_PtRes_AfterMC.at(t).Fill(TauMu_PtBalance_afterMC.Pt() - GenTaumu.Pt());
+					TauMu_Start_EventRecoil_PtRes_AfterMC.at(t).Fill(TauMu_EventRecoil_afterMC.Pt() - GenTaumu.Pt());
+
+					Z_Start_MET_PtRes.at(t).Fill(Z_wMET.Pt() - GenZH.Pt());
+					Z_Start_MET_PhiRes.at(t).Fill(Z_wMET.Phi() - GenZH.Phi());
+					Z_Start_PtBalance_PtRes.at(t).Fill(- GenZH.Pt());
+					//Z_Start_PtBalance_PhiRes.at(t).Fill(
+					Z_Start_EventRecoil_PtRes.at(t).Fill(Pt_Z.Phi_mpi_pi(Pt_Z.Phi()) - GenZH.Pt());
+					Z_Start_EventRecoil_PhiRes.at(t).Fill(Pt_Z.Phi_mpi_pi(Pt_Z.Phi()) - GenZH.Phi());
+
+					if(FitResults.Fitconverged()){
+					TauMu_Start_dPhi_TauMuTauH_MET.at(t).Fill(TauMu_wMET_afterMC.Phi() - RecoTauh_wTruth.LV().Phi());
+					TauMu_Start_dPhi_TauMuTauH_EventRecoil.at(t).Fill(TauMu_EventRecoil_afterMC.Phi() - RecoTauh_wTruth.LV().Phi());
+					TauMu_Start_dPhi_TauMuTauH_PtBalance.at(t).Fill(TauMu_PtBalance_afterMC.Phi() - RecoTauh_wTruth.LV().Phi());
+					}
+
+					TVector3 PV_RecoTau(RecoTauh_wTruth.Vertex());
+					Logger(Logger::Debug) << "PV: " << PV.X() << ", " << PV.Y() << ", " << PV.Z() << std::endl;
+					Logger(Logger::Debug) << "PV_RecoTau: " << PV_RecoTau.X() << ", " << PV_RecoTau.Y() << ", " << PV_RecoTau.Z() << std::endl;
+					Logger(Logger::Debug) << "dxy, phi0, lam, dz: " << dxy << ", " << phi0 << ", " << lam << ", " << dz << std::endl;
+					//Logger(Logger::Debug) << "acos(cosTheta2): " << acos(cosTheta2) << " TauMuDir.Theta(): " << TauMuDir.Theta() << std::endl;
+					Logger(Logger::Debug) << "GEN Z.Pt(): " << GenZH.Pt() << " GenZH.Phi(): " << GenZH.Phi() << std::endl;
+
+					Logger(Logger::Debug) << "TauDir.Phi()(SVPV): " << TauDir.Phi() << " TauMuDirNEW2.Phi(): " << TauMuDirNEW2.Phi() << std::endl;
+					Logger(Logger::Debug) << "TauDir.Phi()(GEF): " << FitResults.getInitTauH().LV().Phi() << " Results.getInitTauMu().LV().Phi(): " << FitResults.getInitTauMu().LV().Phi() << std::endl;
+					Logger(Logger::Debug) << "TauDir.Phi()(TPTR wtruth): " << RecoTauh_wTruth.LV().Phi() << std::endl;
+					Logger(Logger::Debug) << "aPVSV: " << aPVSV << " bPVSV: " << bPVSV << std::endl;
+					Logger(Logger::Debug) << "PV: " << PV.X() << " " << PV.Y() << " " << PV.Z() << std::endl;
+					Logger(Logger::Debug) << "rot. SV: " << SV_Ntp.X() << " " << SV_Ntp.Y() << " " << SV_Ntp.Z() << std::endl;
+					Logger(Logger::Debug) << "unrot. SV: " << SV.X() << " " << SV.Y() << " " << SV.Z() << std::endl;
+					Logger(Logger::Debug) << "Mu POCA: " << Muon0.X() << " " << Muon0.Y() << " " << Muon0.Z() << std::endl;
+					Logger(Logger::Debug) << "Mu POCA wrt PV: " << Ntp->Muon_Poca(selMuon).X() << " " << Ntp->Muon_Poca(selMuon).Y() << " " << Ntp->Muon_Poca(selMuon).Z() << std::endl;
+					Logger(Logger::Debug) << "Mu Phi, Lambda, tNEW2: " << phi0 << " " << lam << " " << tNEW2 << std::endl;
+					Logger(Logger::Debug) << "docNEW2: " << xdocNEW2 << " " << ydocNEW2 << " " << zdocNEW2 << std::endl;
+					Logger(Logger::Debug) << "IS_PtBalance: " << IS_PtBalance.X() << " " << IS_PtBalance.Y() << " " << IS_PtBalance.Z() << std::endl;
+					Logger(Logger::Debug) << "IS_EventRecoil: " << IS_EventRecoil.X() << " " << IS_EventRecoil.Y() << " " << IS_EventRecoil.Z() << std::endl;
+					Logger(Logger::Debug) << "IS_wMET: " << IS_wMET.X() << " " << IS_wMET.Y() << " " << IS_wMET.Z() << std::endl;
+					Logger(Logger::Debug) << "RecoTauh_wTruth.LV(): " << RecoTauh_wTruth.LV().X() << ", " << RecoTauh_wTruth.LV().Y() << std::endl;
+					Logger(Logger::Debug) << "TauMu_PtBalance_PtVec: " << TauMu_PtBalance_PtVec.X() << ", " << TauMu_PtBalance_PtVec.Y() << std::endl;
+
+					if(FitResults.Fitconverged()){
 						if(GenZH.Pt() < 5.){
-							if(ZFits.at(IndexToReturn).Mass() >=0){
-								Reco_ZMass_UnboostedGenZ.at(t).Fill(ZFits.at(IndexToReturn).Mass(), w);
-								RecoZ_Pt_Unboosted.at(t).Fill(ZFits.at(IndexToReturn).Parameter(LorentzVectorParticle::pt), w);
+							if(FitResults.getResonance().Mass() >=0){
+								Reco_dPhi_TauMuTauA1_AfterFit_lowBoost.at(t).Fill(FitResults.getTauMu().LV().Phi() - FitResults.getTauH().LV().Phi(), w);
+								Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost.at(t).Fill(FitResults.getInitTauMu().LV().Phi() - FitResults.getInitTauH().LV().Phi(), w);
+								Reco_ZMass_UnboostedGenZ.at(t).Fill(FitResults.getResonance().Mass(), w);
+								RecoZ_Pt_Unboosted.at(t).Fill(FitResults.getResonance().LV().Pt(), w);
 								GenZ_Pt_Unboosted.at(t).Fill(GenZH.Pt(), w);
 							}
 							//if(FinalIndex != -1) Reco_ZMass_MassScanUnboosted.at(t).Fill(ZFits_MassScan.at(FinalIndex).at(IndicesToReturn.at(FinalIndex)).Mass(),w);
 						}
-						int IndexNoFit(IndexToReturn); //always solution 1
+						int IndexNoFit(FitResults.getIndex()); //always solution 1
 						//if(IndexToReturn == 2) IndexNoFit = 1;
 						//else IndexNoFit = IndexToReturn;
-						TLorentzVector TauA1_TLV_FitSolution = RefitDaughters.at(IndexToReturn).at(0).LV();
-						TLorentzVector Z_TLV = ZFits.at(IndexToReturn).LV();
-						TLorentzVector TauMu_TLV = RefitDaughters.at(IndexToReturn).at(1).LV();
+						TLorentzVector TauA1_TLV_FitSolution = FitResults.getTauH().LV();
+						TLorentzVector Z_TLV = FitResults.getResonance().LV();
+						TLorentzVector TauMu_TLV = FitResults.getTauMu().LV();
 						//TVector3 par_Vec(par.at(IndexToReturn)(0),par.at(IndexToReturn)(1),par.at(IndexToReturn)(2));
 						//TVector3 par0_Vec(par_0.at(IndexToReturn)(0),par_0.at(IndexToReturn)(1),par_0.at(IndexToReturn)(2));
 						double dPt_TauA1 = TauA1_TLV_FitSolution.Pt() - GenTauh.Pt();
 						double dPt_TauMu = TauMu_TLV.Pt() - GenTaumu.Pt();
-						double dPt_TauA1_NoFit = RefitDaughters.at(IndexNoFit).at(0).LV().Pt() - GenTauh.Pt();
-						double dPt_TauMu_NoFit = InitDaughters.at(IndexNoFit).at(1).LV().Pt() - GenTaumu.Pt();
+						double dPt_TauA1_NoFit = TauA1_TLV_FitSolution.Pt() - GenTauh.Pt();
+						double dPt_TauMu_NoFit = TauMu_TLV.Pt() - GenTaumu.Pt();
 
 						double dP_TauA1_FitSolution = TauA1_TLV_FitSolution.P() - GenTauh.P();
 						double dE_Z = Z_TLV.E() - GenZH.E();
+						/*
 						double dP_TauA1_BestSolution(999); int i_BestSolution(-1);
 						for(unsigned i=0; i<A1Fit.size(); i++){
 							TLorentzVector TauA1_TLV_tmp = TPTF_TausA1.at(i).LV();
@@ -1988,23 +2375,14 @@ void  ZToTaumuTauh::doEvent(){
 								i_BestSolution = i;
 							}
 						}
-						if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) < 0){
-							TPTF_TauA1_RightSolution_vs_FitSolution.at(t).Fill(2., IndexToReturn);
-							Gen_TPTF_TauA1_Solution_WithSelection.at(t).Fill(2., w);
-						}
-						else if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) > 0){
-							TPTF_TauA1_RightSolution_vs_FitSolution.at(t).Fill(1., IndexToReturn);
-							Gen_TPTF_TauA1_Solution_WithSelection.at(t).Fill(1., w);
-						}
-						else if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) == 0){
-							TPTF_TauA1_RightSolution_vs_FitSolution.at(t).Fill(0., IndexToReturn);
-							Gen_TPTF_TauA1_Solution_WithSelection.at(t).Fill(0., w);
-						}
-
+						*/
+						TPTF_TauA1_RightSolution_vs_FitSolution.at(t).Fill(GenIndex, FitResults.getIndex());
+						Gen_TPTF_TauA1_Solution_WithSelection.at(t).Fill(GenIndex, w);
 
 						TrackParticle MuonTP = Ntp->Muon_TrackParticle(selMuon);
+						/*
 						if(A1Fit.at(0)){
-							TVector2 ZEst = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(0).LV(), Recoil.Phi());
+							TVector2 ZEst = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(0).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 							Est_Z_Pt_wTruth.at(t).Fill(ZEst.Mod(), w);
 							Est_Z_PtRes_wTruth.at(t).Fill(ZEst.Mod() - GenZH.Pt(), w);
 							Est_Z_Pt_wTruth_vs_GenZ_Pt.at(t).Fill(ZEst.Mod(), GenZH.Pt());
@@ -2020,21 +2398,21 @@ void  ZToTaumuTauh::doEvent(){
 							Est_Z_EnergyRes_alwaysMinus.at(t).Fill(FullZEst.E() - GenZH.E(), w);
 							Est_TauMu_PtRes_wTruth.at(t).Fill(TauMuEst.Pt() - GenTaumu.Pt(), w);
 
-							TLorentzVector TauMuEst2 = TauMuEstimator2(MuonTP, TPTF_TausA1.at(0).LV(), Recoil.Phi());
+							TLorentzVector TauMuEst2 = TauMuEstimator2(MuonTP, TPTF_TausA1.at(0).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 							TLorentzVector FullZEst2 = TPTF_TausA1.at(0).LV() + TauMuEst2;
 							Est_Z_EnergyRes_wTruth2.at(t).Fill(FullZEst2.E() - GenZH.E(), w);
 							Est_Z_EnergyRes_alwaysMinus2.at(t).Fill(FullZEst2.E() - GenZH.E(), w);
 							Est_TauMu_PtRes_wTruth2.at(t).Fill(TauMuEst2.Pt() - GenTaumu.Pt(), w);
 							Est_Z_M_wTruth2.at(t).Fill(FullZEst2.M(), w);
 
-							TLorentzVector TauMuEst_NoZMass = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(0).LV(), Recoil.Phi());
+							TLorentzVector TauMuEst_NoZMass = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(0).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 							TLorentzVector FullZEst_NoZMass = TPTF_TausA1.at(0).LV() + TauMuEst_NoZMass;
 							Est_TauMu_PtRes_wTruth_NoZMass.at(t).Fill(TauMuEst_NoZMass.Pt() - GenTaumu.Pt(), w);
 							Est_Z_EnergyRes_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMass.E() - GenZH.E(), w);
 							Est_Z_M_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMass.M(), w);
 						}
 						else if(A1Fit.at(1) && A1Fit.at(2)){
-							TVector2 ZEstMinus = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(1).LV(), Recoil.Phi());
+							TVector2 ZEstMinus = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(1).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 							Est_Z_Pt_alwaysMinus.at(t).Fill(ZEstMinus.Mod(), w);
 							Est_Z_PtRes_alwaysMinus.at(t).Fill(ZEstMinus.Mod() - GenZH.Pt(), w);
 							Est_Z_Pt_alwaysMinus_vs_GenZ_Pt.at(t).Fill(ZEstMinus.Mod(), GenZH.Pt());
@@ -2044,15 +2422,15 @@ void  ZToTaumuTauh::doEvent(){
 							Est_Z_Energy_alwaysMinus.at(t).Fill(FullZEstMinus.E(), w);
 							Est_Z_EnergyRes_alwaysMinus.at(t).Fill(FullZEstMinus.E() - GenZH.E(), w);
 
-							TLorentzVector TauMuEst2Minus = TauMuEstimator2(MuonTP, TPTF_TausA1.at(1).LV(), Recoil.Phi());
+							TLorentzVector TauMuEst2Minus = TauMuEstimator2(MuonTP, TPTF_TausA1.at(1).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 							TLorentzVector FullZEst2Minus = TPTF_TausA1.at(1).LV() + TauMuEst2Minus;
 							Est_Z_EnergyRes_alwaysMinus2.at(t).Fill(FullZEst2Minus.E() - GenZH.E(), w);
 
-							TLorentzVector TauMuEst_NoZMassMinus = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(1).LV(), Recoil.Phi());
+							TLorentzVector TauMuEst_NoZMassMinus = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(1).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 							TLorentzVector FullZEst_NoZMassMinus = TPTF_TausA1.at(1).LV() + TauMuEst_NoZMassMinus;
 
 							if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) < 0){
-								TVector2 ZEstPlus = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(2).LV(), Recoil.Phi());
+								TVector2 ZEstPlus = ZPtCollinearTauMuEstimator(MuonTP, TPTF_TausA1.at(2).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 								Est_Z_Pt_wTruth.at(t).Fill(ZEstPlus.Mod(), w);
 								Est_Z_PtRes_wTruth.at(t).Fill(ZEstPlus.Mod() - GenZH.Pt(), w);
 								Est_Z_Pt_wTruth_vs_GenZ_Pt.at(t).Fill(ZEstPlus.Mod(), GenZH.Pt());
@@ -2063,13 +2441,13 @@ void  ZToTaumuTauh::doEvent(){
 								Est_Z_EnergyRes_wTruth.at(t).Fill(FullZEstPlus.E() - GenZH.E(), w);
 								Est_TauMu_PtRes_wTruth.at(t).Fill(TauMuEstPlus.Pt() - GenTaumu.Pt(), w);
 
-								TLorentzVector TauMuEst2Plus = TauMuEstimator2(MuonTP, TPTF_TausA1.at(2).LV(), Recoil.Phi());
+								TLorentzVector TauMuEst2Plus = TauMuEstimator2(MuonTP, TPTF_TausA1.at(2).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 								TLorentzVector FullZEst2Plus = TPTF_TausA1.at(2).LV() + TauMuEst2Plus;
 								Est_Z_EnergyRes_wTruth2.at(t).Fill(FullZEst2Plus.E() - GenZH.E(), w);
 								Est_TauMu_PtRes_wTruth2.at(t).Fill(TauMuEst2Plus.Pt() - GenTaumu.Pt(), w);
 								Est_Z_M_wTruth2.at(t).Fill(FullZEst2Plus.M(), w);
 
-								TLorentzVector TauMuEst_NoZMassPlus = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(2).LV(), Recoil.Phi());
+								TLorentzVector TauMuEst_NoZMassPlus = TauMuEstimatorNoZMass(MuonTP, TPTF_TausA1.at(2).LV(), Pt_Z.Phi_mpi_pi(Pt_Z.Phi()));
 								TLorentzVector FullZEst_NoZMassPlus = TPTF_TausA1.at(2).LV() + TauMuEst_NoZMassPlus;
 								Est_TauMu_PtRes_wTruth_NoZMass.at(t).Fill(TauMuEst_NoZMassPlus.Pt() - GenTaumu.Pt(), w);
 								Est_Z_EnergyRes_wTruth_NoZMass.at(t).Fill(FullZEst_NoZMassPlus.E() - GenZH.E(), w);
@@ -2095,6 +2473,7 @@ void  ZToTaumuTauh::doEvent(){
 
 							}
 						}
+						*/
 
 						Reco_Z_Energy_Res.at(t).Fill(dE_Z, w);
 						Reco_PtRes_TauMu.at(t).Fill(dPt_TauMu, w);
@@ -2102,21 +2481,26 @@ void  ZToTaumuTauh::doEvent(){
 						Reco_PtRes_TauMu_NoFit.at(t).Fill(dPt_TauMu_NoFit, w);
 						Reco_PtRes_TauA1_NoFit.at(t).Fill(dPt_TauA1_NoFit, w);
 
-						if(IndexToReturn == 0){
+						double dPhi_TauMu_Prefit = FitResults.getInitTauMu().LV().Phi() - GenTaumu.Phi();
+						double dTheta_TauMu_Prefit = FitResults.getInitTauMu().LV().Theta() - GenTaumu.Theta();
+						Reco_PhiRes_TauMu_PreFit.at(t).Fill(dPhi_TauMu_Prefit);
+						Reco_ThetaRes_TauMu_PreFit.at(t).Fill(dTheta_TauMu_Prefit);
+
+						if(FitResults.getIndex() == 0){
 							Reco_PtRes_TauMu_AmbPoint0.at(t).Fill(dPt_TauMu, w);
 							Reco_PtRes_TauA1_AmbPoint0.at(t).Fill(dPt_TauA1, w);
 							Reco_PtRes_TauMu_AmbPoint0_NoFit.at(t).Fill(dPt_TauMu_NoFit, w);
 							Reco_PtRes_TauA1_AmbPoint0_NoFit.at(t).Fill(dPt_TauA1_NoFit, w);
 						}
 
-						if(IndexToReturn == 1 || IndexToReturn == 2){
+						if(FitResults.getIndex() == 1 || FitResults.getIndex() == 2){
 							Reco_PtRes_TauMu_AmbPoint12.at(t).Fill(dPt_TauMu, w);
 							Reco_PtRes_TauA1_AmbPoint12.at(t).Fill(dPt_TauA1, w);
 							Reco_PtRes_TauMu_AmbPoint12_NoFit.at(t).Fill(dPt_TauMu_NoFit, w);
 							Reco_PtRes_TauA1_AmbPoint12_NoFit.at(t).Fill(dPt_TauA1_NoFit, w);
 						}
 
-						if(IndexToReturn == 1){
+						if(FitResults.getIndex() == 1){
 							Reco_PtRes_TauMu_AmbPoint1.at(t).Fill(dPt_TauMu, w);
 							Reco_PtRes_TauA1_AmbPoint1.at(t).Fill(dPt_TauA1, w);
 						}
@@ -2137,15 +2521,15 @@ void  ZToTaumuTauh::doEvent(){
 						double dP_paral_TauA1_RecoA1 = TauA1_TLV_FitSolution.P()*sin(RecoGJAngle) - GenTauh.P()*sin(GJ_GenTauh_RecoA1);
 
 						TPTF_TauA1_pRes_FitSolution.at(t).Fill(dP_TauA1_FitSolution, w);
-						TPTF_TauA1_pRes_BestSolution.at(t).Fill(dP_TauA1_BestSolution, w);
-						TPTF_TauA1_BestSolution_vs_FitSolution.at(t).Fill(i_BestSolution, IndexToReturn);
+						//TPTF_TauA1_pRes_BestSolution.at(t).Fill(dP_TauA1_BestSolution, w);
+						//TPTF_TauA1_BestSolution_vs_FitSolution.at(t).Fill(i_BestSolution, IndexToReturn);
 						TPTF_TauA1_pRes_vs_GenA1Mass_FitSolution.at(t).Fill(dP_TauA1_FitSolution, GenA1.M());
-						TPTF_TauA1_pRes_vs_GenA1Mass_BestSolution.at(t).Fill(dP_TauA1_BestSolution, GenA1.M());
+						//TPTF_TauA1_pRes_vs_GenA1Mass_BestSolution.at(t).Fill(dP_TauA1_BestSolution, GenA1.M());
 						TPTF_TauA1_pRes_vs_GenGJAngle_FitSolution.at(t).Fill(dP_TauA1_FitSolution, GenGJAngle);
-						TPTF_TauA1_pRes_vs_GenGJAngle_BestSolution.at(t).Fill(dP_TauA1_BestSolution, GenGJAngle);
+						//TPTF_TauA1_pRes_vs_GenGJAngle_BestSolution.at(t).Fill(dP_TauA1_BestSolution, GenGJAngle);
 						TPTF_A1_pRes_vs_GenGJAngle.at(t).Fill(dP_A1, GenGJAngle);
 
-						TPTF_TauA1_pRes_vs_RecoChi2_FitSolution.at(t).Fill(dP_TauA1_FitSolution, Chi2s.at(IndexToReturn));
+						TPTF_TauA1_pRes_vs_RecoChi2_FitSolution.at(t).Fill(dP_TauA1_FitSolution, FitResults.getChi2());
 						TPTF_TauA1_pRes_vs_RecoA1Mass_FitSolution.at(t).Fill(dP_TauA1_FitSolution, Ntp->PFTau_p4(selTau).M());
 						TPTF_TauA1_pRes_vs_RecoGJAngle_FitSolution.at(t).Fill(dP_TauA1_FitSolution, RecoGJAngle);
 						TPTF_TauA1_p_iRes_sq_vs_RecoGJAngle_FitSolution.at(t).Fill(dP_isq_TauA1, RecoGJAngle);
@@ -2619,7 +3003,7 @@ TLorentzVector ZToTaumuTauh::TauHelixP4AtSV(unsigned int selTau, TLorentzVector 
 	double Tau_Phi0 = atan2(p0.Y(),p0.X()) + charge*(TMath::PiOver2() - acos(PVSV.Mag()*kappa));
 	double Tau_Phi02 = atan2(p0.Y(),p0.X()) - charge*(TMath::PiOver2() - acos(PVSV.Mag()*kappa));
 	TLorentzVector Helix_TLV = TLorentzVector(p0.Pt()*cos(Tau_Phi02), p0.Pt()*sin(Tau_Phi02), p0.Z(), Tau.E());
-	Logger(Logger::Debug) << "Helix_TLV.M(): " << Helix_TLV.M() << std::endl;
+	//Logger(Logger::Debug) << "Helix_TLV.M(): " << Helix_TLV.M() << std::endl;
 	return Helix_TLV;
 }
 TLorentzVector ZToTaumuTauh::GenTauHelixP4AtSV(unsigned int selTau, TLorentzVector Tau){
@@ -2636,7 +3020,7 @@ TLorentzVector ZToTaumuTauh::GenTauHelixP4AtSV(unsigned int selTau, TLorentzVect
 	double Tau_Phi0 = atan2(p0.Y(),p0.X()) + charge*(TMath::PiOver2() - acos(PVSV.Mag()*kappa));
 	double Tau_Phi02 = atan2(p0.Y(),p0.X()) - charge*(TMath::PiOver2() - acos(PVSV.Mag()*kappa));
 	TLorentzVector Helix_TLV = TLorentzVector(p0.Pt()*cos(Tau_Phi02), p0.Pt()*sin(Tau_Phi02), p0.Z(), Tau.E());
-	Logger(Logger::Debug) << "Helix_TLV.M(): " << Helix_TLV.M() << std::endl;
+	//Logger(Logger::Debug) << "Helix_TLV.M(): " << Helix_TLV.M() << std::endl;
 	return Helix_TLV;
 }
 TVector2 ZToTaumuTauh::ZPtCollinearTauMuEstimator(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil){
@@ -2697,3 +3081,85 @@ TLorentzVector ZToTaumuTauh::TauMuEstimatorNoZMass(TrackParticle Muon, TLorentzV
 	TLorentzVector TauMu = TLorentzVector(TauMuPVec, TauMuE);
 	return TauMu;
 }
+TLorentzVector ZToTaumuTauh::TauMuFullEstimate(TVector3 PV, TrackParticle Muon, LorentzVectorParticle Tauh, TVector2 TauMuPt, TVector3 &Intersection){
+	double dxy 			= Muon.Parameter(TrackParticle::dxy);
+	double phi0 		= Muon.Parameter(TrackParticle::phi);
+	double lam	 		= Muon.Parameter(TrackParticle::lambda);
+	double dz			= Muon.Parameter(TrackParticle::dz);
+
+	double tanphi_tau = TauMuPt.Y()/TauMuPt.X();
+	double a = tanphi_tau;
+	double b = PV.Y() - a*PV.X();
+
+	double deno = a*cos(phi0) - sin(phi0);
+	double num = dxy*(cos(phi0) + a*sin(phi0)) - b;
+
+	double tmu  = (dxy*(cos(phi0) + a*sin(phi0)) - b)  / (a*cos(phi0) - sin(phi0)); //projection onto XY plane
+
+	double xdoc = -dxy*sin(phi0) + tmu*cos(phi0);
+	double ydoc = dxy*cos(phi0) + tmu*sin(phi0);
+	double zdoc = dz + tmu*tan(lam);
+
+	TVector3 PointGuess(xdoc, ydoc, zdoc);
+	TVector3 TauMuDir = PointGuess - PV;
+	TauMuDir.SetMag(1.);
+
+	Intersection = PointGuess;
+
+	double Zmass = 91.2;
+	double P_TauMu = pow(Zmass, 2.)/2./Tauh.LV().P()/(1 - cos(Tauh.LV().Angle(TauMuDir)));
+
+	TLorentzVector Taumu(P_TauMu*TauMuDir, sqrt(pow(1.777,2.) + pow(P_TauMu, 2.)));
+
+
+	Logger(Logger::Debug) << "acos(TauMuDir.Z()/TauMuDir.Mag()): " << acos(TauMuDir.Z()/TauMuDir.Mag()) << " TauMuDir.Theta(): " << TauMuDir.Theta() << std::endl;
+	Logger(Logger::Debug) << "a: " << a << " b: " << b << std::endl;
+	Logger(Logger::Debug) << "tmu: " << tmu << std::endl;
+	Logger(Logger::Debug) << "numerator of tmu: " << num << " denominator of tmu: " << deno << std::endl;
+
+	Logger(Logger::Debug) << "Muon Charge: " << Muon.Charge() << " Kappa: "<< Muon.Parameter(TrackParticle::kappa) <<  std::endl;
+	Logger(Logger::Debug) << "Muon dxy: " << dxy << " dz: "<< dz <<  std::endl;
+	Logger(Logger::Debug) << "Muon Phi: " << phi0 << std::endl;
+	Logger(Logger::Debug) << "Tauh.LV().Phi(): " << Tauh.LV().Phi() << " Tauh.LV().Pt(): " << Tauh.LV().Pt() << std::endl;
+	Logger(Logger::Debug) << "TauMuPt.X(): "<< TauMuPt.X() << " TauMuPt.Y(): " << TauMuPt.Y() << std::endl;
+	Logger(Logger::Debug) << "TauMuPt.Phi(): "<< TauMuPt.Phi_mpi_pi(TauMuPt.Phi()) << " TauMuPt.Mod(): " << TauMuPt.Mod() << std::endl;
+	Logger(Logger::Debug) << "Taumu.Phi(): "<< Taumu.Phi() << " Taumu.Pt(): " << Taumu.Pt() << std::endl;
+	Logger(Logger::Debug) << "P_TauMu: "<< P_TauMu << " Taumu.P(): " << Taumu.P() << std::endl;
+	Logger(Logger::Debug) << "Taumu.M(): "<< Taumu.M() << std::endl;
+	TLorentzVector Z = Taumu + Tauh.LV();
+	Logger(Logger::Debug) << "Z.M(): " << Z.M() << " Z.Pt(): " << Z.Pt() <<  " Z.Phi(): " << Z.Phi() << std::endl;
+
+	return Taumu;
+}
+/*
+TVector3 ZToTaumuTauh::TauMuEstimatorWithMET(TrackParticle Muon, LorentzVectorParticle Tauh, LorentzVectorParticle Neutrino, TVector2 MET){
+	double dxy 			= fabs(Muon.Parameter(TrackParticle::dxy));
+	double phi0 		= Muon.Parameter(TrackParticle::phi);
+	double lam	 		= Muon.Parameter(TrackParticle::lambda);
+	double dsz 			= fabs(Muon.Parameter(TrackParticle::dz));
+	//  double phiAnot = inpar(4,0);
+
+	TVector3 MuonDir(cos(phi0)*cos(lam), sin(phi0)*cos(lam), sin(lam));
+	TVector3 Muon0(dxy*sin(phi0), dxy*cos(phi0), dsz*cos(lam));
+
+	double MuonPt = Muon.BField()/Muon.Parameter(TrackParticle::kappa);
+
+	TVector3 PV = Tauh.Vertex();
+
+	TVector2 MuonPtVec(MuonPt*MuonDir.XYvector());
+	TVector2 NeutrinoPtVec(Neutrino.LV().X(), Neutrino.LV().Y());
+	TVector2 TauMuPtVec = MET - NeutrinoPtVec + MuonPtVec;
+
+	double tanphi_tau = TauMuPtVec.Y()/TauMuPtVec.X();
+	// reconstruct line of 1st tau
+	double a = tanphi_tau;
+	double b = PV.Y() - a*PV.X();
+
+	double tmu  = (dxy*(cos(phi0) - a*sin(phi0)) - b)  / (a*cos(phi0) - sin(phi0)); //projection onto XY plane
+
+
+	double xdoc = dxy*sin(phi0) + tmu*cos(phi0);
+	double ydoc = dxy*cos(phi0) + tmu*sin(phi0);
+	double zdoc = dsz*cos(lam) + tmu*tan(lam);
+}
+*/
