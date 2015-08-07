@@ -17,6 +17,7 @@
 #include "SimpleFits/FitSoftware/interface/DiTauConstrainedFitter.h"
 #include "SimpleFits/FitSoftware/interface/Logger.h"
 #include "SimpleFits/FitSoftware/interface/GlobalEventFit.h"
+#include "Objects.h"
 
 ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 	Selection(Name_,id_),
@@ -65,7 +66,7 @@ ZToTaumuTauh::ZToTaumuTauh(TString Name_, TString id_):
 
 	Use_Embedded = true;
 
-	Logger::Instance()->SetLevel(Logger::Debug);
+	Logger::Instance()->SetLevel(Logger::Info);
 }
 
 ZToTaumuTauh::~ZToTaumuTauh(){
@@ -95,7 +96,7 @@ void  ZToTaumuTauh::Configure(){
 		if(i==NTauIso)			cut.at(NTauIso)=1;
 		if(i==ChargeSum)		cut.at(ChargeSum)=0;
 		if(i==TauDecayMode)		cut.at(TauDecayMode)=10;//10
-		if(i==TauFLSigma)		cut.at(TauFLSigma)=3;//3
+		if(i==TauFLSigma)		cut.at(TauFLSigma)=3.;//3
 		if(i==MT_MuMET)			cut.at(MT_MuMET)=30;
 	}
 
@@ -266,9 +267,13 @@ void  ZToTaumuTauh::Configure(){
 	Mu_phi=HConfig.GetTH1D(Name+"_Mu_phi","Mu_phi",30,-3.14159265359,3.14159265359,"Muon #phi","Events");
 	Mu_eta=HConfig.GetTH1D(Name+"_Mu_eta","Mu_eta",50,-2.5,2.5,"Muon #eta","Events");
 
-	Tau_pt=HConfig.GetTH1D(Name+"_Tau_pt","Tau_pt",50,0,100,"Tau p_{t}","Events");
-	Tau_phi=HConfig.GetTH1D(Name+"_Tau_phi","Tau_phi",30,-3.14159265359,3.14159265359,"Tau #phi","Events");
-	Tau_eta=HConfig.GetTH1D(Name+"_Tau_eta","Tau_eta",50,-2.5,2.5,"Tau #eta","Events");
+	Tau_pt=HConfig.GetTH1D(Name+"_Tau_pt","Tau_pt",50,0,100,"vis. Tau p_{t}","Events");
+	Tau_phi=HConfig.GetTH1D(Name+"_Tau_phi","Tau_phi",30,-3.14159265359,3.14159265359,"vis. Tau #phi","Events");
+	Tau_eta=HConfig.GetTH1D(Name+"_Tau_eta","Tau_eta",50,-2.5,2.5,"vis. Tau #eta","Events");
+
+	Tau_pt_wo_FLSigmaCut=HConfig.GetTH1D(Name+"_Tau_pt_wo_FLSigmaCut","Tau_pt_wo_FLSigmaCut",50,0,100,"vis. Tau p_{t} w/o #sigma_{FL} cut","Events");
+	Tau_phi_wo_FLSigmaCut=HConfig.GetTH1D(Name+"_Tau_phi_wo_FLSigmaCut","Tau_phi_wo_FLSigmaCut",30,-3.14159265359,3.14159265359,"vis. Tau #phi w/o #sigma_{FL} cut","Events");
+	Tau_eta_wo_FLSigmaCut=HConfig.GetTH1D(Name+"_Tau_eta_wo_FLSigmaCut","Tau_eta_wo_FLSigmaCut",50,-2.5,2.5,"vis. Tau #eta w/o #sigma_{FL} cut","Events");
 
 	Tau_Mass_Inclusive=HConfig.GetTH1D(Name+"_Tau_Mass_Inclusive","Tau_Mass_Inclusive",170,-0.2,1.5,"PFTau mass","Events");
 	Tau_Mass_sq_Inclusive=HConfig.GetTH1D(Name+"_Tau_Mass_sq_Inclusive","Tau_Mass_sq_Inclusive",170,-0.05,0.05,"PFTau mass squared","Events");
@@ -360,15 +365,48 @@ void  ZToTaumuTauh::Configure(){
 	Gen_TauA1_GJ=HConfig.GetTH1D(Name+"_Gen_TauA1_GJ","Gen_TauA1_GJ",100,0,.05,"Gen_TauA1_GJ","Events");
 	Gen_TauMu_GJ=HConfig.GetTH1D(Name+"_Gen_TauMu_GJ","Gen_TauMu_GJ",100,0,.05,"Gen_TauMu_GJ","Events");
 
-	Gen_DiTau_dPhi=HConfig.GetTH1D(Name+"_Gen_DiTau_dPhi","Gen_DiTau_dPhi",256,-2*3.14159265359,2*3.14159265359,"Gen_DiTau_dPhi","Events");
+	Gen_DiTau_dPhi=HConfig.GetTH1D(Name+"_Gen_DiTau_dPhi","Gen_DiTau_dPhi",128,-3.14159265359,3.14159265359,"Gen_DiTau_dPhi","Events");
 	Gen_DiTau_Pt=HConfig.GetTH1D(Name+"_Gen_DiTau_Pt","Gen_DiTau_Pt",30,0,30,"Gen_DiTau_Pt","Events");
-	Gen_Z_Pt=HConfig.GetTH1D(Name+"_Gen_Z_Pt","Gen_Z_Pt",30,0,30,"Gen_Z_Pt","Events");
+	Gen_Z_Pt=HConfig.GetTH1D(Name+"_Gen_Z_Pt","Gen_Z_Pt",100,0,100,"Gen_Z_Pt","Events");
 	Gen_Z_M=HConfig.GetTH1D(Name+"_Gen_Z_M","Gen_Z_M",180,60,150,"Gen_Z_M","Events");
 	Gen_DiTau_PtBalance_M=HConfig.GetTH1D(Name+"_Gen_DiTau_PtBalance_M","Gen_DiTau_PtBalance_M",280,20,160,"Gen_DiTau_PtBalance_M","Events");
 	Gen_DiTau_PtBalance_dM=HConfig.GetTH1D(Name+"_Gen_DiTau_PtBalance_dM","Gen_DiTau_PtBalance_dM",100,-50,50,"Gen_DiTau_PtBalance_dM","Events");
 	Gen_TauMu_PtBalance_Pt=HConfig.GetTH1D(Name+"_Gen_TauMu_PtBalance_Pt","Gen_TauMu_PtBalance_Pt",100,-50,50,"Gen_TauMu_PtBalance_Pt","Events");
 	Gen_TauMu_PtBalance_dP=HConfig.GetTH1D(Name+"_Gen_TauMu_PtBalance_dP","Gen_TauMu_PtBalance_dP",100,-50,50,"Gen_TauMu_PtBalance_dP","Events");
 	Gen_TauA1_dP=HConfig.GetTH1D(Name+"_Gen_TauA1_dP","Gen_TauA1_dP",50,0,50,"Gen_TauA1_dP","Events");
+
+	Gen_TauA1_P=HConfig.GetTH1D(Name+"_Gen_TauA1_P","Gen_TauA1_P",75, 0,150,"Gen_TauA1_P","Events");
+	Gen_TauA1_Pt=HConfig.GetTH1D(Name+"_Gen_TauA1_Pt","Gen_TauA1_Pt",75, 0,150,"Gen_TauA1_Pt","Events");
+	Gen_TauA1_Px=HConfig.GetTH1D(Name+"_Gen_TauA1_Px","Gen_TauA1_Px",100,-100,100,"Gen_TauA1_Px","Events");
+	Gen_TauA1_Py=HConfig.GetTH1D(Name+"_Gen_TauA1_Py","Gen_TauA1_Py",100,-100,100,"Gen_TauA1_Py","Events");
+	Gen_TauA1_Pz=HConfig.GetTH1D(Name+"_Gen_TauA1_Pz","Gen_TauA1_Pz",100,-100,100,"Gen_TauA1_Pz","Events");
+	Gen_TauA1_Phi=HConfig.GetTH1D(Name+"_Gen_TauA1_Phi","Gen_TauA1_Phi",64,-3.14159265359,3.14159265359,"Gen_TauA1_Phi","Events");
+	Gen_TauA1_Eta=HConfig.GetTH1D(Name+"_Gen_TauA1_Eta","Gen_TauA1_Eta",50,-2.5, 2.5,"Gen_TauA1_Eta","Events");
+
+	Gen_TauMu_P=HConfig.GetTH1D(Name+"_Gen_TauMu_P","Gen_TauMu_P",75, 0,150,"Gen_TauMu_P","Events");
+	Gen_TauMu_Pt=HConfig.GetTH1D(Name+"_Gen_TauMu_Pt","Gen_TauMu_Pt",75, 0,150,"Gen_TauMu_Pt","Events");
+	Gen_TauMu_Px=HConfig.GetTH1D(Name+"_Gen_TauMu_Px","Gen_TauMu_Px",100,-100,100,"Gen_TauMu_Px","Events");
+	Gen_TauMu_Py=HConfig.GetTH1D(Name+"_Gen_TauMu_Py","Gen_TauMu_Py",100,-100,100,"Gen_TauMu_Py","Events");
+	Gen_TauMu_Pz=HConfig.GetTH1D(Name+"_Gen_TauMu_Pz","Gen_TauMu_Pz",100,-100,100,"Gen_TauMu_Pz","Events");
+	Gen_TauMu_Phi=HConfig.GetTH1D(Name+"_Gen_TauMu_Phi","Gen_TauMu_Phi",64,-3.14159265359,3.14159265359,"Gen_TauMu_Phi","Events");
+	Gen_TauMu_Eta=HConfig.GetTH1D(Name+"_Gen_TauMu_Eta","Gen_TauMu_Eta",50,-2.5, 2.5,"Gen_TauMu_Eta","Events");
+
+	Gen_TauA1_P_noSel=HConfig.GetTH1D(Name+"_Gen_TauA1_P_noSel","Gen_TauA1_P_noSel",75, 0,150,"Gen_TauA1_P_noSel","Events");
+	Gen_TauA1_Pt_noSel=HConfig.GetTH1D(Name+"_Gen_TauA1_Pt_noSel","Gen_TauA1_Pt_noSel",75, 0,150,"Gen_TauA1_Pt_noSel","Events");
+	Gen_TauA1_Px_noSel=HConfig.GetTH1D(Name+"_Gen_TauA1_Px_noSel","Gen_TauA1_Px_noSel",100,-100,100,"Gen_TauA1_Px_noSel","Events");
+	Gen_TauA1_Py_noSel=HConfig.GetTH1D(Name+"_Gen_TauA1_Py_noSel","Gen_TauA1_Py_noSel",100,-100,100,"Gen_TauA1_Py_noSel","Events");
+	Gen_TauA1_Pz_noSel=HConfig.GetTH1D(Name+"_Gen_TauA1_Pz_noSel","Gen_TauA1_Pz_noSel",100,-100,100,"Gen_TauA1_Pz_noSel","Events");
+	Gen_TauA1_Phi_noSel=HConfig.GetTH1D(Name+"_Gen_TauA1_Phi_noSel","Gen_TauA1_Phi_noSel",64,-3.14159265359,3.14159265359,"Gen_TauA1_Phi_noSel","Events");
+	Gen_TauA1_Eta_noSel=HConfig.GetTH1D(Name+"_Gen_TauA1_Eta_noSel","Gen_TauA1_Eta_noSel",50,-2.5, 2.5,"Gen_TauA1_Eta_noSel","Events");
+
+	Gen_TauMu_P_noSel=HConfig.GetTH1D(Name+"_Gen_TauMu_P_noSel","Gen_TauMu_P_noSel",75, 0,150,"Gen_TauMu_P_noSel","Events");
+	Gen_TauMu_Pt_noSel=HConfig.GetTH1D(Name+"_Gen_TauMu_Pt_noSel","Gen_TauMu_Pt_noSel",75, 0,150,"Gen_TauMu_Pt_noSel","Events");
+	Gen_TauMu_Px_noSel=HConfig.GetTH1D(Name+"_Gen_TauMu_Px_noSel","Gen_TauMu_Px_noSel",100,-100,100,"Gen_TauMu_Px_noSel","Events");
+	Gen_TauMu_Py_noSel=HConfig.GetTH1D(Name+"_Gen_TauMu_Py_noSel","Gen_TauMu_Py_noSel",100,-100,100,"Gen_TauMu_Py_noSel","Events");
+	Gen_TauMu_Pz_noSel=HConfig.GetTH1D(Name+"_Gen_TauMu_Pz_noSel","Gen_TauMu_Pz_noSel",100,-100,100,"Gen_TauMu_Pz_noSel","Events");
+	Gen_TauMu_Phi_noSel=HConfig.GetTH1D(Name+"_Gen_TauMu_Phi_noSel","Gen_TauMu_Phi_noSel",64,-3.14159265359,3.14159265359,"Gen_TauMu_Phi_noSel","Events");
+	Gen_TauMu_Eta_noSel=HConfig.GetTH1D(Name+"_Gen_TauMu_Eta_noSel","Gen_TauMu_Eta_noSel",50,-2.5, 2.5,"Gen_TauMu_Eta_noSel","Events");
+
 
 	Gen_TPTF_TauA1_Solution_NoSelection=HConfig.GetTH1D(Name+"_Gen_TPTF_TauA1_RightSolution_NoSelection","Gen_TPTF_TauA1_RightSolution_NoSelection",3,-0.5,2.5,"Gen_TPTF_TauA1_RightSolution_NoSelection","Events");
 	Gen_TPTF_TauA1_Solution_WithSelection=HConfig.GetTH1D(Name+"_Gen_TPTF_TauA1_RightSolution_WithSelection","Gen_TPTF_TauA1_RightSolution_WithSelection",3,-0.5,2.5,"Gen_TPTF_TauA1_RightSolution_WithSelection","Events");
@@ -417,17 +455,6 @@ void  ZToTaumuTauh::Configure(){
 	TPTF_TauA1_p_paralRes_vs_RecoGJAngle_FitSolution=HConfig.GetTH2D(Name+"_TPTF_TauA1_p_paralRes_vs_RecoGJAngle_FitSolution","TPTF_TauA1_p_paralRes_vs_RecoGJAngle_FitSolution",51, -1, 1,50,0.0,0.035,"TPTF_TauA1_p_paralRes_FitSolution","RecoGJAngle");
 	TPTF_A1_pRes_vs_RecoGJAngle=HConfig.GetTH2D(Name+"_TPTF_A1_pRes_vs_RecoGJAngle","TPTF_A1_pRes_vs_RecoGJAngle",51,-11,11,50,0.0,0.035,"TPTF_A1_pRes","RecoGJAngle");
 
-	TPTF_TauA1_p_Reco=HConfig.GetTH1D(Name+"_TPTF_TauA1_p_Reco","TPTF_TauA1_p_Reco",75, 0,150,"TPTF_TauA1_p_Reco","Events");
-	TPTF_TauA1_pt_Reco=HConfig.GetTH1D(Name+"_TPTF_TauA1_pt_Reco","TPTF_TPTF_TauA1_pt_Reco",75, 0,150,"TPTF_TauA1_pt_Reco","Events");
-	TPTF_TauA1_px_Reco=HConfig.GetTH1D(Name+"_TPTF_TauA1_px_Reco","TPTF_TPTF_TauA1_px_Reco",100,-100,100,"TPTF_TauA1_px_Reco","Events");
-	TPTF_TauA1_py_Reco=HConfig.GetTH1D(Name+"_TPTF_TauA1_py_Reco","TPTF_TPTF_TauA1_py_Reco",100,-100,100,"TPTF_TauA1_py_Reco","Events");
-	TPTF_TauA1_pz_Reco=HConfig.GetTH1D(Name+"_TPTF_TauA1_pz_Reco","TPTF_TPTF_TauA1_pz_Reco",100,-100,100,"TPTF_TauA1_pz_Reco","Events");
-	TPTF_TauA1_p_Gen=HConfig.GetTH1D(Name+"_TPTF_TauA1_p_Gen","TPTF_TauA1_p_Gen",75, 0,150,"TPTF_TauA1_p_Gen","Events");
-	TPTF_TauA1_pt_Gen=HConfig.GetTH1D(Name+"_TPTF_TauA1_pt_Gen","TPTF_TauA1_pt_Gen",75, 0,150,"TPTF_TauA1_pt_Gen","Events");
-	TPTF_TauA1_px_Gen=HConfig.GetTH1D(Name+"_TPTF_TauA1_px_Gen","TPTF_TauA1_px_Gen",100,-100,100,"TPTF_TauA1_px_Gen","Events");
-	TPTF_TauA1_py_Gen=HConfig.GetTH1D(Name+"_TPTF_TauA1_py_Gen","TPTF_TauA1_py_Gen",100,-100,100,"TPTF_TauA1_py_Gen","Events");
-	TPTF_TauA1_pz_Gen=HConfig.GetTH1D(Name+"_TPTF_TauA1_pz_Gen","TPTF_TauA1_pz_Gen",100,-100,100,"TPTF_TauA1_pz_Gen","Events");
-
 	TPTF_TauA1_pxsq_Reco=HConfig.GetTH1D(Name+"_TPTF_TauA1_pxsq_Reco","TPTF_TauA1_pxsq_Reco",100,0,4000,"TPTF_TauA1_pxsq_Reco","Events");
 	TPTF_TauA1_pysq_Reco=HConfig.GetTH1D(Name+"_TPTF_TauA1_pysq_Reco","TPTF_TauA1_pysq_Reco",100,0,4000,"TPTF_TauA1_pysq_Reco","Events");
 	TPTF_TauA1_pzsq_Reco=HConfig.GetTH1D(Name+"_TPTF_TauA1_pzsq_Reco","TPTF_TauA1_pzsq_Reco",100,0,4000,"TPTF_TauA1_pzsq_Reco","Events");
@@ -463,7 +490,6 @@ void  ZToTaumuTauh::Configure(){
 	Est_Z_Energy_alwaysMinus=HConfig.GetTH1D(Name+"_Est_Z_Energy_alwaysMinus","Est_Z_Energy_alwaysMinus",100,0,1000,"Est_Z_Energy_alwaysMinus","Events");
 	Est_Z_EnergyRes_alwaysMinus=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_alwaysMinus","Est_Z_EnergyRes_alwaysMinus",100,-100,100,"Est_Z_EnergyRes_alwaysMinus","Events");
 
-
 	Est_TauMu_PtRes_wTruth2=HConfig.GetTH1D(Name+"_Est_TauMu_PtRes_wTruth2","Est_TauMu_PtRes_wTruth2",100,-50,50,"Est_TauMu_PtRes_wTruth2","Events");
 	Est_Z_EnergyRes_wTruth2=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_wTruth2","Est_Z_EnergyRes_wTruth2",100,-100,100,"Est_Z_EnergyRes_wTruth2","Events");
 	Est_Z_EnergyRes_alwaysMinus2=HConfig.GetTH1D(Name+"_Est_Z_EnergyRes_alwaysMinus2","Est_Z_EnergyRes_alwaysMinus2",100,-100,100,"Est_Z_EnergyRes_alwaysMinus2","Events");
@@ -478,20 +504,18 @@ void  ZToTaumuTauh::Configure(){
 	Est_TauMu_wMET_EtaRes=HConfig.GetTH1D(Name+"_Est_TauMu_wMET_EtaRes","Est_TauMu_wMET_EtaRes",100,-5,5,"Est_TauMu_wMET_EtaRes","Events");
 
 	Est_Z_wMET_PtRes=HConfig.GetTH1D(Name+"_Est_Z_wMET_PtRes","Est_Z_wMET_PtRes",100,-40,40,"Est_Z_wMET_PtRes","Events");
-	Est_Z_wMET_PhiRes=HConfig.GetTH1D(Name+"_Est_Z_wMET_PhiRes","Est_Z_wMET_PhiRes",100,-7,7,"Est_Z_wMET_PhiRes","Events");
+	Est_Z_wMET_PhiRes=HConfig.GetTH1D(Name+"_Est_Z_wMET_PhiRes","Est_Z_wMET_PhiRes",64,-3.14159265359,3.14159265359,"Est_Z_wMET_PhiRes","Events");
 
 	//DiTau Reco
+
 	Reco_ZMass=HConfig.GetTH1D(Name+"_Reco_ZMass","Reco_ZMass",180,60,150,"Reco_ZMass","Events");
 	Reco_ZMass_UnboostedGenZ=HConfig.GetTH1D(Name+"_Reco_ZMass_UnboostedGenZ","Reco_ZMass_UnboostedGenZ",180,60,150,"Reco_ZMass_UnboostedGenZ","Events");
 	Reco_EventFit_Solution=HConfig.GetTH1D(Name+"_Reco_EventFit_Solution","Reco_EventFit_Solution",5,-2.5,2.5,"Reco_EventFit_Solution","Events");
 	Reco_A1Fit_Solution=HConfig.GetTH1D(Name+"_Reco_A1Fit_Solution","Reco_A1Fit_Solution",5,-2.5,2.5,"Reco_A1Fit_Solution","Events");
-	Reco_Chi2=HConfig.GetTH1D(Name+"_Reco_Chi2","Reco_Chi2",30,0,30,"Reco_Chi2","Events");
-	Reco_Chi2_FitSolutionOnly=HConfig.GetTH1D(Name+"_Reco_Chi2_FitSolutionOnly","Reco_Chi2_FitSolutionOnly",30,0,30,"Reco_Chi2_FitSolutionOnly","Events");
 	Reco_Chi2_FitSolutionOnlyLargeScale=HConfig.GetTH1D(Name+"_Reco_Chi2_FitSolutionOnlyLargeScale","Reco_Chi2_FitSolutionOnlyLargeScale",100,0,500000,"Reco_Chi2_FitSolutionOnlyLargeScale","Events");
 	Reco_ConstrainedDeltaSum=HConfig.GetTH1D(Name+"_Reco_ConstrainedDeltaSum","Reco_ConstrainedDeltaSum",150,0,300,"Reco_ConstrainedDeltaSum","Events");
 	Reco_ConstrainedDeltaMass=HConfig.GetTH1D(Name+"_Reco_ConstrainedDeltaMass","Reco_ConstrainedDeltaMass",100,0,40,"Reco_ConstrainedDeltaMass","Events");
 	Reco_ConstrainedDeltaPt=HConfig.GetTH1D(Name+"_Reco_ConstrainedDeltaPt","Reco_ConstrainedDeltaPt",100,0,1,"Reco_ConstrainedDeltaPt","Events");
-	Reco_NIter=HConfig.GetTH1D(Name+"_Reco_NIter","Reco_NIter",100,0,100,"Reco_NIter","Events");
 	Reco_TauMu_DeltaPX_FitImpact=HConfig.GetTH1D(Name+"_Reco_TauMu_DeltaPX_FitImpact","Reco_TauMu_DeltaPX_FitImpact",100,-30,30,"Reco_TauMu_DeltaPX_FitImpact","Events");
 	Reco_TauMu_DeltaPY_FitImpact=HConfig.GetTH1D(Name+"_Reco_TauMu_DeltaPY_FitImpact","Reco_TauMu_DeltaPY_FitImpact",100,-30,30,"Reco_TauMu_DeltaPY_FitImpact","Events");
 	Reco_TauMu_DeltaPZ_FitImpact=HConfig.GetTH1D(Name+"_Reco_TauMu_DeltaPZ_FitImpact","Reco_TauMu_DeltaPZ_FitImpact",100,-30,30,"Reco_TauMu_DeltaPZ_FitImpact","Events");
@@ -510,12 +534,11 @@ void  ZToTaumuTauh::Configure(){
 	Reco_PtRes_TauMu_AmbPoint12=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_AmbPoint12","Reco_PtRes_TauMu_AmbPoint12",100,-50,50,"Reco_PtRes_TauMu_AmbPoint12","Events");
 	Reco_PtRes_TauMu_AmbPoint1=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_AmbPoint1","Reco_PtRes_TauMu_AmbPoint1",100,-50,50,"Reco_PtRes_TauMu_AmbPoint1","Events");
 
-	Reco_dPhi_TauMuTauA1_AfterFit=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_AfterFit","Reco_dPhi_TauMuTauA1_AfterFit",100,-7,7,"Reco_dPhi_TauMuTauA1_AfterFit","Events");
-	Reco_dPhi_TauMuTauA1_BeforeFit=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_BeforeFit","Reco_dPhi_TauMuTauA1_BeforeFit",100,-7,7,"Reco_dPhi_TauMuTauA1_BeforeFit","Events");
+	Reco_dPhi_TauMuTauA1_AfterFit=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_AfterFit","Reco_dPhi_TauMuTauA1_AfterFit",64,-3.14159265359,3.14159265359,"Reco_dPhi_TauMuTauA1_AfterFit","Events");
+	Reco_dPhi_TauMuTauA1_BeforeFit=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_BeforeFit","Reco_dPhi_TauMuTauA1_BeforeFit",64,-3.14159265359,3.14159265359,"Reco_dPhi_TauMuTauA1_BeforeFit","Events");
 
-	Reco_dPhi_TauMuTauA1_AfterFit_lowBoost=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_AfterFit_lowBoost","Reco_dPhi_TauMuTauA1_AfterFit_lowBoost",100,-7,7,"Reco_dPhi_TauMuTauA1_AfterFit_lowBoost","Events");
-	Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost","Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost",100,-7,7,"Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost","Events");
-
+	Reco_dPhi_TauMuTauA1_AfterFit_lowBoost=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_AfterFit_lowBoost","Reco_dPhi_TauMuTauA1_AfterFit_lowBoost",64,-3.14159265359,3.14159265359,"Reco_dPhi_TauMuTauA1_AfterFit_lowBoost","Events");
+	Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost","Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost",64,-3.14159265359,3.14159265359,"Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost","Events");
 
 	Reco_PtRes_TauA1_NoFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_NoFit","Reco_PtRes_TauA1_NoFit",100,-50,50,"Reco_PtRes_TauA1_NoFit","Events");
 	Reco_PtRes_TauA1_AmbPoint0_NoFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_AmbPoint0_NoFit","Reco_PtRes_TauA1_AmbPoint0_NoFit",100,-50,50,"Reco_PtRes_TauA1_AmbPoint0_NoFit","Events");
@@ -527,7 +550,31 @@ void  ZToTaumuTauh::Configure(){
 	Reco_PhiRes_TauMu_PreFit=HConfig.GetTH1D(Name+"_Reco_PhiRes_TauMu_PreFit","Reco_PhiRes_TauMu_PreFit",64,-2*3.14159265359,2*3.14159265359,"Reco_PhiRes_TauMu_PreFit","Events");
 	Reco_ThetaRes_TauMu_PreFit=HConfig.GetTH1D(Name+"_Reco_ThetaRes_TauMu_PreFit","Reco_ThetaRes_TauMu_PreFit",64,-2*3.14159265359,2*3.14159265359,"Reco_ThetaRes_TauMu_PreFit","Events");
 
-	Reco_ZMass_MassScan=HConfig.GetTH1D(Name+"_Reco_ZMass_MassScan","Reco_ZMass_MassScan",50,0,250,"Reco_ZMass_MassScan","Events");
+	Reco_TauA1_P=HConfig.GetTH1D(Name+"_Reco_TauA1_P","Reco_TauA1_P",75, 0,150,"Reco_TauA1_P","Events");
+	Reco_TauA1_Pt=HConfig.GetTH1D(Name+"_Reco_TauA1_Pt","Reco_TauA1_Pt",75, 0,150,"Reco_TauA1_Pt","Events");
+	Reco_TauA1_Px=HConfig.GetTH1D(Name+"_Reco_TauA1_Px","Reco_TauA1_Px",100,-100,100,"Reco_TauA1_Px","Events");
+	Reco_TauA1_Py=HConfig.GetTH1D(Name+"_Reco_TauA1_Py","Reco_TauA1_Py",100,-100,100,"Reco_TauA1_Py","Events");
+	Reco_TauA1_Pz=HConfig.GetTH1D(Name+"_Reco_TauA1_Pz","Reco_TauA1_Pz",100,-100,100,"Reco_TauA1_Pz","Events");
+	Reco_TauA1_Phi=HConfig.GetTH1D(Name+"_Reco_TauA1_Phi","Reco_TauA1_Phi",64,-3.14159265359,3.14159265359,"Reco_TauA1_Phi","Events");
+	Reco_TauA1_Eta=HConfig.GetTH1D(Name+"_Reco_TauA1_eta","Reco_TauA1_Eta",50,-2.5,2.5,"Reco_TauA1_Eta","Events");
+
+	Reco_TauMu_P=HConfig.GetTH1D(Name+"_Reco_TauMu_P","Reco_TauMu_P",75, 0,150,"Reco_TauMu_P","Events");
+	Reco_TauMu_Pt=HConfig.GetTH1D(Name+"_Reco_TauMu_Pt","Reco_TauMu_Pt",75, 0,150,"Reco_TauMu_Pt","Events");
+	Reco_TauMu_Px=HConfig.GetTH1D(Name+"_Reco_TauMu_Px","Reco_TauMu_Px",100,-100,100,"Reco_TauMu_Px","Events");
+	Reco_TauMu_Py=HConfig.GetTH1D(Name+"_Reco_TauMu_Py","Reco_TauMu_Py",100,-100,100,"Reco_TauMu_Py","Events");
+	Reco_TauMu_Pz=HConfig.GetTH1D(Name+"_Reco_TauMu_Pz","Reco_TauMu_Pz",100,-100,100,"Reco_TauMu_Pz","Events");
+	Reco_TauMu_Phi=HConfig.GetTH1D(Name+"_Reco_TauMu_Phi","Reco_TauMu_Phi",64,-3.14159265359,3.14159265359,"Reco_TauMu_Phi","Events");
+	Reco_TauMu_Eta=HConfig.GetTH1D(Name+"_Reco_TauMu_eta","Reco_TauMu_Eta",50,-2.5,2.5,"Reco_TauMu_Eta","Events");
+
+	Reco_Z_Px=HConfig.GetTH1D(Name+"_Reco_Z_Px","Reco_Z_Px",100,-100,100,"Reco_Z_Px","Events");
+	Reco_Z_Py=HConfig.GetTH1D(Name+"_Reco_Z_Py","Reco_Z_Py",100,-100,100,"Reco_Z_Py","Events");
+	Reco_Z_Pz=HConfig.GetTH1D(Name+"_Reco_Z_Pz","Reco_Z_Pz",100,-100,100,"Reco_Z_Pz","Events");
+	Reco_Z_Pt=HConfig.GetTH1D(Name+"_Reco_Z_Pt","Reco_Z_Pt",100,0,100,"Reco_Z_Pt","Events");
+	Reco_Z_PtRes=HConfig.GetTH1D(Name+"_Reco_Z_PtRes","Reco_Z_PtRes",100,-100,100,"Reco_Z_PtRes","Events");
+	Reco_Z_Phi=HConfig.GetTH1D(Name+"_Reco_Z_Phi","Reco_Z_Phi",64,-3.14159265359,3.14159265359,"Reco_Z_Phi","Events");
+	Reco_Z_Eta=HConfig.GetTH1D(Name+"_Reco_Z_Eta","Reco_Z_Eta",100,-10,10,"Reco_Z_Eta","Events");
+
+	Reco_ZMass_MassScan=HConfig.GetTH1D(Name+"_Reco_ZMass_MassScan","Reco_ZMass_MassScan",125,0,250,"Reco_ZMass_MassScan","Events");
 	Reco_ZMass_MassScanUnboosted=HConfig.GetTH1D(Name+"_Reco_ZMass_MassScanUnboosted","Reco_ZMass_MassScanUnboosted",50,0,250,"Reco_ZMass_MassScanUnboosted","Events");
 	Reco_ZMasswithProbWeight_MassScan=HConfig.GetTH1D(Name+"_Reco_ZMasswithProbWeight_MassScan","Reco_ZMasswithProbWeight_MassScan",50,0,250,"Reco_ZMasswithProbWeight_MassScan","Events");
 	Reco_ProbStack_MassScan=HConfig.GetTH1D(Name+"_Reco_ProbStack_MassScan","Reco_ProbStack_MassScan",50,0,1,"Reco_ProbStack_MassScan","Events");
@@ -538,6 +585,149 @@ void  ZToTaumuTauh::Configure(){
 
 	Reco_TauMu_ResCosTheta=HConfig.GetTH1D(Name+"_RecoTaumu_ResCosTheta","RecoTaumu_ResCosTheta",31,-2,2,"RecoTaumu_ResCosTheta","Events");
 	Reco_TauMu_DeltaPhi_FitImpact=HConfig.GetTH1D(Name+"_Reco_TauMu_DeltaPhi_FitImpact","Reco_TauMu_DeltaPhi_FitImpact",31,-3.14159265359*2,3.14159265359*2,"Reco_TauMu_DeltaPhi_FitImpact","Events");
+
+	Reco_Z_PhiRes=HConfig.GetTH1D(Name+"_Reco_Z_PhiRes","Reco_Z_PhiRes",64,-3.14159265359,3.14159265359,"Reco_Z_PhiRes","Events");
+	Reco_Z_PhiRes_noAmb=HConfig.GetTH1D(Name+"_Reco_Z_PhiRes_noAmb","Reco_Z_PhiRes_noAmb",64,-3.14159265359,3.14159265359,"Reco_Z_PhiRes_noAmb","Events");
+	Reco_Z_PhiRes_wAmb=HConfig.GetTH1D(Name+"_Reco_Z_PhiRes_wAmb","Reco_Z_PhiRes_wAmb",64,-3.14159265359,3.14159265359,"Reco_Z_PhiRes_wAmb","Events");
+	Reco_Z_PhiRes_pickedrightAmb=HConfig.GetTH1D(Name+"_Reco_Z_PhiRes_pickedrightAmb","Reco_Z_PhiRes_pickedrightAmb",64,-3.14159265359,3.14159265359,"Reco_Z_PhiRes_pickedrightAmb","Events");
+	Reco_Z_PhiRes_pickedwrongAmb=HConfig.GetTH1D(Name+"_Reco_Z_PhiRes_pickedwrongAmb","Reco_Z_PhiRes_pickedwrongAmb",64,-3.14159265359,3.14159265359,"Reco_Z_PhiRes_pickedwrongAmb","Events");
+	Reco_Z_EtaRes=HConfig.GetTH1D(Name+"_Reco_Z_EtaRes","Reco_Z_EtaRes",100,-10,10,"Reco_Z_EtaRes","Events");
+	Reco_Z_EtaRes_noAmb=HConfig.GetTH1D(Name+"_Reco_Z_EtaRes_noAmb","Reco_Z_EtaRes_noAmb",100,-10,10,"Reco_Z_EtaRes_noAmb","Events");
+	Reco_Z_EtaRes_wAmb=HConfig.GetTH1D(Name+"_Reco_Z_EtaRes_wAmb","Reco_Z_EtaRes_wAmb",100,-10,10,"Reco_Z_EtaRes_wAmb","Events");
+	Reco_Z_EtaRes_pickedrightAmb=HConfig.GetTH1D(Name+"_Reco_Z_EtaRes_pickedrightAmb","Reco_Z_EtaRes_pickedrightAmb",100,-10,10,"Reco_Z_EtaRes_pickedrightAmb","Events");
+	Reco_Z_EtaRes_pickedwrongAmb=HConfig.GetTH1D(Name+"_Reco_Z_EtaRes_pickedwrongAmb","Reco_Z_EtaRes_pickedwrongAmb",100,-10,10,"Reco_Z_EtaRes_pickedwrongAmb","Events");
+	Reco_Z_PRes=HConfig.GetTH1D(Name+"_Reco_Z_PRes","Reco_Z_PRes",100,-100,100,"Reco_Z_PRes","Events");
+	Reco_Z_PRes_noAmb=HConfig.GetTH1D(Name+"_Reco_Z_PRes_noAmb","Reco_Z_PRes_noAmb",100,-100,100,"Reco_Z_PRes_noAmb","Events");
+	Reco_Z_PRes_wAmb=HConfig.GetTH1D(Name+"_Reco_Z_PRes_wAmb","Reco_Z_PRes_wAmb",100,-100,100,"Reco_Z_PRes_wAmb","Events");
+	Reco_Z_PRes_pickedrightAmb=HConfig.GetTH1D(Name+"_Reco_Z_PRes_pickedrightAmb","Reco_Z_PRes_pickedrightAmb",100,-100,100,"Reco_Z_PRes_pickedrightAmb","Events");
+	Reco_Z_PRes_pickedwrongAmb=HConfig.GetTH1D(Name+"_Reco_Z_PRes_pickedwrongAmb","Reco_Z_PRes_pickedwrongAmb",100,-100,100,"Reco_Z_PRes_pickedwrongAmb","Events");
+	Reco_NIter=HConfig.GetTH1D(Name+"_Reco_NIter","Reco_NIter",100,0,100,"Reco_NIter all ambiguities","Events");
+	Reco_NIter_noAmb=HConfig.GetTH1D(Name+"_Reco_NIter_noAmb","Reco_NIter_noAmb",100,0,100,"Reco_NIter_noAmb","Events");
+	Reco_NIter_wAmb=HConfig.GetTH1D(Name+"_Reco_NIter_wAmb","Reco_NIter_wAmb",100,0,100,"Reco_NIter_wAmb","Events");
+	Reco_NIter_pickedrightAmb=HConfig.GetTH1D(Name+"_Reco_NIter_pickedrightAmb","Reco_NIter_pickedrightAmb",100,0,100,"Reco_NIter_pickedrightAmb","Events");
+	Reco_NIter_pickedwrongAmb=HConfig.GetTH1D(Name+"_Reco_NIter_pickedwrongAmb","Reco_NIter_pickedwrongAmb",100,0,100,"Reco_NIter_pickedwrongAmb","Events");
+	Reco_Chi2=HConfig.GetTH1D(Name+"_Reco_Chi2","Reco_Chi2",100,0,1,"Reco_Chi2","Events");
+	Reco_Chi2_noAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_noAmb","Reco_Chi2_noAmb",100,0,1,"Reco_Chi2_noAmb","Events");
+	Reco_Chi2_wAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_wAmb","Reco_Chi2_wAmb",100,0,1,"Reco_Chi2_wAmb","Events");
+	Reco_Chi2_rightAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_rightAmb","Reco_Chi2_rightAmb",100,0,1,"Reco_Chi2_rightAmb","Events");
+	Reco_Chi2_wrongAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_wrongAmb","Reco_Chi2_wrongAmb",100,0,1,"Reco_Chi2_wrongAmb","Events");
+	Reco_Chi2_pickedrightAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_pickedrightAmb","Reco_Chi2_pickedrightAmb",100,0,1,"Reco_Chi2_pickedrightAmb","Events");
+	Reco_Chi2_pickedwrongAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_pickedwrongAmb","Reco_Chi2_pickedwrongAmb",100,0,1,"Reco_Chi2_pickedwrongAmb","Events");
+	Reco_Chi2_orig=HConfig.GetTH1D(Name+"_Reco_Chi2_orig","Reco_Chi2_orig",100,0,1,"Reco_Chi2_orig","Events");
+	Reco_Chi2_orig_noAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_orig_noAmb","Reco_Chi2_orig_noAmb",100,0,1,"Reco_Chi2_orig_noAmb","Events");
+	Reco_Chi2_orig_wAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_orig_wAmb","Reco_Chi2_orig_wAmb",100,0,1,"Reco_Chi2_orig_wAmb","Events");
+	Reco_Chi2_orig_rightAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_orig_rightAmb","Reco_Chi2_orig_rightAmb",100,0,1,"Reco_Chi2_orig_rightAmb","Events");
+	Reco_Chi2_orig_wrongAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_orig_wrongAmb","Reco_Chi2_orig_wrongAmb",100,0,1,"Reco_Chi2_orig_wrongAmb","Events");
+	Reco_Chi2_orig_pickedrightAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_orig_pickedrightAmb","Reco_Chi2_orig_pickedrightAmb",100,0,1,"Reco_Chi2_orig_pickedrightAmb","Events");
+	Reco_Chi2_orig_pickedwrongAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_orig_pickedwrongAmb","Reco_Chi2_orig_pickedwrongAmb",100,0,1,"Reco_Chi2_orig_pickedwrongAmb","Events");
+	Reco_Chi2_SC=HConfig.GetTH1D(Name+"_Reco_Chi2_SC","Reco_Chi2_SC",100,0,1,"Reco_Chi2_SC","Events");
+	Reco_Chi2_SC_noAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_SC_noAmb","Reco_Chi2_SC_noAmb",100,0,1,"Reco_Chi2_SC_noAmb","Events");
+	Reco_Chi2_SC_wAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_SC_wAmb","Reco_Chi2_SC_wAmb",100,0,1,"Reco_Chi2_SC_wAmb","Events");
+	Reco_Chi2_SC_rightAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_SC_rightAmb","Reco_Chi2_SC_rightAmb",100,0,1,"Reco_Chi2_SC_rightAmb","Events");
+	Reco_Chi2_SC_wrongAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_SC_wrongAmb","Reco_Chi2_SC_wrongAmb",100,0,1,"Reco_Chi2_SC_wrongAmb","Events");
+	Reco_Chi2_SC_pickedrightAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_SC_pickedrightAmb","Reco_Chi2_SC_pickedrightAmb",100,0,1,"Reco_Chi2_SC_pickedrightAmb","Events");
+	Reco_Chi2_SC_pickedwrongAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_SC_pickedwrongAmb","Reco_Chi2_SC_pickedwrongAmb",100,0,1,"Reco_Chi2_SC_pickedwrongAmb","Events");
+	Reco_Chi2_HC=HConfig.GetTH1D(Name+"_Reco_Chi2_HC","Reco_Chi2_HC",100,0,1,"Reco_Chi2_HC","Events");
+	Reco_Chi2_HC_noAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_HC_noAmb","Reco_Chi2_HC_noAmb",100,0,1,"Reco_Chi2_HC_noAmb","Events");
+	Reco_Chi2_HC_wAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_HC_wAmb","Reco_Chi2_HC_wAmb",100,0,1,"Reco_Chi2_HC_wAmb","Events");
+	Reco_Chi2_HC_rightAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_HC_rightAmb","Reco_Chi2_HC_rightAmb",100,0,1,"Reco_Chi2_HC_rightAmb","Events");
+	Reco_Chi2_HC_wrongAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_HC_wrongAmb","Reco_Chi2_HC_wrongAmb",100,0,1,"Reco_Chi2_HC_wrongAmb","Events");
+	Reco_Chi2_HC_pickedrightAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_HC_pickedrightAmb","Reco_Chi2_HC_pickedrightAmb",100,0,1,"Reco_Chi2_HC_pickedrightAmb","Events");
+	Reco_Chi2_HC_pickedwrongAmb=HConfig.GetTH1D(Name+"_Reco_Chi2_HC_pickedwrongAmb","Reco_Chi2_HC_pickedwrongAmb",100,0,1,"Reco_Chi2_HC_pickedwrongAmb","Events");
+
+	Reco_Chi2_diff=HConfig.GetTH1D(Name+"_Reco_Chi2_diff","Reco_Chi2_diff",100,-2,2,"Reco_Chi2_diff","Events");
+	Reco_Chi2_orig_diff=HConfig.GetTH1D(Name+"_Reco_Chi2_orig_diff","Reco_Chi2_orig_diff",100,-2,2,"Reco_Chi2_orig_diff","Events");
+	Reco_Chi2_HC_diff=HConfig.GetTH1D(Name+"_Reco_Chi2_HC_diff","Reco_Chi2_HC_diff",100,-1,1,"Reco_Chi2_HC_diff","Events");
+	Reco_Chi2_SC_diff=HConfig.GetTH1D(Name+"_Reco_Chi2_SC_diff","Reco_Chi2_SC_diff",100,-2,2,"Reco_Chi2_SC_diff","Events");
+	Reco_Chi2_origplusSC_diff=HConfig.GetTH1D(Name+"_Reco_Chi2_origplusSC_diff","Reco_Chi2_origplusSC_diff",100,-2,2,"Reco_Chi2_origplusSC_diff","Events");
+
+	Reco_Chi2_diff_vs_correctAssignment=HConfig.GetTH2D(Name+"_Reco_Chi2_diff_vs_correctAssignment","Reco_Chi2_diff_vs_correctAssignment",40,-2,2,2,-0.5,1.5,"Reco_Chi2_diff","correctAssignment");
+
+	Reco_FitSolution_byChi2_Full_vs_RightSolution=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_Full_vs_RightSolution","Reco_FitSolution_byChi2_Full_vs_RightSolution",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_Full_vs_RightSolution");
+	Reco_FitSolution_byChi2_orig_vs_RightSolution=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_orig_vs_RightSolution","Reco_FitSolution_byChi2_orig_vs_RightSolution",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_orig_vs_RightSolution");
+	Reco_FitSolution_byChi2_SC_vs_RightSolution=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_SC_vs_RightSolution","Reco_FitSolution_byChi2_SC_vs_RightSolution",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_SC_vs_RightSolution");
+	Reco_FitSolution_byChi2_HC_vs_RightSolution=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_HC_vs_RightSolution","Reco_FitSolution_byChi2_HC_vs_RightSolution",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_HC_vs_RightSolution");
+	Reco_FitSolution_byChi2_origplusSC_vs_RightSolution=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_origplusSC_vs_RightSolution","Reco_FitSolution_byChi2_origplusSC_vs_RightSolution",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_origplusSC");
+
+	//DiTau Reco with Pt recoil estimate
+
+	Reco_PtRes_TauA1_wRecoil=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_wRecoil","Reco_PtRes_TauA1_wRecoil",100,-50,50,"Reco_PtRes_TauA1_wRecoil","Events");
+	Reco_PtRes_TauA1_wRecoil_AmbZero=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_wRecoil_AmbZero","Reco_PtRes_TauA1_wRecoil_AmbZero",100,-50,50,"Reco_PtRes_TauA1_wRecoil_AmbZero","Events");
+	Reco_PtRes_TauA1_wRecoil_wAmb=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_wRecoil_wAmb","Reco_PtRes_TauA1_wRecoil_wAmb",100,-50,50,"Reco_PtRes_TauA1_wRecoil_wAmb","Events");
+	Reco_PtRes_TauMu_wRecoil=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_wRecoil","Reco_PtRes_TauMu_wRecoil",100,-50,50,"Reco_PtRes_TauMu_wRecoil","Events");
+	Reco_PtRes_TauMu_wRecoil_AmbZero=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_wRecoil_AmbZero","Reco_PtRes_TauMu_wRecoil_AmbZero",100,-50,50,"Reco_PtRes_TauMu_wRecoil_AmbZero","Events");
+	Reco_PtRes_TauMu_wRecoil_wAmb=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_wRecoil_wAmb","Reco_PtRes_TauMu_wRecoil_wAmb",100,-50,50,"Reco_PtRes_TauMu_wRecoil_wAmb","Events");
+
+	Reco_PtRes_TauA1_wRecoil_PreFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauA1_wRecoil_PreFit","Reco_PtRes_TauA1_wRecoil_PreFit",100,-50,50,"Reco_PtRes_TauA1_wRecoil_PreFit","Events");
+	Reco_PtRes_TauMu_wRecoil_PreFit=HConfig.GetTH1D(Name+"_Reco_PtRes_TauMu_wRecoil_PreFit","Reco_PtRes_TauMu_wRecoil_PreFit",100,-50,50,"Reco_PtRes_TauMu_wRecoil_PreFit","Events");
+
+	Reco_dPhi_TauMuTauA1_AfterFit_wRecoil=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_AfterFit_wRecoil","Reco_dPhi_TauMuTauA1_AfterFit_wRecoil",64,-3.14159265359,3.14159265359,"Reco_dPhi_TauMuTauA1_AfterFit_wRecoil","Events");
+	Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil=HConfig.GetTH1D(Name+"_Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil","Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil",64,-3.14159265359,3.14159265359,"Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil","Events");
+
+	Reco_EventFit_Solution_wRecoil=HConfig.GetTH1D(Name+"_Reco_EventFit_Solution_wRecoil","Reco_EventFit_Solution_wRecoil",5,-2.5,2.5,"Reco_EventFit_Solution_wRecoil","Events");
+	Reco_Chi2_FitSolutionOnly_wRecoil=HConfig.GetTH1D(Name+"_Reco_Chi2_FitSolutionOnly_wRecoil","Reco_Chi2_FitSolutionOnly_wRecoil",30,0,30,"Reco_Chi2_FitSolutionOnly_wRecoil","Events");
+	Reco_Chi2_Full_wRecoil=HConfig.GetTH1D(Name+"_Reco_Chi2_Full_wRecoil","Reco_Chi2_Full_wRecoil",50,0,1,"Reco_Chi2_Full_wRecoil","Events");
+	Reco_Chi2_Orig_wRecoil=HConfig.GetTH1D(Name+"_Reco_Chi2_Orig_wRecoil","Reco_Chi2_Orig_wRecoil",50,0,1,"Reco_Chi2_Orig_wRecoil","Events");
+	Reco_Chi2_SC_wRecoil=HConfig.GetTH1D(Name+"_Reco_Chi2_SC_wRecoil","Reco_Chi2_SC_wRecoil",50,0,1,"Reco_Chi2_SC_wRecoil","Events");
+	Reco_Chi2_HC_wRecoil=HConfig.GetTH1D(Name+"_Reco_Chi2_HC_wRecoil","Reco_Chi2_HC_wRecoil",50,0,1,"Reco_Chi2_HC_wRecoil","Events");
+	Reco_Chi2_OrigProb_wRecoil=HConfig.GetTH1D(Name+"_Reco_Chi2_OrigProb_wRecoil","Reco_Chi2_OrigProb_wRecoil",50,0,1,"Reco_Chi2_OrigProb_wRecoil","Events");
+	Reco_ZMass_wRecoil=HConfig.GetTH1D(Name+"_Reco_ZMass_wRecoil","Reco_ZMass_wRecoil",180,60,150,"Reco_ZMass_wRecoil","Events");
+	Reco_NIter_wRecoil=HConfig.GetTH1D(Name+"_Reco_NIter_wRecoil","Reco_NIter_wRecoil",100,0,100,"Reco_NIter_wRecoil","Events");
+	Reco_Z_Energy_Res_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_Energy_Res_wRecoil","Reco_Z_Energy_Res_wRecoil",100,-100,100,"Reco_Z_Energy_Res_wRecoil","Events");
+
+	Reco_TauA1_ptRes_vs_ptGen_wRecoil=HConfig.GetTH2D(Name+"_Reco_TauA1_ptRes_vs_ptGen_wRecoil","Reco_TauA1_ptRes_vs_ptGen_wRecoil",100,-50,50,50,0.0,50,"Reco_TauA1_ptRes_wRecoil","ptGen");
+	Reco_TauA1_ptRes_vs_ptReco_wRecoil=HConfig.GetTH2D(Name+"_Reco_TauA1_ptRes_vs_ptReco_wRecoil","Reco_TauA1_ptRes_vs_ptReco_wRecoil",100,-50,50,50,0.0,100,"Reco_TauA1_ptRes_wRecoil","ptReco");
+
+	Reco_TauMu_ptRes_vs_ptGen_wRecoil=HConfig.GetTH2D(Name+"_Reco_TauMu_ptRes_vs_ptGen_wRecoil","Reco_TauMu_ptRes_vs_ptGen_wRecoil",100,-50,50,50,0.0,50,"Reco_TauMu_ptRes_wRecoil","ptGen");
+	Reco_TauMu_ptRes_vs_ptReco_wRecoil=HConfig.GetTH2D(Name+"_Reco_TauMu_ptRes_vs_ptReco_wRecoil","Reco_TauMu_ptRes_vs_ptReco_wRecoil",100,-50,50,50,0.0,100,"Reco_TauMu_ptRes_wRecoil","ptReco");
+
+	Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr=HConfig.GetTH2D(Name+"_Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr","Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr",100,-50,50,50,0.0,100,"Reco_TauA1_ptRes_wRecoilCorr","ptReco");
+	Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr=HConfig.GetTH2D(Name+"_Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr","Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr",100,-50,50,50,0.0,100,"Reco_TauMu_ptRes_wRecoilCorr","ptReco");
+
+	Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_wAmb=HConfig.GetTH2D(Name+"_Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_wAmb","Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_wAmb",100,-50,50,50,0.0,100,"Reco_TauA1_ptRes_wRecoilCorr_wAmb","ptReco");
+	Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_AmbZero=HConfig.GetTH2D(Name+"_Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_AmbZero","Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_AmbZero",100,-50,50,50,0.0,100,"Reco_TauA1_ptRes_wRecoilCorr_AmbZero","ptReco");
+
+	Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_wAmb=HConfig.GetTH2D(Name+"_Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_wAmb","Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_wAmb",100,-50,50,50,0.0,100,"Reco_TauMu_ptRes_wRecoilCorr_wAmb","ptReco");
+	Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_AmbZero=HConfig.GetTH2D(Name+"_Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_AmbZero","Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_AmbZero",100,-50,50,50,0.0,100,"Reco_TauMu_ptRes_wRecoilCorr_AmbZero","ptReco");
+
+	Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit=HConfig.GetTH2D(Name+"_Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit","Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit",100,-50,50,50,0.0,100,"Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit","ptReco");
+	Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit=HConfig.GetTH2D(Name+"_Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit","Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit",100,-50,50,50,0.0,100,"Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit","ptReco");
+	Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit=HConfig.GetTH2D(Name+"_Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit","Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit",100,-50,50,50,0.0,100,"Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit","ptReco");
+	Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit=HConfig.GetTH2D(Name+"_Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit","Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit",100,-50,50,50,0.0,100,"Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit","ptReco");
+	Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit=HConfig.GetTH2D(Name+"_Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit","Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit",100,-50,50,50,0.0,100,"Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit","ptReco");
+	Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit=HConfig.GetTH2D(Name+"_Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit","Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit",100,-50,50,50,0.0,100,"Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit","ptReco");
+
+	Reco_TauA1_P_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauA1_P_wRecoil","Reco_TauA1_P_wRecoil",75, 0,150,"Reco_TauA1_P_wRecoil","Events");
+	Reco_TauA1_Pt_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauA1_Pt_wRecoil","Reco_TauA1_Pt_wRecoil",75, 0,150,"Reco_TauA1_Pt_wRecoil","Events");
+	Reco_TauA1_Px_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauA1_Px_wRecoil","Reco_TauA1_Px_wRecoil",100,-100,100,"Reco_TauA1_Px_wRecoil","Events");
+	Reco_TauA1_Py_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauA1_Py_wRecoil","Reco_TauA1_Py_wRecoil",100,-100,100,"Reco_TauA1_Py_wRecoil","Events");
+	Reco_TauA1_Pz_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauA1_Pz_wRecoil","Reco_TauA1_Pz_wRecoil",100,-100,100,"Reco_TauA1_Pz_wRecoil","Events");
+	Reco_TauA1_Phi_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauA1_Phi_wRecoil","Reco_TauA1_Phi_wRecoil",64,-3.14159265359,3.14159265359,"Reco_TauA1_Phi_wRecoil","Events");
+	Reco_TauA1_Eta_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauA1_Eta_wRecoil","Reco_TauA1_Eta_wRecoil",50,-2.5,2.5,"Reco_TauA1_Eta_wRecoil","Events");
+
+	Reco_TauMu_P_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauMu_P_wRecoil","Reco_TauMu_P_wRecoil",75, 0,150,"Reco_TauMu_P_wRecoil","Events");
+	Reco_TauMu_Pt_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauMu_Pt_wRecoil","Reco_TauMu_Pt_wRecoil",75, 0,150,"Reco_TauMu_Pt_wRecoil","Events");
+	Reco_TauMu_Px_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauMu_Px_wRecoil","Reco_TauMu_Px_wRecoil",100,-100,100,"Reco_TauMu_Px_wRecoil","Events");
+	Reco_TauMu_Py_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauMu_Py_wRecoil","Reco_TauMu_Py_wRecoil",100,-100,100,"Reco_TauMu_Py_wRecoil","Events");
+	Reco_TauMu_Pz_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauMu_Pz_wRecoil","Reco_TauMu_Pz_wRecoil",100,-100,100,"Reco_TauMu_Pz_wRecoil","Events");
+	Reco_TauMu_Phi_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauMu_Phi_wRecoil","Reco_TauMu_Phi_wRecoil",64,-3.14159265359,3.14159265359,"Reco_TauMu_Phi_wRecoil","Events");
+	Reco_TauMu_Eta_wRecoil=HConfig.GetTH1D(Name+"_Reco_TauMu_Eta_wRecoil","Reco_TauMu_Eta_wRecoil",50,-2.5,2.5,"Reco_TauMu_Eta_wRecoil","Events");
+
+	Reco_Z_Px_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_Px_wRecoil","Reco_Z_Px_wRecoil",100,-100,100,"Reco_Z_Px_wRecoil","Events");
+	Reco_Z_Py_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_Py_wRecoil","Reco_Z_Py_wRecoil",100,-100,100,"Reco_Z_Py_wRecoil","Events");
+	Reco_Z_Pz_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_Pz_wRecoil","Reco_Z_Pz_wRecoil",100,-100,100,"Reco_Z_Pz_wRecoil","Events");
+	Reco_Z_Pt_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_Pt_wRecoil","Reco_Z_Pt_wRecoil",100,0,100,"Reco_Z_Pt_wRecoil","Events");
+	Reco_Z_PtRes_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_PtRes_wRecoil","Reco_Z_PtRes_wRecoil",100,-100,100,"Reco_Z_PtRes_wRecoil","Events");
+	Reco_Z_Phi_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_Phi_wRecoil","Reco_Z_Phi_wRecoil",64,-3.14159265359,3.14159265359,"Reco_Z_Phi_wRecoil","Events");
+	Reco_Z_PhiRes_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_PhiRes_wRecoil","Reco_Z_PhiRes_wRecoil",64,-3.14159265359,3.14159265359,"Reco_Z_PhiRes_wRecoil","Events");
+	Reco_Z_Eta_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_Eta_wRecoil","Reco_Z_Eta_wRecoil",100,-10,10,"Reco_Z_Eta_wRecoil","Events");
+	Reco_Z_EtaRes_wRecoil=HConfig.GetTH1D(Name+"_Reco_Z_EtaRes_wRecoil","Reco_Z_EtaRes_wRecoil",100,-10,10,"Reco_Z_EtaRes_wRecoil","Events");
+
+	Reco_FitSolution_byChi2_Full_vs_RightSolution_wRecoil=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_Full_vs_RightSolution_wRecoil","Reco_FitSolution_byChi2_Full_vs_RightSolution_wRecoil",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_Full_vs_RightSolution_wRecoil");
+	Reco_FitSolution_byChi2_orig_vs_RightSolution_wRecoil=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_orig_vs_RightSolution_wRecoil","Reco_FitSolution_byChi2_orig_vs_RightSolution_wRecoil",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_orig_vs_RightSolution_wRecoil");
+	Reco_FitSolution_byChi2_SC_vs_RightSolution_wRecoil=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_SC_vs_RightSolution_wRecoil","Reco_FitSolution_byChi2_SC_vs_RightSolution_wRecoil",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_SC_vs_RightSolution_wRecoil");
+	Reco_FitSolution_byChi2_HC_vs_RightSolution_wRecoil=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_HC_vs_RightSolution_wRecoil","Reco_FitSolution_byChi2_HC_vs_RightSolution_wRecoil",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_HC_vs_RightSolution_wRecoil");
+	Reco_FitSolution_byChi2_origplusSC_vs_RightSolution_wRecoil=HConfig.GetTH2D(Name+"_Reco_FitSolution_byChi2_origplusSC_vs_RightSolution_wRecoil","Reco_FitSolution_byChi2_origplusSC_vs_RightSolution_wRecoil",3,-0.5,2.5,3,-0.5,2.5,"RightSolution","Reco_FitSolution_byChi2_origplusSC_wRecoil");
 
 	//DiTau Reco with generator information/particles
 	GenReco_ZMass=HConfig.GetTH1D(Name+"_GenReco_ZMass","GenReco_ZMass",180,60,150,"GenReco_ZMass","Events");
@@ -565,18 +755,18 @@ void  ZToTaumuTauh::Configure(){
 	TauMu_Start_PtBalance_PtRes_AfterMC=HConfig.GetTH1D(Name+"_TauMu_Start_PtBalance_PtRes_AfterMC","TauMu_Start_PtBalance_PtRes_AfterMC",100,-40,40,"TauMu_Start_PtBalance_PtRes_AfterMC","Events");
 	TauMu_Start_EventRecoil_PtRes_AfterMC=HConfig.GetTH1D(Name+"_TauMu_Start_EventRecoil_PtRes_AfterMC","TauMu_Start_EventRecoil_PtRes_AfterMC",100,-40,40,"TauMu_Start_EventRecoil_PtRes_AfterMC","Events");
 
-	TauMu_Start_dPhi_TauMuTauH_MET=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_MET","TauMu_Start_dPhi_TauMuTauH_MET",100,-7,7,"TauMu_Start_dPhi_TauMuTauH_MET","Events");
-	TauMu_Start_dPhi_TauMuTauH_EventRecoil=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_EventRecoil","TauMu_Start_dPhi_TauMuTauH_EventRecoil",100,-7,7,"TauMu_Start_dPhi_TauMuTauH_EventRecoil","Events");
-	TauMu_Start_dPhi_TauMuTauH_PtBalance=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_PtBalance","TauMu_Start_dPhi_TauMuTauH_PtBalance",100,-7,7,"TauMu_Start_dPhi_TauMuTauH_PtBalance","Events");
+	TauMu_Start_dPhi_TauMuTauH_MET=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_MET","TauMu_Start_dPhi_TauMuTauH_MET",64,-3.14159265359,3.14159265359,"TauMu_Start_dPhi_TauMuTauH_MET","Events");
+	TauMu_Start_dPhi_TauMuTauH_EventRecoil=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_EventRecoil","TauMu_Start_dPhi_TauMuTauH_EventRecoil",64,-3.14159265359,3.14159265359,"TauMu_Start_dPhi_TauMuTauH_EventRecoil","Events");
+	TauMu_Start_dPhi_TauMuTauH_PtBalance=HConfig.GetTH1D(Name+"_TauMu_Start_dPhi_TauMuTauH_PtBalance","TauMu_Start_dPhi_TauMuTauH_PtBalance",64,-3.14159265359,3.14159265359,"TauMu_Start_dPhi_TauMuTauH_PtBalance","Events");
 
 	Z_Start_MET_PtRes=HConfig.GetTH1D(Name+"_Z_Start_MET_PtRes","Z_Start_MET_PtRes",100,-40,40,"Z_Start_MET_PtRes","Events");
-	Z_Start_MET_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_MET_PhiRes","Z_Start_MET_PhiRes",100,-7,7,"Z_Start_MET_PhiRes","Events");
+	Z_Start_MET_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_MET_PhiRes","Z_Start_MET_PhiRes",64,-3.14159265359,3.14159265359,"Z_Start_MET_PhiRes","Events");
 
 	Z_Start_PtBalance_PtRes=HConfig.GetTH1D(Name+"_Z_Start_PtBalance_PtRes","Z_Start_PtBalance_PtRes",100,-40,40,"Z_Start_PtBalance_PtRes","Events");
-	Z_Start_PtBalance_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_PtBalance_PhiRes","Z_Start_PtBalance_PhiRes",100,-7,7,"Z_Start_PtBalance_PhiRes","Events");
+	Z_Start_PtBalance_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_PtBalance_PhiRes","Z_Start_PtBalance_PhiRes",64,-3.14159265359,3.14159265359,"Z_Start_PtBalance_PhiRes","Events");
 
 	Z_Start_EventRecoil_PtRes=HConfig.GetTH1D(Name+"_Z_Start_EventRecoil_PtRes","Z_Start_EventRecoil_PtRes",100,-40,40,"Z_Start_EventRecoil_PtRes","Events");
-	Z_Start_EventRecoil_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_EventRecoil_PhiRes","Z_Start_EventRecoil_PhiRes",100,-7,7,"Z_Start_EventRecoil_PhiRes","Events");
+	Z_Start_EventRecoil_PhiRes=HConfig.GetTH1D(Name+"_Z_Start_EventRecoil_PhiRes","Z_Start_EventRecoil_PhiRes",64,-3.14159265359,3.14159265359,"Z_Start_EventRecoil_PhiRes","Events");
 
 	//Muon Track Parameters
 
@@ -592,12 +782,115 @@ void  ZToTaumuTauh::Configure(){
 	Mu_TP_Poca_quadrantData=HConfig.GetTH1D(Name+"_Mu_TP_Poca_quadrantData","Mu_TP_Poca_quadrantData",4,0.5,4.5,"Mu_TP_Poca_quadrantData","Events");
 	Mu_TP_Poca_quadrantMCDY=HConfig.GetTH1D(Name+"_Mu_TP_Poca_quadrantMCDY","Mu_TP_Poca_quadrantMCDY",4,0.5,4.5,"Mu_TP_Poca_quadrantMCDY","Events");
 
-	Mu_TP_Poca_xy=HConfig.GetTH2D(Name+"_Mu_TP_Poca_xy","Mu_TP_Poca_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_Poca_x","Mu_TP_Poca_y");
-	Mu_TP_Vertex_xy=HConfig.GetTH2D(Name+"_Mu_TP_Vertex_xy","Vertex_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_Vertex_x","Mu_TP_Vertex_y");
-	Mu_TP_RefitVertex_xy=HConfig.GetTH2D(Name+"_Mu_TP_RefitVertex_xy","Mu_TP_RefitVertex_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_RefitVertex_x","Mu_TP_RefitVertex_y");
-	Mu_TP_BeamSpot_xy=HConfig.GetTH2D(Name+"_Mu_TP_BeamSpot_xy","Vertex_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_BeamSpot_x","Mu_TP_BeamSpot_y");
-	Mu_TP_NTP_Poca_xy=HConfig.GetTH2D(Name+"_Mu_TP_NTP_Poca_xy","Mu_TP_NTP_Poca_xy",100,-0.1,0.1,100,-0.1,0.1,"Mu_TP_NTP_Poca_x","Mu_TP_NTP_Poca_y");
+	Mu_TP_Poca_xy=HConfig.GetTH2D(Name+"_Mu_TP_Poca_xy","Mu_TP_Poca_xy",100,-0.5,0.5,100,-0.5,0.5,"Mu_TP_Poca_x","Mu_TP_Poca_y");
+	Mu_TP_Vertex_xy=HConfig.GetTH2D(Name+"_Mu_TP_Vertex_xy","Vertex_xy",100,-0.5,0.5,100,-0.5,0.5,"Mu_TP_Vertex_x","Mu_TP_Vertex_y");
+	Mu_TP_RefitVertex_xy=HConfig.GetTH2D(Name+"_Mu_TP_RefitVertex_xy","Mu_TP_RefitVertex_xy",100,-0.5,0.5,100,-0.5,0.5,"Mu_TP_RefitVertex_x","Mu_TP_RefitVertex_y");
+	Mu_TP_BeamSpot_xy=HConfig.GetTH2D(Name+"_Mu_TP_BeamSpot_xy","Vertex_xy",100,-0.5,0.5,100,-0.5,0.5,"Mu_TP_BeamSpot_x","Mu_TP_BeamSpot_y");
+	Mu_TP_NTP_Poca_xy=HConfig.GetTH2D(Name+"_Mu_TP_NTP_Poca_xy","Mu_TP_NTP_Poca_xy",100,-0.5,0.5,100,-0.5,0.5,"Mu_TP_NTP_Poca_x","Mu_TP_NTP_Poca_y");
 
+	//MET
+	MVAMET_metobject_XX=HConfig.GetTH1D(Name+"_MVAMET_metobject_XX","MVAMET_metobject_XX",100,-10,90,"MVAMET_metobject_XX","Events");
+	MVAMET_ptobject_XX=HConfig.GetTH1D(Name+"_MVAMET_ptobject_XX","MVAMET_ptobject_XX",100,-10,90,"MVAMET_ptobject_XX","Events");
+
+	//A1
+	A1_Par_Px=HConfig.GetTH1D(Name+"_A1_Par_Px","A1_Par_Px",100,-100,100,"A1_Par_Px","Events");
+	A1_Par_Py=HConfig.GetTH1D(Name+"_A1_Par_Py","A1_Par_Py",100,-100,100,"A1_Par_Py","Events");
+	A1_Par_Pz=HConfig.GetTH1D(Name+"_A1_Par_Pz","A1_Par_Pz",100,-100,100,"A1_Par_Pz","Events");
+	A1_Par_M=HConfig.GetTH1D(Name+"_A1_Par_M","A1_Par_M",100,-5,5,"A1_Par_M","Events");
+	A1_Cov_Pxx=HConfig.GetTH1D(Name+"_A1_Cov_Pxx","A1_Cov_Pxx",100,0,0.05,"A1_Cov_Pxx","Events");
+	A1_Cov_Pyy=HConfig.GetTH1D(Name+"_A1_Cov_Pyy","A1_Cov_Pyy",100,0,0.05,"A1_Cov_Pyy","Events");
+	A1_Cov_Pzz=HConfig.GetTH1D(Name+"_A1_Cov_Pzz","A1_Cov_Pzz",100,0,0.05,"A1_Cov_Pzz","Events");
+	A1_Cov_Pxy=HConfig.GetTH1D(Name+"_A1_Cov_Pxy","A1_Cov_Pxy",100,-0.05,0.05,"A1_Cov_Pxy","Events");
+	A1_Cov_Pxz=HConfig.GetTH1D(Name+"_A1_Cov_Pxz","A1_Cov_Pxz",100,-0.05,0.05,"A1_Cov_Pxz","Events");
+	A1_Cov_Pyz=HConfig.GetTH1D(Name+"_A1_Cov_Pyz","A1_Cov_Pyz",100,-0.05,0.05,"A1_Cov_Pyz","Events");
+	A1_Pull_Px=HConfig.GetTH1D(Name+"_A1_Pull_Px","A1_Pull_Px",100,-5,5,"A1_Pull_Px","Events");
+	A1_Pull_Py=HConfig.GetTH1D(Name+"_A1_Pull_Py","A1_Pull_Py",100,-5,5,"A1_Pull_Py","Events");
+	A1_Pull_Pz=HConfig.GetTH1D(Name+"_A1_Pull_Pz","A1_Pull_Pz",100,-5,5,"A1_Pull_Pz","Events");
+	A1_Pull_M=HConfig.GetTH1D(Name+"_A1_Pull_M","A1_Pull_M",100,-5,5,"A1_Pull_M","Events");
+	A1_Pull_Px_AmbZero=HConfig.GetTH1D(Name+"_A1_Pull_Px_AmbZero","A1_Pull_Px_AmbZero",100,-5,5,"A1_Pull_Px_AmbZero","Events");
+	A1_Pull_Py_AmbZero=HConfig.GetTH1D(Name+"_A1_Pull_Py_AmbZero","A1_Pull_Py_AmbZero",100,-5,5,"A1_Pull_Py_AmbZero","Events");
+	A1_Pull_Pz_AmbZero=HConfig.GetTH1D(Name+"_A1_Pull_Pz_AmbZero","A1_Pull_Pz_AmbZero",100,-5,5,"A1_Pull_Pz_AmbZero","Events");
+	A1_Pull_M_AmbZero=HConfig.GetTH1D(Name+"_A1_Pull_M_AmbZero","A1_Pull_M_AmbZero",100,-5,5,"A1_Pull_M_AmbZero","Events");
+	A1_Pull_Px_wAmb=HConfig.GetTH1D(Name+"_A1_Pull_Px_wAmb","A1_Pull_Px_wAmb",100,-5,5,"A1_Pull_Px_wAmb","Events");
+	A1_Pull_Py_wAmb=HConfig.GetTH1D(Name+"_A1_Pull_Py_wAmb","A1_Pull_Py_wAmb",100,-5,5,"A1_Pull_Py_wAmb","Events");
+	A1_Pull_Pz_wAmb=HConfig.GetTH1D(Name+"_A1_Pull_Pz_wAmb","A1_Pull_Pz_wAmb",100,-5,5,"A1_Pull_Pz_wAmb","Events");
+	A1_Pull_M_wAmb=HConfig.GetTH1D(Name+"_A1_Pull_M_wAmb","A1_Pull_M_wAmb",100,-5,5,"A1_Pull_M_wAmb","Events");
+
+	//SV
+	SV_Par_x=HConfig.GetTH1D(Name+"_SV_Par_x","SV_Par_x",100,-2,2,"SV_Par_x","Events");
+	SV_Par_y=HConfig.GetTH1D(Name+"_SV_Par_y","SV_Par_y",100,-2,2,"SV_Par_y","Events");
+	SV_Par_z=HConfig.GetTH1D(Name+"_SV_Par_z","SV_Par_z",100,-20,20,"SV_Par_z","Events");
+	SV_Cov_xx=HConfig.GetTH1D(Name+"_SV_Cov_xx","SV_Cov_xx",100,0,0.01,"SV_Cov_xx","Events");
+	SV_Cov_yy=HConfig.GetTH1D(Name+"_SV_Cov_yy","SV_Cov_yy",100,0,0.01,"SV_Cov_yy","Events");
+	SV_Cov_zz=HConfig.GetTH1D(Name+"_SV_Cov_zz","SV_Cov_zz",100,0,0.2,"SV_Cov_zz","Events");
+	SV_Cov_xy=HConfig.GetTH1D(Name+"_SV_Cov_xy","SV_Cov_xy",100,-0.01,0.01,"SV_Cov_xy","Events");
+	SV_Cov_xz=HConfig.GetTH1D(Name+"_SV_Cov_xz","SV_Cov_xz",100,-0.01,0.01,"SV_Cov_xz","Events");
+	SV_Cov_yz=HConfig.GetTH1D(Name+"_SV_Cov_yz","SV_Cov_yz",100,-0.01,0.01,"SV_Cov_yz","Events");
+	SV_Pull_Px=HConfig.GetTH1D(Name+"_SV_Pull_Px","SV_Pull_Px",100,-5,5,"SV_Pull_Px","Events");
+	SV_Pull_Py=HConfig.GetTH1D(Name+"_SV_Pull_Py","SV_Pull_Py",100,-5,5,"SV_Pull_Py","Events");
+	SV_Pull_Pz=HConfig.GetTH1D(Name+"_SV_Pull_Pz","SV_Pull_Pz",100,-5,5,"SV_Pull_Pz","Events");
+	SV_Pull_Px_AmbZero=HConfig.GetTH1D(Name+"_SV_Pull_Px_AmbZero","SV_Pull_Px_AmbZero",100,-5,5,"SV_Pull_Px_AmbZero","Events");
+	SV_Pull_Py_AmbZero=HConfig.GetTH1D(Name+"_SV_Pull_Py_AmbZero","SV_Pull_Py_AmbZero",100,-5,5,"SV_Pull_Py_AmbZero","Events");
+	SV_Pull_Pz_AmbZero=HConfig.GetTH1D(Name+"_SV_Pull_Pz_AmbZero","SV_Pull_Pz_AmbZero",100,-5,5,"SV_Pull_Pz_AmbZero","Events");
+	SV_Pull_Px_wAmb=HConfig.GetTH1D(Name+"_SV_Pull_Px_wAmb","SV_Pull_Px_wAmb",100,-5,5,"SV_Pull_Px_wAmb","Events");
+	SV_Pull_Py_wAmb=HConfig.GetTH1D(Name+"_SV_Pull_Py_wAmb","SV_Pull_Py_wAmb",100,-5,5,"SV_Pull_Py_wAmb","Events");
+	SV_Pull_Pz_wAmb=HConfig.GetTH1D(Name+"_SV_Pull_Pz_wAmb","SV_Pull_Pz_wAmb",100,-5,5,"SV_Pull_Pz_wAmb","Events");
+
+	//TauA1
+	TauA1_Par_Px_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Par_Px_AmbZero","TauA1_Par_Px_AmbZero",100,-100,100,"TauA1_Par_Px_AmbZero","Events");
+	TauA1_Par_Py_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Par_Py_AmbZero","TauA1_Par_Py_AmbZero",100,-100,100,"TauA1_Par_Py_AmbZero","Events");
+	TauA1_Par_Pz_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Par_Pz_AmbZero","TauA1_Par_Pz_AmbZero",100,-100,100,"TauA1_Par_Pz_AmbZero","Events");
+	TauA1_Cov_Pxx_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxx_AmbZero","TauA1_Cov_Pxx_AmbZero",100,-10,490,"TauA1_Cov_Pxx_AmbZero","Events");
+	TauA1_Cov_Pyy_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Cov_Pyy_AmbZero","TauA1_Cov_Pyy_AmbZero",100,-10,490,"TauA1_Cov_Pyy_AmbZero","Events");
+	TauA1_Cov_Pzz_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Cov_Pzz_AmbZero","TauA1_Cov_Pzz_AmbZero",100,-10,490,"TauA1_Cov_Pzz_AmbZero","Events");
+	TauA1_Cov_Pxy_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxy_AmbZero","TauA1_Cov_Pxy_AmbZero",100,-100,100,"TauA1_Cov_Pxy_AmbZero","Events");
+	TauA1_Cov_Pxz_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxz_AmbZero","TauA1_Cov_Pxz_AmbZero",100,-100,100,"TauA1_Cov_Pxz_AmbZero","Events");
+	TauA1_Cov_Pyz_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Cov_Pyz_AmbZero","TauA1_Cov_Pyz_AmbZero",100,-100,100,"TauA1_Cov_Pyz_AmbZero","Events");
+	TauA1_Pull_Px_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Pull_Px_AmbZero","TauA1_Pull_Px_AmbZero",100,-5,5,"TauA1_Pull_Px_AmbZero","Events");
+	TauA1_Pull_Py_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Pull_Py_AmbZero","TauA1_Pull_Py_AmbZero",100,-5,5,"TauA1_Pull_Py_AmbZero","Events");
+	TauA1_Pull_Pz_AmbZero=HConfig.GetTH1D(Name+"_TauA1_Pull_Pz_AmbZero","TauA1_Pull_Pz_AmbZero",100,-5,5,"TauA1_Pull_Pz_AmbZero","Events");
+
+	TauA1_Par_Px_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Par_Px_CorrectAmb","TauA1_Par_Px_CorrectAmb",100,-100,100,"TauA1_Par_Px_CorrectAmb","Events");
+	TauA1_Par_Py_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Par_Py_CorrectAmb","TauA1_Par_Py_CorrectAmb",100,-100,100,"TauA1_Par_Py_CorrectAmb","Events");
+	TauA1_Par_Pz_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Par_Pz_CorrectAmb","TauA1_Par_Pz_CorrectAmb",100,-100,100,"TauA1_Par_Pz_CorrectAmb","Events");
+	TauA1_Cov_Pxx_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxx_CorrectAmb","TauA1_Cov_Pxx_CorrectAmb",100,-10,490,"TauA1_Cov_Pxx_CorrectAmb","Events");
+	TauA1_Cov_Pyy_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pyy_CorrectAmb","TauA1_Cov_Pyy_CorrectAmb",100,-10,490,"TauA1_Cov_Pyy_CorrectAmb","Events");
+	TauA1_Cov_Pzz_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pzz_CorrectAmb","TauA1_Cov_Pzz_CorrectAmb",100,-10,490,"TauA1_Cov_Pzz_CorrectAmb","Events");
+	TauA1_Cov_Pxy_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxy_CorrectAmb","TauA1_Cov_Pxy_CorrectAmb",100,-100,100,"TauA1_Cov_Pxy_CorrectAmb","Events");
+	TauA1_Cov_Pxz_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxz_CorrectAmb","TauA1_Cov_Pxz_CorrectAmb",100,-100,100,"TauA1_Cov_Pxz_CorrectAmb","Events");
+	TauA1_Cov_Pyz_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pyz_CorrectAmb","TauA1_Cov_Pyz_CorrectAmb",100,-100,100,"TauA1_Cov_Pyz_CorrectAmb","Events");
+	TauA1_Pull_Px_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Pull_Px_CorrectAmb","TauA1_Pull_Px_CorrectAmb",100,-5,5,"TauA1_Pull_Px_CorrectAmb","Events");
+	TauA1_Pull_Py_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Pull_Py_CorrectAmb","TauA1_Pull_Py_CorrectAmb",100,-5,5,"TauA1_Pull_Py_CorrectAmb","Events");
+	TauA1_Pull_Pz_CorrectAmb=HConfig.GetTH1D(Name+"_TauA1_Pull_Pz_CorrectAmb","TauA1_Pull_Pz_CorrectAmb",100,-5,5,"TauA1_Pull_Pz_CorrectAmb","Events");
+
+	TauA1_Par_Px_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Par_Px_WrongAmb","TauA1_Par_Px_WrongAmb",100,-100,100,"TauA1_Par_Px_WrongAmb","Events");
+	TauA1_Par_Py_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Par_Py_WrongAmb","TauA1_Par_Py_WrongAmb",100,-100,100,"TauA1_Par_Py_WrongAmb","Events");
+	TauA1_Par_Pz_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Par_Pz_WrongAmb","TauA1_Par_Pz_WrongAmb",100,-100,100,"TauA1_Par_Pz_WrongAmb","Events");
+	TauA1_Cov_Pxx_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxx_WrongAmb","TauA1_Cov_Pxx_WrongAmb",100,-10,490,"TauA1_Cov_Pxx_WrongAmb","Events");
+	TauA1_Cov_Pyy_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pyy_WrongAmb","TauA1_Cov_Pyy_WrongAmb",100,-10,490,"TauA1_Cov_Pyy_WrongAmb","Events");
+	TauA1_Cov_Pzz_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pzz_WrongAmb","TauA1_Cov_Pzz_WrongAmb",100,-10,490,"TauA1_Cov_Pzz_WrongAmb","Events");
+	TauA1_Cov_Pxy_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxy_WrongAmb","TauA1_Cov_Pxy_WrongAmb",100,-100,100,"TauA1_Cov_Pxy_WrongAmb","Events");
+	TauA1_Cov_Pxz_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pxz_WrongAmb","TauA1_Cov_Pxz_WrongAmb",100,-100,100,"TauA1_Cov_Pxz_WrongAmb","Events");
+	TauA1_Cov_Pyz_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Cov_Pyz_WrongAmb","TauA1_Cov_Pyz_WrongAmb",100,-100,100,"TauA1_Cov_Pyz_WrongAmb","Events");
+	TauA1_Pull_Px_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Pull_Px_WrongAmb","TauA1_Pull_Px_WrongAmb",100,-5,5,"TauA1_Pull_Px_WrongAmb","Events");
+	TauA1_Pull_Py_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Pull_Py_WrongAmb","TauA1_Pull_Py_WrongAmb",100,-5,5,"TauA1_Pull_Py_WrongAmb","Events");
+	TauA1_Pull_Pz_WrongAmb=HConfig.GetTH1D(Name+"_TauA1_Pull_Pz_WrongAmb","TauA1_Pull_Pz_WrongAmb",100,-5,5,"TauA1_Pull_Pz_WrongAmb","Events");
+
+	//Tau flight length significance studies
+
+	TauFLSigmaVlad=HConfig.GetTH1D(Name+"_TauFLSigmaVlad","TauFLSigmaVlad",80,-10,30,"TauFLSigmaVlad","Events");
+	TauFLSigmaVlad_PhiA1=HConfig.GetTH1D(Name+"_TauFLSigmaVlad_PhiA1","TauFLSigmaVlad_PhiA1",64,-3.14159265359,3.14159265359,"TauFLSigmaVlad_PhiA1","Events");
+	TauFLSigmaVlad_PhiTau=HConfig.GetTH1D(Name+"_TauFLSigmaVlad_PhiTau","TauFLSigmaVlad_PhiTau",64,-3.14159265359,3.14159265359,"TauFLSigmaVlad_PhiTau","Events");
+	TauFLSigmaVlad_PhiTauNoCorr=HConfig.GetTH1D(Name+"_TauFLSigmaVlad_PhiTauNoCorr","TauFLSigmaVlad_PhiTauNoCorr",64,-3.14159265359,3.14159265359,"TauFLSigmaVlad_PhiTauNoCorr","Events");
+	TauFLSigmaVlad_PhiZnoCorr=HConfig.GetTH1D(Name+"_TauFLSigmaVlad_PhiZnoCorr","TauFLSigmaVlad_PhiZnoCorr",64,-3.14159265359,3.14159265359,"TauFLSigmaVlad_PhiZnoCorr","Events");
+	TauFLSigmaVlad_PhiZwCorr=HConfig.GetTH1D(Name+"_TauFLSigmaVlad_PhiZwCorr","TauFLSigmaVlad_PhiZwCorr",64,-3.14159265359,3.14159265359,"TauFLSigmaVlad_PhiZwCorr","Events");
+
+	TauFLSigmaAlex=HConfig.GetTH1D(Name+"_TauFLSigmaAlex","TauFLSigmaAlex",80,-10,30,"TauFLSigmaAlex","Events");
+	TauFLSigmaAlex_PhiA1=HConfig.GetTH1D(Name+"_TauFLSigmaAlex_PhiA1","TauFLSigmaAlex_PhiA1",64,-3.14159265359,3.14159265359,"TauFLSigmaAlex_PhiA1","Events");
+	TauFLSigmaAlex_PhiTau=HConfig.GetTH1D(Name+"_TauFLSigmaAlex_PhiTau","TauFLSigmaAlex_PhiTau",64,-3.14159265359,3.14159265359,"TauFLSigmaAlex_PhiTau","Events");
+	TauFLSigmaAlex_PhiTauNoCorr=HConfig.GetTH1D(Name+"_TauFLSigmaAlex_PhiTauNoCorr","TauFLSigmaAlex_PhiTauNoCorr",64,-3.14159265359,3.14159265359,"TauFLSigmaAlex_PhiTauNoCorr","Events");
+	TauFLSigmaAlex_PhiZnoCorr=HConfig.GetTH1D(Name+"_TauFLSigmaAlex_PhiZnoCorr","TauFLSigmaAlex_PhiZnoCorr",64,-3.14159265359,3.14159265359,"TauFLSigmaAlex_PhiZnoCorr","Events");
+	TauFLSigmaAlex_PhiZwCorr=HConfig.GetTH1D(Name+"_TauFLSigmaAlex_PhiZwCorr","TauFLSigmaAlex_PhiZwCorr",64,-3.14159265359,3.14159265359,"TauFLSigmaAlex_PhiZwCorr","Events");
 
 	//QCD Histos
 	NQCD=HConfig.GetTH1D(Name+"_NQCD","NQCD",4,0.5,4.5,"NQCD in ABCD","Events");
@@ -615,6 +908,7 @@ void  ZToTaumuTauh::Configure(){
 	Selection::ConfigureHistograms();
 	HConfig.GetHistoInfo(types,CrossSectionandAcceptance,legend,colour);
 }
+
 
 void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&NVtx);
@@ -636,6 +930,9 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&Tau_pt);
 	Extradist1d.push_back(&Tau_phi);
 	Extradist1d.push_back(&Tau_eta);
+	Extradist1d.push_back(&Tau_pt_wo_FLSigmaCut);
+	Extradist1d.push_back(&Tau_phi_wo_FLSigmaCut);
+	Extradist1d.push_back(&Tau_eta_wo_FLSigmaCut);
 	Extradist1d.push_back(&Tau_Mass_Inclusive);
 	Extradist1d.push_back(&Tau_Mass_sq_Inclusive);
 	Extradist1d.push_back(&Tau_Mass_Inclusive_NoTLV);
@@ -713,6 +1010,35 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist2d.push_back(&Gen_Z_Pt_vs_MET);
 	Extradist2d.push_back(&Gen_Z_Pt_vs_VtxTracksPt);
 	Extradist2d.push_back(&Gen_Z_Phi_vs_VtxTracksPhi);
+	Extradist1d.push_back(&Gen_TauA1_P);
+	Extradist1d.push_back(&Gen_TauA1_Pt);
+	Extradist1d.push_back(&Gen_TauA1_Px);
+	Extradist1d.push_back(&Gen_TauA1_Py);
+	Extradist1d.push_back(&Gen_TauA1_Pz);
+	Extradist1d.push_back(&Gen_TauA1_Phi);
+	Extradist1d.push_back(&Gen_TauA1_Eta);
+	Extradist1d.push_back(&Gen_TauMu_P);
+	Extradist1d.push_back(&Gen_TauMu_Pt);
+	Extradist1d.push_back(&Gen_TauMu_Px);
+	Extradist1d.push_back(&Gen_TauMu_Py);
+	Extradist1d.push_back(&Gen_TauMu_Pz);
+	Extradist1d.push_back(&Gen_TauMu_Phi);
+	Extradist1d.push_back(&Gen_TauMu_Eta);
+	Extradist1d.push_back(&Gen_TauA1_P_noSel);
+	Extradist1d.push_back(&Gen_TauA1_Pt_noSel);
+	Extradist1d.push_back(&Gen_TauA1_Px_noSel);
+	Extradist1d.push_back(&Gen_TauA1_Py_noSel);
+	Extradist1d.push_back(&Gen_TauA1_Pz_noSel);
+	Extradist1d.push_back(&Gen_TauA1_Phi_noSel);
+	Extradist1d.push_back(&Gen_TauA1_Eta_noSel);
+	Extradist1d.push_back(&Gen_TauMu_P_noSel);
+	Extradist1d.push_back(&Gen_TauMu_Pt_noSel);
+	Extradist1d.push_back(&Gen_TauMu_Px_noSel);
+	Extradist1d.push_back(&Gen_TauMu_Py_noSel);
+	Extradist1d.push_back(&Gen_TauMu_Pz_noSel);
+	Extradist1d.push_back(&Gen_TauMu_Phi_noSel);
+	Extradist1d.push_back(&Gen_TauMu_Eta_noSel);
+
 	Extradist1d.push_back(&VtxTracksPtRes);
 	Extradist1d.push_back(&VtxTracksPhiCorrectedRes);
 	Extradist1d.push_back(&dPhi_MinusSVPV_genTaumu);
@@ -745,17 +1071,6 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist2d.push_back(&TPTF_A1_pRes_vs_RecoGJAngle);
 	Extradist2d.push_back(&TPTF_TauA1_ptRes_vs_ptGen);
 	Extradist2d.push_back(&TPTF_TauA1_ptRes_vs_ptReco);
-
-	Extradist1d.push_back(&TPTF_TauA1_p_Reco);
-	Extradist1d.push_back(&TPTF_TauA1_pt_Reco);
-	Extradist1d.push_back(&TPTF_TauA1_px_Reco);
-	Extradist1d.push_back(&TPTF_TauA1_py_Reco);
-	Extradist1d.push_back(&TPTF_TauA1_pz_Reco);
-	Extradist1d.push_back(&TPTF_TauA1_p_Gen);
-	Extradist1d.push_back(&TPTF_TauA1_pt_Gen);
-	Extradist1d.push_back(&TPTF_TauA1_px_Gen);
-	Extradist1d.push_back(&TPTF_TauA1_py_Gen);
-	Extradist1d.push_back(&TPTF_TauA1_pz_Gen);
 
 	Extradist1d.push_back(&TPTF_TauA1_pxsq_Reco);
 	Extradist1d.push_back(&TPTF_TauA1_pysq_Reco);
@@ -809,13 +1124,10 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&Reco_ProbStack_MassScan);
 	Extradist1d.push_back(&Reco_EventFit_Solution);
 	Extradist1d.push_back(&Reco_A1Fit_Solution);
-	Extradist1d.push_back(&Reco_Chi2);
-	Extradist1d.push_back(&Reco_Chi2_FitSolutionOnly);
 	Extradist1d.push_back(&Reco_Chi2_FitSolutionOnlyLargeScale);
 	Extradist1d.push_back(&Reco_ConstrainedDeltaSum);
 	Extradist1d.push_back(&Reco_ConstrainedDeltaMass);
 	Extradist1d.push_back(&Reco_ConstrainedDeltaPt);
-	Extradist1d.push_back(&Reco_NIter);
 
 	Extradist1d.push_back(&Reco_PtRes_TauA1);
 	Extradist1d.push_back(&Reco_PtRes_TauA1_AmbPoint0);
@@ -857,6 +1169,161 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&Reco_ZMass_PDF);
 	Extradist1d.push_back(&Reco_Z_Energy_Res);
 	Extradist1d.push_back(&RecoZ_Pt);
+
+	Extradist1d.push_back(&Reco_TauA1_P);
+	Extradist1d.push_back(&Reco_TauA1_Pt);
+	Extradist1d.push_back(&Reco_TauA1_Px);
+	Extradist1d.push_back(&Reco_TauA1_Py);
+	Extradist1d.push_back(&Reco_TauA1_Pz);
+	Extradist1d.push_back(&Reco_TauA1_Phi);
+	Extradist1d.push_back(&Reco_TauA1_Eta);
+	Extradist1d.push_back(&Reco_TauMu_P);
+	Extradist1d.push_back(&Reco_TauMu_Pt);
+	Extradist1d.push_back(&Reco_TauMu_Px);
+	Extradist1d.push_back(&Reco_TauMu_Py);
+	Extradist1d.push_back(&Reco_TauMu_Pz);
+	Extradist1d.push_back(&Reco_TauMu_Phi);
+	Extradist1d.push_back(&Reco_TauMu_Eta);
+	Extradist1d.push_back(&Reco_Z_Px);
+	Extradist1d.push_back(&Reco_Z_Py);
+	Extradist1d.push_back(&Reco_Z_Pz);
+	Extradist1d.push_back(&Reco_Z_Pt);
+	Extradist1d.push_back(&Reco_Z_PtRes);
+	Extradist1d.push_back(&Reco_Z_Phi);
+	Extradist1d.push_back(&Reco_Z_Eta);
+
+	Extradist1d.push_back(&Reco_Z_PhiRes);
+	Extradist1d.push_back(&Reco_Z_PhiRes_noAmb);
+	Extradist1d.push_back(&Reco_Z_PhiRes_wAmb);
+	Extradist1d.push_back(&Reco_Z_PhiRes_pickedrightAmb);
+	Extradist1d.push_back(&Reco_Z_PhiRes_pickedwrongAmb);
+	Extradist1d.push_back(&Reco_Z_EtaRes);
+	Extradist1d.push_back(&Reco_Z_EtaRes_noAmb);
+	Extradist1d.push_back(&Reco_Z_EtaRes_wAmb);
+	Extradist1d.push_back(&Reco_Z_EtaRes_pickedrightAmb);
+	Extradist1d.push_back(&Reco_Z_EtaRes_pickedwrongAmb);
+	Extradist1d.push_back(&Reco_Z_PRes);
+	Extradist1d.push_back(&Reco_Z_PRes_noAmb);
+	Extradist1d.push_back(&Reco_Z_PRes_wAmb);
+	Extradist1d.push_back(&Reco_Z_PRes_pickedrightAmb);
+	Extradist1d.push_back(&Reco_Z_PRes_pickedwrongAmb);
+	Extradist1d.push_back(&Reco_NIter);
+	Extradist1d.push_back(&Reco_NIter_noAmb);
+	Extradist1d.push_back(&Reco_NIter_wAmb);
+	Extradist1d.push_back(&Reco_NIter_pickedrightAmb);
+	Extradist1d.push_back(&Reco_NIter_pickedwrongAmb);
+	Extradist1d.push_back(&Reco_Chi2);
+	Extradist1d.push_back(&Reco_Chi2_noAmb);
+	Extradist1d.push_back(&Reco_Chi2_wAmb);
+	Extradist1d.push_back(&Reco_Chi2_rightAmb);
+	Extradist1d.push_back(&Reco_Chi2_wrongAmb);
+	Extradist1d.push_back(&Reco_Chi2_pickedrightAmb);
+	Extradist1d.push_back(&Reco_Chi2_pickedwrongAmb);
+	Extradist1d.push_back(&Reco_Chi2_orig);
+	Extradist1d.push_back(&Reco_Chi2_orig_noAmb);
+	Extradist1d.push_back(&Reco_Chi2_orig_wAmb);
+	Extradist1d.push_back(&Reco_Chi2_orig_rightAmb);
+	Extradist1d.push_back(&Reco_Chi2_orig_wrongAmb);
+	Extradist1d.push_back(&Reco_Chi2_orig_pickedrightAmb);
+	Extradist1d.push_back(&Reco_Chi2_orig_pickedwrongAmb);
+	Extradist1d.push_back(&Reco_Chi2_SC);
+	Extradist1d.push_back(&Reco_Chi2_SC_noAmb);
+	Extradist1d.push_back(&Reco_Chi2_SC_wAmb);
+	Extradist1d.push_back(&Reco_Chi2_SC_rightAmb);
+	Extradist1d.push_back(&Reco_Chi2_SC_wrongAmb);
+	Extradist1d.push_back(&Reco_Chi2_SC_pickedrightAmb);
+	Extradist1d.push_back(&Reco_Chi2_SC_pickedwrongAmb);
+	Extradist1d.push_back(&Reco_Chi2_HC);
+	Extradist1d.push_back(&Reco_Chi2_HC_noAmb);
+	Extradist1d.push_back(&Reco_Chi2_HC_wAmb);
+	Extradist1d.push_back(&Reco_Chi2_HC_rightAmb);
+	Extradist1d.push_back(&Reco_Chi2_HC_wrongAmb);
+	Extradist1d.push_back(&Reco_Chi2_HC_pickedrightAmb);
+	Extradist1d.push_back(&Reco_Chi2_HC_pickedwrongAmb);
+
+	Extradist1d.push_back(&Reco_Chi2_diff);
+	Extradist1d.push_back(&Reco_Chi2_orig_diff);
+	Extradist1d.push_back(&Reco_Chi2_HC_diff);
+	Extradist1d.push_back(&Reco_Chi2_SC_diff);
+	Extradist1d.push_back(&Reco_Chi2_origplusSC_diff);
+
+	Extradist2d.push_back(&Reco_Chi2_diff_vs_correctAssignment);
+
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_Full_vs_RightSolution);
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_orig_vs_RightSolution);
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_SC_vs_RightSolution);
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_HC_vs_RightSolution);
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_origplusSC_vs_RightSolution);
+
+	Extradist1d.push_back(&Reco_PtRes_TauA1_wRecoil);
+	Extradist1d.push_back(&Reco_PtRes_TauA1_wRecoil_AmbZero);
+	Extradist1d.push_back(&Reco_PtRes_TauA1_wRecoil_wAmb);
+	Extradist1d.push_back(&Reco_PtRes_TauMu_wRecoil);
+	Extradist1d.push_back(&Reco_PtRes_TauMu_wRecoil_AmbZero);
+	Extradist1d.push_back(&Reco_PtRes_TauMu_wRecoil_wAmb);
+	Extradist1d.push_back(&Reco_PtRes_TauA1_wRecoil_PreFit);
+	Extradist1d.push_back(&Reco_PtRes_TauMu_wRecoil_PreFit);
+	Extradist1d.push_back(&Reco_dPhi_TauMuTauA1_AfterFit_wRecoil);
+	Extradist1d.push_back(&Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil);
+	Extradist1d.push_back(&Reco_Chi2_FitSolutionOnly_wRecoil);
+	Extradist1d.push_back(&Reco_Chi2_Full_wRecoil);
+	Extradist1d.push_back(&Reco_Chi2_Orig_wRecoil);
+	Extradist1d.push_back(&Reco_Chi2_SC_wRecoil);
+	Extradist1d.push_back(&Reco_Chi2_HC_wRecoil);
+	Extradist1d.push_back(&Reco_Chi2_OrigProb_wRecoil);
+	Extradist1d.push_back(&Reco_ZMass_wRecoil);
+	Extradist1d.push_back(&Reco_NIter_wRecoil);
+	Extradist1d.push_back(&Reco_EventFit_Solution_wRecoil);
+	Extradist1d.push_back(&Reco_Z_Energy_Res_wRecoil);
+	Extradist1d.push_back(&Reco_TauA1_P_wRecoil);
+	Extradist1d.push_back(&Reco_TauA1_Pt_wRecoil);
+	Extradist1d.push_back(&Reco_TauA1_Px_wRecoil);
+	Extradist1d.push_back(&Reco_TauA1_Py_wRecoil);
+	Extradist1d.push_back(&Reco_TauA1_Pz_wRecoil);
+	Extradist1d.push_back(&Reco_TauA1_Phi_wRecoil);
+	Extradist1d.push_back(&Reco_TauA1_Eta_wRecoil);
+	Extradist1d.push_back(&Reco_TauMu_P_wRecoil);
+	Extradist1d.push_back(&Reco_TauMu_Pt_wRecoil);
+	Extradist1d.push_back(&Reco_TauMu_Px_wRecoil);
+	Extradist1d.push_back(&Reco_TauMu_Py_wRecoil);
+	Extradist1d.push_back(&Reco_TauMu_Pz_wRecoil);
+	Extradist1d.push_back(&Reco_TauMu_Phi_wRecoil);
+	Extradist1d.push_back(&Reco_TauMu_Eta_wRecoil);
+	Extradist1d.push_back(&Reco_Z_Px_wRecoil);
+	Extradist1d.push_back(&Reco_Z_Py_wRecoil);
+	Extradist1d.push_back(&Reco_Z_Pz_wRecoil);
+	Extradist1d.push_back(&Reco_Z_Pt_wRecoil);
+	Extradist1d.push_back(&Reco_Z_PtRes_wRecoil);
+	Extradist1d.push_back(&Reco_Z_Phi_wRecoil);
+	Extradist1d.push_back(&Reco_Z_PhiRes_wRecoil);
+	Extradist1d.push_back(&Reco_Z_Eta_wRecoil);
+	Extradist1d.push_back(&Reco_Z_EtaRes_wRecoil);
+
+	Extradist2d.push_back(&Reco_TauA1_ptRes_vs_ptGen_wRecoil);
+	Extradist2d.push_back(&Reco_TauA1_ptRes_vs_ptReco_wRecoil);
+	Extradist2d.push_back(&Reco_TauMu_ptRes_vs_ptGen_wRecoil);
+	Extradist2d.push_back(&Reco_TauMu_ptRes_vs_ptReco_wRecoil);
+
+	Extradist2d.push_back(&Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr);
+	Extradist2d.push_back(&Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr);
+
+	Extradist2d.push_back(&Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_wAmb);
+	Extradist2d.push_back(&Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_AmbZero);
+	Extradist2d.push_back(&Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_wAmb);
+	Extradist2d.push_back(&Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_AmbZero);
+
+	Extradist2d.push_back(&Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit);
+	Extradist2d.push_back(&Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit);
+	Extradist2d.push_back(&Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit);
+	Extradist2d.push_back(&Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit);
+	Extradist2d.push_back(&Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit);
+	Extradist2d.push_back(&Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit);
+
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_Full_vs_RightSolution_wRecoil);
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_orig_vs_RightSolution_wRecoil);
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_SC_vs_RightSolution_wRecoil);
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_HC_vs_RightSolution_wRecoil);
+	Extradist2d.push_back(&Reco_FitSolution_byChi2_origplusSC_vs_RightSolution_wRecoil);
 
 	Extradist1d.push_back(&GenReco_ZMass);
 	Extradist1d.push_back(&GenReco_EventFit_Solution);
@@ -904,6 +1371,104 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist2d.push_back(&Mu_TP_RefitVertex_xy);
 	Extradist2d.push_back(&Mu_TP_BeamSpot_xy);
 	Extradist2d.push_back(&Mu_TP_NTP_Poca_xy);
+
+	Extradist1d.push_back(&MVAMET_metobject_XX);
+	Extradist1d.push_back(&MVAMET_ptobject_XX);
+
+	Extradist1d.push_back(&A1_Par_Px);
+	Extradist1d.push_back(&A1_Par_Py);
+	Extradist1d.push_back(&A1_Par_Pz);
+	Extradist1d.push_back(&A1_Par_M);
+	Extradist1d.push_back(&A1_Cov_Pxx);
+	Extradist1d.push_back(&A1_Cov_Pyy);
+	Extradist1d.push_back(&A1_Cov_Pzz);
+	Extradist1d.push_back(&A1_Cov_Pxy);
+	Extradist1d.push_back(&A1_Cov_Pxz);
+	Extradist1d.push_back(&A1_Cov_Pyz);
+	Extradist1d.push_back(&A1_Pull_Px);
+	Extradist1d.push_back(&A1_Pull_Py);
+	Extradist1d.push_back(&A1_Pull_Pz);
+	Extradist1d.push_back(&A1_Pull_M);
+	Extradist1d.push_back(&A1_Pull_Px_AmbZero);
+	Extradist1d.push_back(&A1_Pull_Py_AmbZero);
+	Extradist1d.push_back(&A1_Pull_Pz_AmbZero);
+	Extradist1d.push_back(&A1_Pull_M_AmbZero);
+	Extradist1d.push_back(&A1_Pull_Px_wAmb);
+	Extradist1d.push_back(&A1_Pull_Py_wAmb);
+	Extradist1d.push_back(&A1_Pull_Pz_wAmb);
+	Extradist1d.push_back(&A1_Pull_M_wAmb);
+
+	Extradist1d.push_back(&SV_Par_x);
+	Extradist1d.push_back(&SV_Par_y);
+	Extradist1d.push_back(&SV_Par_z);
+	Extradist1d.push_back(&SV_Cov_xx);
+	Extradist1d.push_back(&SV_Cov_yy);
+	Extradist1d.push_back(&SV_Cov_zz);
+	Extradist1d.push_back(&SV_Cov_xy);
+	Extradist1d.push_back(&SV_Cov_xz);
+	Extradist1d.push_back(&SV_Cov_yz);
+	Extradist1d.push_back(&SV_Pull_Px);
+	Extradist1d.push_back(&SV_Pull_Py);
+	Extradist1d.push_back(&SV_Pull_Pz);
+	Extradist1d.push_back(&SV_Pull_Px_AmbZero);
+	Extradist1d.push_back(&SV_Pull_Py_AmbZero);
+	Extradist1d.push_back(&SV_Pull_Pz_AmbZero);
+	Extradist1d.push_back(&SV_Pull_Px_wAmb);
+	Extradist1d.push_back(&SV_Pull_Py_wAmb);
+	Extradist1d.push_back(&SV_Pull_Pz_wAmb);
+
+	Extradist1d.push_back(&TauA1_Par_Px_AmbZero);
+	Extradist1d.push_back(&TauA1_Par_Py_AmbZero);
+	Extradist1d.push_back(&TauA1_Par_Pz_AmbZero);
+	Extradist1d.push_back(&TauA1_Cov_Pxx_AmbZero);
+	Extradist1d.push_back(&TauA1_Cov_Pyy_AmbZero);
+	Extradist1d.push_back(&TauA1_Cov_Pzz_AmbZero);
+	Extradist1d.push_back(&TauA1_Cov_Pxy_AmbZero);
+	Extradist1d.push_back(&TauA1_Cov_Pxz_AmbZero);
+	Extradist1d.push_back(&TauA1_Cov_Pyz_AmbZero);
+	Extradist1d.push_back(&TauA1_Pull_Px_AmbZero);
+	Extradist1d.push_back(&TauA1_Pull_Py_AmbZero);
+	Extradist1d.push_back(&TauA1_Pull_Pz_AmbZero);
+
+	Extradist1d.push_back(&TauA1_Par_Px_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Par_Py_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Par_Pz_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pxx_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pyy_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pzz_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pxy_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pxz_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pyz_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Pull_Px_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Pull_Py_CorrectAmb);
+	Extradist1d.push_back(&TauA1_Pull_Pz_CorrectAmb);
+
+	Extradist1d.push_back(&TauA1_Par_Px_WrongAmb);
+	Extradist1d.push_back(&TauA1_Par_Py_WrongAmb);
+	Extradist1d.push_back(&TauA1_Par_Pz_WrongAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pxx_WrongAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pyy_WrongAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pzz_WrongAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pxy_WrongAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pxz_WrongAmb);
+	Extradist1d.push_back(&TauA1_Cov_Pyz_WrongAmb);
+	Extradist1d.push_back(&TauA1_Pull_Px_WrongAmb);
+	Extradist1d.push_back(&TauA1_Pull_Py_WrongAmb);
+	Extradist1d.push_back(&TauA1_Pull_Pz_WrongAmb);
+
+	Extradist1d.push_back(&TauFLSigmaVlad);
+	Extradist1d.push_back(&TauFLSigmaVlad_PhiA1);
+	Extradist1d.push_back(&TauFLSigmaVlad_PhiTau);
+	Extradist1d.push_back(&TauFLSigmaVlad_PhiTauNoCorr);
+	Extradist1d.push_back(&TauFLSigmaVlad_PhiZnoCorr);
+	Extradist1d.push_back(&TauFLSigmaVlad_PhiZwCorr);
+
+	Extradist1d.push_back(&TauFLSigmaAlex);
+	Extradist1d.push_back(&TauFLSigmaAlex_PhiA1);
+	Extradist1d.push_back(&TauFLSigmaAlex_PhiTau);
+	Extradist1d.push_back(&TauFLSigmaAlex_PhiTauNoCorr);
+	Extradist1d.push_back(&TauFLSigmaAlex_PhiZnoCorr);
+	Extradist1d.push_back(&TauFLSigmaAlex_PhiZwCorr);
 
 	Extradist1d.push_back(&NQCD);
 	Extradist1d.push_back(&QCD_MT_MuMET_A);
@@ -965,13 +1530,15 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d_OS.push_back(&Reco_ProbStack_MassScan);
 	Extradist1d_OS.push_back(&Reco_EventFit_Solution);
 	Extradist1d_OS.push_back(&Reco_A1Fit_Solution);
-	Extradist1d_OS.push_back(&Reco_Chi2);
-	Extradist1d_OS.push_back(&Reco_Chi2_FitSolutionOnly);
 	Extradist1d_OS.push_back(&Reco_Chi2_FitSolutionOnlyLargeScale);
 	Extradist1d_OS.push_back(&Reco_ConstrainedDeltaSum);
 	Extradist1d_OS.push_back(&Reco_ConstrainedDeltaMass);
 	Extradist1d_OS.push_back(&Reco_ConstrainedDeltaPt);
 	Extradist1d_OS.push_back(&Reco_NIter);
+	Extradist1d_OS.push_back(&Reco_Chi2);
+	Extradist1d_OS.push_back(&Reco_Chi2_orig);
+	Extradist1d_OS.push_back(&Reco_Chi2_SC);
+	Extradist1d_OS.push_back(&Reco_Chi2_HC);
 	Extradist1d_OS.push_back(&Reco_PtRes_TauA1);
 	Extradist1d_OS.push_back(&Reco_PtRes_TauA1_AmbPoint0);
 	Extradist1d_OS.push_back(&Reco_PtRes_TauA1_AmbPoint12);
@@ -985,6 +1552,125 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d_OS.push_back(&RecoZ_Pt_Unboosted);
 	Extradist1d_OS.push_back(&Reco_ZMass_PDF);
 	Extradist1d_OS.push_back(&TauFL_WithTauFLSigmaCut);
+
+	Extradist1d_OS.push_back(&Reco_TauA1_P);
+	Extradist1d_OS.push_back(&Reco_TauA1_Pt);
+	Extradist1d_OS.push_back(&Reco_TauA1_Px);
+	Extradist1d_OS.push_back(&Reco_TauA1_Py);
+	Extradist1d_OS.push_back(&Reco_TauA1_Pz);
+	Extradist1d_OS.push_back(&Reco_TauA1_Phi);
+	Extradist1d_OS.push_back(&Reco_TauA1_Eta);
+	Extradist1d_OS.push_back(&Reco_TauMu_P);
+	Extradist1d_OS.push_back(&Reco_TauMu_Pt);
+	Extradist1d_OS.push_back(&Reco_TauMu_Px);
+	Extradist1d_OS.push_back(&Reco_TauMu_Py);
+	Extradist1d_OS.push_back(&Reco_TauMu_Pz);
+	Extradist1d_OS.push_back(&Reco_TauMu_Phi);
+	Extradist1d_OS.push_back(&Reco_TauMu_Eta);
+	Extradist1d_OS.push_back(&Reco_Z_Px);
+	Extradist1d_OS.push_back(&Reco_Z_Py);
+	Extradist1d_OS.push_back(&Reco_Z_Pz);
+	Extradist1d_OS.push_back(&Reco_Z_Pt);
+	Extradist1d_OS.push_back(&Reco_Z_Phi);
+	Extradist1d_OS.push_back(&Reco_Z_Eta);
+
+	Extradist1d_OS.push_back(&Mu_TP_phi0);
+	Extradist1d_OS.push_back(&Mu_TP_lambda);
+	Extradist1d_OS.push_back(&Mu_TP_dxy);
+	Extradist1d_OS.push_back(&Mu_TP_dz);
+	Extradist1d_OS.push_back(&Mu_TP_kappa);
+	Extradist1d_OS.push_back(&Mu_TP_POCA_quadrant);
+	Extradist1d_OS.push_back(&Mu_TP_POCA_quadrantVlad);
+	Extradist1d_OS.push_back(&Mu_TP_POCA_quadrantby_dxyphi0);
+
+	Extradist1d_OS.push_back(&MVAMET_metobject_XX);
+	Extradist1d_OS.push_back(&MVAMET_ptobject_XX);
+	Extradist1d_OS.push_back(&A1_Par_Px);
+	Extradist1d_OS.push_back(&A1_Par_Py);
+	Extradist1d_OS.push_back(&A1_Par_Pz);
+	Extradist1d_OS.push_back(&A1_Par_M);
+	Extradist1d_OS.push_back(&A1_Cov_Pxx);
+	Extradist1d_OS.push_back(&A1_Cov_Pyy);
+	Extradist1d_OS.push_back(&A1_Cov_Pzz);
+	Extradist1d_OS.push_back(&A1_Cov_Pxy);
+	Extradist1d_OS.push_back(&A1_Cov_Pxz);
+	Extradist1d_OS.push_back(&A1_Cov_Pyz);
+	Extradist1d_OS.push_back(&SV_Par_x);
+	Extradist1d_OS.push_back(&SV_Par_y);
+	Extradist1d_OS.push_back(&SV_Par_z);
+	Extradist1d_OS.push_back(&SV_Cov_xx);
+	Extradist1d_OS.push_back(&SV_Cov_yy);
+	Extradist1d_OS.push_back(&SV_Cov_zz);
+	Extradist1d_OS.push_back(&SV_Cov_xy);
+	Extradist1d_OS.push_back(&SV_Cov_xz);
+	Extradist1d_OS.push_back(&SV_Cov_yz);
+
+	Extradist1d_OS.push_back(&TauA1_Par_Px_AmbZero);
+	Extradist1d_OS.push_back(&TauA1_Par_Py_AmbZero);
+	Extradist1d_OS.push_back(&TauA1_Par_Pz_AmbZero);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pxx_AmbZero);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pyy_AmbZero);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pzz_AmbZero);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pxy_AmbZero);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pxz_AmbZero);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pyz_AmbZero);
+
+	Extradist1d_OS.push_back(&TauA1_Par_Px_WrongAmb);
+	Extradist1d_OS.push_back(&TauA1_Par_Py_WrongAmb);
+	Extradist1d_OS.push_back(&TauA1_Par_Pz_WrongAmb);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pxx_WrongAmb);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pyy_WrongAmb);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pzz_WrongAmb);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pxy_WrongAmb);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pxz_WrongAmb);
+	Extradist1d_OS.push_back(&TauA1_Cov_Pyz_WrongAmb);
+
+	Extradist1d_OS.push_back(&Reco_TauA1_P_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauA1_Pt_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauA1_Px_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauA1_Py_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauA1_Pz_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauA1_Phi_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauA1_Eta_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauMu_P_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauMu_Pt_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauMu_Px_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauMu_Py_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauMu_Pz_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauMu_Phi_wRecoil);
+	Extradist1d_OS.push_back(&Reco_TauMu_Eta_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Z_Px_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Z_Py_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Z_Pz_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Z_Pt_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Z_Phi_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Z_Eta_wRecoil);
+	Extradist1d_OS.push_back(&Reco_dPhi_TauMuTauA1_AfterFit_wRecoil);
+	Extradist1d_OS.push_back(&Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Chi2_FitSolutionOnly_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Chi2_Full_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Chi2_Orig_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Chi2_SC_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Chi2_HC_wRecoil);
+	Extradist1d_OS.push_back(&Reco_Chi2_OrigProb_wRecoil);
+	Extradist1d_OS.push_back(&Reco_ZMass_wRecoil);
+	Extradist1d_OS.push_back(&Reco_NIter_wRecoil);
+	Extradist1d_OS.push_back(&Reco_EventFit_Solution_wRecoil);
+
+	Extradist1d_OS.push_back(&TauFLSigmaVlad);
+	Extradist1d_OS.push_back(&TauFLSigmaVlad_PhiA1);
+	Extradist1d_OS.push_back(&TauFLSigmaVlad_PhiTau);
+	Extradist1d_OS.push_back(&TauFLSigmaVlad_PhiTauNoCorr);
+	Extradist1d_OS.push_back(&TauFLSigmaVlad_PhiZnoCorr);
+	Extradist1d_OS.push_back(&TauFLSigmaVlad_PhiZwCorr);
+
+	Extradist1d_OS.push_back(&TauFLSigmaAlex);
+	Extradist1d_OS.push_back(&TauFLSigmaAlex_PhiA1);
+	Extradist1d_OS.push_back(&TauFLSigmaAlex_PhiTau);
+	Extradist1d_OS.push_back(&TauFLSigmaAlex_PhiTauNoCorr);
+	Extradist1d_OS.push_back(&TauFLSigmaAlex_PhiZnoCorr);
+	Extradist1d_OS.push_back(&TauFLSigmaAlex_PhiZwCorr);
+
 }
 
 void  ZToTaumuTauh::doEvent(){
@@ -1047,7 +1733,7 @@ void  ZToTaumuTauh::doEvent(){
 	}
 
 	// Trigger
-	if(verbose) Logger(Logger::Verbose) << "Cut on Trigger" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Trigger" << std::endl;
 	value.at(TriggerOk) = TriggerOkDummy;
 	for (std::vector<TString>::iterator it_trig = cTriggerNames.begin(); it_trig != cTriggerNames.end(); ++it_trig){
 		if(Ntp->TriggerAccept(*it_trig)){
@@ -1059,7 +1745,7 @@ void  ZToTaumuTauh::doEvent(){
 	}
 	pass.at(TriggerOk) = (value.at(TriggerOk) >= cut.at(TriggerOk));
 	if(id == DataMCType::DY_mutau_embedded) pass.at(TriggerOk) = true;
-	if(verbose){
+	if(selection_verbose){
 		Logger(Logger::Verbose) << "value at TriggerOk: " <<value.at(TriggerOk) << std::endl;
 		Logger(Logger::Verbose) << "pass at TriggerOk: " <<pass.at(TriggerOk) << std::endl;
 	}
@@ -1212,7 +1898,7 @@ void  ZToTaumuTauh::doEvent(){
 		Charge = ChargeSumDummy;
 	}
 	pass.at(ChargeSum)=(value.at(ChargeSum)==cut.at(ChargeSum));
-	if(verbose){
+	if(selection_verbose){
 		Logger(Logger::Verbose) << "value at ChargeSum: " <<value.at(ChargeSum) << std::endl;
 		Logger(Logger::Verbose) << "pass at ChargeSum: " <<pass.at(ChargeSum) << std::endl;
 	}
@@ -1223,13 +1909,13 @@ void  ZToTaumuTauh::doEvent(){
 		value.at(TauDecayMode) = Ntp->PFTau_hpsDecayMode(selTau);
 	}
 	pass.at(TauDecayMode)= (value.at(TauDecayMode)>=cut.at(TauDecayMode));
-	if(verbose){
+	if(selection_verbose){
 		Logger(Logger::Verbose) << "value at TauDecayMode: " <<value.at(TauDecayMode) << std::endl;
 		Logger(Logger::Verbose) << "pass at TauDecayMode: " <<pass.at(TauDecayMode) << std::endl;
 	}
 
 	// Tau FlightLength Significance
-	if(verbose) Logger(Logger::Verbose) << "Cut on Tau Flight Length Significance" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "Cut on Tau Flight Length Significance" << std::endl;
 	value.at(TauFLSigma) = TauFLSigmaDummy;
 	if(pass.at(TauDecayMode) && selTau != selTauDummy){
 		//std::cout << "selTau" << selTau << std::endl;
@@ -1249,11 +1935,14 @@ void  ZToTaumuTauh::doEvent(){
 			//std::cout << "Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength_error(selTau) << std::endl;
 			//std::cout << "Ntp->PFTau_FlightLength(selTau)/Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength(selTau)/Ntp->PFTau_FlightLength_error(selTau) << std::endl;
 			//std::cout << "Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength_error(selTau) << std::endl;
+			double FLSigma = Ntp->PFTau_FlightLenght_significance(Ntp->PFTau_TIP_primaryVertex_pos(selTau), Ntp->PFTau_TIP_primaryVertex_cov(selTau), Ntp->PFTau_TIP_secondaryVertex_pos(selTau), Ntp->PFTau_TIP_secondaryVertex_cov(selTau));
+			Logger(Logger::Debug) << "FLSigma Ich: " << Ntp->PFTau_FlightLength_significance(selTau) << std::endl;
+			Logger(Logger::Debug) << "FLSigma Vladimir: " << FLSigma << std::endl;
 			if(Ntp->PFTau_3PS_A1_LV(selTau).Vect().Dot(Ntp->PFTau_FlightLength3d(selTau)) < 0){
-				value.at(TauFLSigma) = -Ntp->PFTau_FlightLength_significance(selTau);
+				value.at(TauFLSigma) = -FLSigma;
 			}
 			else{
-				value.at(TauFLSigma) = Ntp->PFTau_FlightLength_significance(selTau);
+				value.at(TauFLSigma) = FLSigma;
 			}
 		}
 	}
@@ -1285,7 +1974,7 @@ void  ZToTaumuTauh::doEvent(){
 		value.at(MT_MuMET)		= Ntp->transverseMass(pT,phi,eTmiss,eTmPhi);
 	}
 	if(value.at(MT_MuMET) != MTDummy) pass.at(MT_MuMET)=(value.at(MT_MuMET)<cut.at(MT_MuMET));
-	if(verbose){
+	if(selection_verbose){
 		Logger(Logger::Verbose) << "value at MT_MuMET: " <<value.at(MT_MuMET) << std::endl;
 		Logger(Logger::Verbose) << "pass at MT_MuMET: " <<pass.at(MT_MuMET) << std::endl;
 	}
@@ -1359,8 +2048,8 @@ void  ZToTaumuTauh::doEvent(){
 	exclude_cuts.clear();
 	exclude_cuts.push_back(ChargeSum);
 	exclude_cuts.push_back(MT_MuMET);
-	//exclude_cuts.push_back(TauDecayMode);
-	//exclude_cuts.push_back(TauFLSigma);
+	exclude_cuts.push_back(TauDecayMode);
+	exclude_cuts.push_back(TauFLSigma);
 
 	if(passAllBut(exclude_cuts)){
 		if(pass.at(ChargeSum)){ //Opposite Sign WJets yield (bin #1 with value 1)
@@ -1398,7 +2087,7 @@ void  ZToTaumuTauh::doEvent(){
 			}
 		}
 	}
-	if(selection_verbose) std::cout << "QCD ABCD BG Method" << std::endl;
+	if(selection_verbose) Logger(Logger::Verbose) << "QCD ABCD BG Method" << std::endl;
 	exclude_cuts.push_back(NMuIso);
 	if(passAllBut(exclude_cuts)){
 		if(pass.at(NMuIso) && selMuon_Iso != selMuonDummy){
@@ -1452,13 +2141,29 @@ void  ZToTaumuTauh::doEvent(){
 		Logger(Logger::Verbose) << "------------------------" << std::endl;
 	}
 
+	if(passAllBut(TauFLSigma) && value.at(TauFLSigma) != TauFLSigmaDummy){
+		Tau_pt_wo_FLSigmaCut.at(t).Fill(Ntp->PFTau_p4(selTau).Pt(), w);
+		Tau_phi_wo_FLSigmaCut.at(t).Fill(Ntp->PFTau_p4(selTau).Phi(), w);
+		Tau_eta_wo_FLSigmaCut.at(t).Fill(Ntp->PFTau_p4(selTau).Eta(), w);
+	}
 
-	GEFObject FitResults, FitResultswithFullRecoil;
+	GEFObject FitResults, FitResultsNoCorr, FitResultswithFullRecoil;
+	std::vector<GEFObject> FitResults_wRecoil_MassScan;
 	TPTRObject TPResults;
 	TVector2 Pt_Z;
+	objects::MET MET(Ntp, "CorrMVAMuTau");
+	TMatrixT<double> METpar(2,1); METpar(0,0) = MET.ex(); METpar(1,0) = MET.ey();
+	TMatrixTSym<double> METCov; METCov.ResizeTo(2,2); METCov = MET.significanceMatrix< TMatrixTSym<double> >();
+	PTObject MET2(METpar, METCov);
 	TLorentzVector Recoil;
+	std::vector<bool> fitstatuses, fitstatusesNoCorr, fitstatuses_wRecoil;
+	TLorentzVector Reco_Z_Corr, Reco_Z_Corr_wRecoil;
 
 	if(status && value.at(TauFLSigma) != TauFLSigmaDummy){
+
+		MVAMET_metobject_XX.at(t).Fill(MET.significanceXX(), w);
+		MVAMET_ptobject_XX.at(t).Fill(MET2.Cov()(0,0), w);
+
 		LorentzVectorParticle A1 = Ntp->PFTau_a1_lvp(selTau);
 		TrackParticle MuonTP = Ntp->Muon_TrackParticle(selMuon);
 		TVector3 PV = Ntp->PFTau_TIP_primaryVertex_pos(selTau);
@@ -1474,13 +2179,47 @@ void  ZToTaumuTauh::doEvent(){
 		Pt_Z.Set(-Pt_Z.X(), -Pt_Z.Y()); //rotation by pi
 
 		GlobalEventFit GEF(MuonTP, A1, Phi_Res, PV, PVCov);
+		//GEF.SetCorrectPt(false);
 		//GEF.setMaxDelta(30.);
 		//GEF.setMassConstraint(90.);
 		TPResults = GEF.getTPTRObject();
 		FitResults = GEF.Fit();
+		fitstatuses = GEF.getFitStatuses();
 
-		GlobalEventFit GEFwithFullRecoil(MuonTP, A1, Pt_Z, PV, PVCov);
+		GlobalEventFit GEFNoCorr(MuonTP, A1, Phi_Res, PV, PVCov);
+		GEFNoCorr.SetCorrectPt(false);
+		//GEF.setMaxDelta(30.);
+		//GEF.setMassConstraint(90.);
+		FitResultsNoCorr = GEF.Fit();
+		fitstatusesNoCorr = GEF.getFitStatuses();
+
+		GlobalEventFit GEFwithFullRecoil(MuonTP, A1, MET2, PV, PVCov);
+		GEFwithFullRecoil.SetCorrectPt(false);
 		FitResultswithFullRecoil = GEFwithFullRecoil.Fit();
+		fitstatuses_wRecoil = GEFwithFullRecoil.getFitStatuses();
+
+		/*
+		for(unsigned i_mass=0;i_mass<50;i_mass++){
+		  GlobalEventFit GEFwithFullRecoilMassScan(MuonTP, A1, MET2, PV, PVCov);
+		  GEFwithFullRecoilMassScan.setMassConstraint(28.5 + 2.5*i_mass);
+		  GEFObject tmp = GEFwithFullRecoilMassScan.Fit();
+		  FitResults_wRecoil_MassScan.push_back(tmp);
+		}
+		*/
+		unsigned i_minchi2=999;
+		double minchi2=999;
+		bool MassScanConverged(false);
+		/*
+		for(unsigned i_mass=0;i_mass<50;i_mass++){
+		  if(FitResults_wRecoil_MassScan.at(i_mass).Fitconverged()){
+			if(FitResults_wRecoil_MassScan.at(i_mass).getChi2()<minchi2){
+			  i_minchi2 = i_mass;
+			  minchi2 = FitResults_wRecoil_MassScan.at(i_mass).getChi2();
+			}
+		  }
+		}
+		if(i_minchi2 != 999) MassScanConverged = true;
+		*/
 
 		Logger(Logger::Debug) << "Results.getTauH().LV().Pt(): " << FitResults.getTauH().LV().Pt() << std::endl;
 		Logger(Logger::Debug) << "ResultswithFullRecoil.getTauH().LV().Pt(): " << FitResultswithFullRecoil.getTauH().LV().Pt() << std::endl;
@@ -1489,10 +2228,12 @@ void  ZToTaumuTauh::doEvent(){
 		Logger(Logger::Debug) << "ResultswithFullRecoil.getTauMu().LV().Pt(): " << FitResultswithFullRecoil.getTauMu().LV().Pt() << std::endl;
 
 		if(FitResults.Fitconverged()){
+			Reco_Z_Corr = FitResults.getTauH().LV() + FitResults.getTauMu().LV();
+
 			Reco_EventFit_Solution.at(t).Fill(FitResults.getIndex(), w);
 			Reco_EventFit_Solution.at(t).Fill(-1, w); //all solutions
 			Reco_ConstrainedDeltaSum.at(t).Fill(FitResults.getCsum(), w);
-			Reco_Chi2_FitSolutionOnly.at(t).Fill(FitResults.getChi2(), w);
+			Reco_Chi2.at(t).Fill(FitResults.getChi2(), w);
 			Reco_TauMu_DeltaPX_FitImpact.at(t).Fill(FitResults.getInitTauMu().LV().Px() - FitResults.getTauMu().LV().Px(), w);
 			Reco_TauMu_DeltaPY_FitImpact.at(t).Fill(FitResults.getInitTauMu().LV().Py() - FitResults.getTauMu().LV().Py(), w);
 			Reco_TauMu_DeltaPZ_FitImpact.at(t).Fill(FitResults.getInitTauMu().LV().Pz() - FitResults.getTauMu().LV().Pz(), w);
@@ -1500,12 +2241,123 @@ void  ZToTaumuTauh::doEvent(){
 			Reco_TauA1_DeltaPY_FitImpact.at(t).Fill(FitResults.getInitTauH().LV().Py() - FitResults.getTauH().LV().Py(), w);
 			Reco_TauA1_DeltaPZ_FitImpact.at(t).Fill(FitResults.getInitTauH().LV().Pz() - FitResults.getTauH().LV().Pz(), w);
 
-			Reco_TauMu_DeltaPhi_FitImpact.at(t).Fill(FitResults.getTauMu().LV().Phi() - FitResults.getInitTauMu().LV().Phi(), w);
+			Reco_TauA1_P.at(t).Fill(FitResults.getTauH().LV().P(), w);
+			Reco_TauA1_Pt.at(t).Fill(FitResults.getTauH().LV().Pt(), w);
+			Reco_TauA1_Px.at(t).Fill(FitResults.getTauH().LV().Px(), w);
+			Reco_TauA1_Py.at(t).Fill(FitResults.getTauH().LV().Py(), w);
+			Reco_TauA1_Pz.at(t).Fill(FitResults.getTauH().LV().Pz(), w);
+			Reco_TauA1_Phi.at(t).Fill(FitResults.getTauH().LV().Phi(), w);
+			Reco_TauA1_Eta.at(t).Fill(FitResults.getTauH().LV().Eta(), w);
+
+			Reco_TauMu_P.at(t).Fill(FitResults.getTauMu().LV().P(), w);
+			Reco_TauMu_Pt.at(t).Fill(FitResults.getTauMu().LV().Pt(), w);
+			Reco_TauMu_Px.at(t).Fill(FitResults.getTauMu().LV().Px(), w);
+			Reco_TauMu_Py.at(t).Fill(FitResults.getTauMu().LV().Py(), w);
+			Reco_TauMu_Pz.at(t).Fill(FitResults.getTauMu().LV().Pz(), w);
+			Reco_TauMu_Phi.at(t).Fill(FitResults.getTauMu().LV().Phi(), w);
+			Reco_TauMu_Eta.at(t).Fill(FitResults.getTauMu().LV().Eta(), w);
+
+			Reco_Z_Px.at(t).Fill(Reco_Z_Corr.Px(), w);
+			Reco_Z_Py.at(t).Fill(Reco_Z_Corr.Py(), w);
+			Reco_Z_Pz.at(t).Fill(Reco_Z_Corr.Pz(), w);
+			Reco_Z_Pt.at(t).Fill(Reco_Z_Corr.Pt(), w);
+			Reco_Z_Phi.at(t).Fill(Reco_Z_Corr.Phi(), w);
+			Reco_Z_Eta.at(t).Fill(Reco_Z_Corr.Eta(), w);
+
+			Reco_TauMu_DeltaPhi_FitImpact.at(t).Fill(FitResults.getTauMu().LV().DeltaPhi(FitResults.getInitTauMu().LV()), w);
 			Reco_TauMu_ResCosTheta.at(t).Fill(FitResults.getTauMu().LV().CosTheta() - FitResults.getInitTauMu().LV().CosTheta(), w);
-			RecoZ_Pt.at(t).Fill(FitResults.getResonance().LV().Pt(), w);
-			Reco_dPhi_TauMuTauA1_AfterFit.at(t).Fill(FitResults.getTauMu().LV().Phi() - FitResults.getTauH().LV().Phi(), w);
-			Reco_dPhi_TauMuTauA1_BeforeFit.at(t).Fill(FitResults.getInitTauMu().LV().Phi() - FitResults.getInitTauH().LV().Phi(), w);
+			RecoZ_Pt.at(t).Fill(Reco_Z_Corr.Pt(), w);
+			Reco_dPhi_TauMuTauA1_AfterFit.at(t).Fill(FitResults.getTauMu().LV().DeltaPhi(FitResults.getTauH().LV()), w);
+			Reco_dPhi_TauMuTauA1_BeforeFit.at(t).Fill(FitResults.getInitTauMu().LV().DeltaPhi(FitResults.getInitTauH().LV()), w);
+			Reco_NIter.at(t).Fill(FitResults.getNiterations(), w);
+			Reco_Chi2.at(t).Fill(FitResults.getChi2Vector().Sum(), w);
+			Reco_Chi2_orig.at(t).Fill(FitResults.getChi2Vector()(0), w);
+			Reco_Chi2_SC.at(t).Fill(FitResults.getChi2Vector()(1), w);
+			Reco_Chi2_HC.at(t).Fill(FitResults.getChi2Vector()(2), w);
+
+			if(FitResults.getIndex() == 0){
+				Reco_NIter_noAmb.at(t).Fill(FitResults.getNiterations(), w);
+				Reco_Chi2_noAmb.at(t).Fill(FitResults.getChi2Vector().Sum(), w);
+				Reco_Chi2_orig_noAmb.at(t).Fill(FitResults.getChi2Vector()(0), w);
+				Reco_Chi2_SC_noAmb.at(t).Fill(FitResults.getChi2Vector()(1), w);
+				Reco_Chi2_HC_noAmb.at(t).Fill(FitResults.getChi2Vector()(2), w);
+			}
+			else{
+				Reco_NIter_wAmb.at(t).Fill(FitResults.getNiterations(), w);
+				Reco_Chi2_wAmb.at(t).Fill(FitResults.getChi2Vector().Sum(), w);
+				Reco_Chi2_orig_wAmb.at(t).Fill(FitResults.getChi2Vector()(0), w);
+				Reco_Chi2_SC_wAmb.at(t).Fill(FitResults.getChi2Vector()(1), w);
+				Reco_Chi2_HC_wAmb.at(t).Fill(FitResults.getChi2Vector()(2), w);
+			}
 		}
+		else Reco_EventFit_Solution.at(t).Fill(-2., w);
+
+		if(FitResultswithFullRecoil.Fitconverged()){
+			Reco_dPhi_TauMuTauA1_AfterFit_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().DeltaPhi(FitResultswithFullRecoil.getTauH().LV()), w);
+			Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil.at(t).Fill(FitResultswithFullRecoil.getInitTauMu().LV().DeltaPhi(FitResultswithFullRecoil.getInitTauH().LV()), w);
+			Reco_Chi2_FitSolutionOnly_wRecoil.at(t).Fill(FitResultswithFullRecoil.getChi2(), w);
+			Reco_NIter_wRecoil.at(t).Fill(FitResultswithFullRecoil.getNiterations(), w);
+			Reco_TauA1_P_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().P(), w);
+			Reco_TauA1_Pt_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pt(), w);
+			Reco_TauA1_Px_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Px(), w);
+			Reco_TauA1_Py_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Py(), w);
+			Reco_TauA1_Pz_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pz(), w);
+			Reco_TauA1_Phi_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Phi(), w);
+			Reco_TauA1_Eta_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Eta(), w);
+			Reco_TauMu_P_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().P(), w);
+			Reco_TauMu_Pt_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pt(), w);
+			Reco_TauMu_Px_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Px(), w);
+			Reco_TauMu_Py_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Py(), w);
+			Reco_TauMu_Pz_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pz(), w);
+			Reco_TauMu_Phi_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Phi(), w);
+			Reco_TauMu_Eta_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Eta(), w);
+
+			Reco_Z_Corr_wRecoil = FitResultswithFullRecoil.getTauMu().LV() + FitResultswithFullRecoil.getTauH().LV();
+			Reco_Z_Px_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.Px(), w);
+			Reco_Z_Py_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.Py(), w);
+			Reco_Z_Pz_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.Pz(), w);
+			Reco_Z_Pt_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.Pt(), w);
+			Reco_Z_Phi_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.Phi(), w);
+			Reco_Z_Eta_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.Eta(), w);
+
+			Reco_EventFit_Solution_wRecoil.at(t).Fill(-1., w);
+			Reco_EventFit_Solution_wRecoil.at(t).Fill(FitResultswithFullRecoil.getIndex(), w);
+
+			Reco_Chi2_Full_wRecoil.at(t).Fill(FitResultswithFullRecoil.getChi2(), w);
+			Reco_Chi2_Orig_wRecoil.at(t).Fill(FitResultswithFullRecoil.getChi2Vector()(0), w);
+			Reco_Chi2_SC_wRecoil.at(t).Fill(FitResultswithFullRecoil.getChi2Vector()(1), w);
+			Reco_Chi2_HC_wRecoil.at(t).Fill(FitResultswithFullRecoil.getChi2Vector()(2), w);
+			Reco_Chi2_OrigProb_wRecoil.at(t).Fill(TMath::Prob(FitResultswithFullRecoil.getChi2Vector()(0), 1), w);
+		}
+		else Reco_EventFit_Solution_wRecoil.at(t).Fill(-2., w);
+
+
+		if(MassScanConverged){
+			LorentzVectorParticle Resonance_MassScan = FitResults_wRecoil_MassScan.at(i_minchi2).getResonance();
+			Reco_ZMass_MassScan.at(t).Fill(Resonance_MassScan.LV().M(), w);
+		}
+
+		A1_Par_Px.at(t).Fill(TPResults.getA1().LV().Px(), w);
+		A1_Par_Py.at(t).Fill(TPResults.getA1().LV().Py(), w);
+		A1_Par_Pz.at(t).Fill(TPResults.getA1().LV().Pz(), w);
+		A1_Par_M.at(t).Fill(TPResults.getA1().LV().M(), w);
+		A1_Cov_Pxx.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px), w);
+		A1_Cov_Pyy.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py), w);
+		A1_Cov_Pzz.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz), w);
+		A1_Cov_Pxy.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::py), w);
+		A1_Cov_Pxz.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::pz), w);
+		A1_Cov_Pyz.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::py,LorentzVectorParticle::pz), w);
+
+		SV_Par_x.at(t).Fill(TPResults.getA1().Vertex().X(), w);
+		SV_Par_y.at(t).Fill(TPResults.getA1().Vertex().Y(), w);
+		SV_Par_z.at(t).Fill(TPResults.getA1().Vertex().Z(), w);
+		SV_Cov_xx.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::vx,LorentzVectorParticle::vx), w);
+		SV_Cov_yy.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::vy,LorentzVectorParticle::vy), w);
+		SV_Cov_zz.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::vz,LorentzVectorParticle::vz), w);
+		SV_Cov_xy.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::vx,LorentzVectorParticle::vy), w);
+		SV_Cov_xz.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::vx,LorentzVectorParticle::vz), w);
+		SV_Cov_yz.at(t).Fill(TPResults.getA1().Covariance(LorentzVectorParticle::vy,LorentzVectorParticle::vz), w);
+
 	}
 	/*
 	//DiTau Fit
@@ -1770,11 +2622,11 @@ void  ZToTaumuTauh::doEvent(){
 		double dz   = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::dz);
 		double signed_dxy = Ntp->Muon_TrackParticle(selMuon).Parameter(TrackParticle::dxy);
 
-		Mu_TP_phi0.at(t).Fill(MuonTP.Parameter(TrackParticle::phi));
-		Mu_TP_lambda.at(t).Fill(MuonTP.Parameter(TrackParticle::lambda));
-		Mu_TP_dxy.at(t).Fill(MuonTP.Parameter(TrackParticle::dxy));
-		Mu_TP_dz.at(t).Fill(MuonTP.Parameter(TrackParticle::dz));
-		Mu_TP_kappa.at(t).Fill(MuonTP.Parameter(TrackParticle::kappa));
+		Mu_TP_phi0.at(t).Fill(MuonTP.Parameter(TrackParticle::phi), w);
+		Mu_TP_lambda.at(t).Fill(MuonTP.Parameter(TrackParticle::lambda), w);
+		Mu_TP_dxy.at(t).Fill(MuonTP.Parameter(TrackParticle::dxy), w);
+		Mu_TP_dz.at(t).Fill(MuonTP.Parameter(TrackParticle::dz), w);
+		Mu_TP_kappa.at(t).Fill(MuonTP.Parameter(TrackParticle::kappa), w);
 
 		double xPoca = -signed_dxy*sin(phi0);
 		double yPoca = signed_dxy*cos(phi0);
@@ -1788,34 +2640,34 @@ void  ZToTaumuTauh::doEvent(){
 		Mu_TP_NTP_Poca_xy.at(t).Fill(Ntp->Muon_Poca(selMuon).X(), Ntp->Muon_Poca(selMuon).Y());
 
 		if(xPoca >= 0){
-			if(yPoca >= 0) Mu_TP_POCA_quadrant.at(t).Fill(1);
-			else Mu_TP_POCA_quadrant.at(t).Fill(4);
+			if(yPoca >= 0) Mu_TP_POCA_quadrant.at(t).Fill(1, w);
+			else Mu_TP_POCA_quadrant.at(t).Fill(4, w);
 		}
 		else {
-			if(yPoca >= 0) Mu_TP_POCA_quadrant.at(t).Fill(2);
-			else Mu_TP_POCA_quadrant.at(t).Fill(3);
+			if(yPoca >= 0) Mu_TP_POCA_quadrant.at(t).Fill(2, w);
+			else Mu_TP_POCA_quadrant.at(t).Fill(3, w);
 		}
 		if(xPocaVlad >= 0){
-			if(yPocaVlad >= 0) Mu_TP_POCA_quadrantVlad.at(t).Fill(1);
-			else Mu_TP_POCA_quadrantVlad.at(t).Fill(4);
+			if(yPocaVlad >= 0) Mu_TP_POCA_quadrantVlad.at(t).Fill(1, w);
+			else Mu_TP_POCA_quadrantVlad.at(t).Fill(4, w);
 		}
 		else {
-			if(yPocaVlad >= 0) Mu_TP_POCA_quadrantVlad.at(t).Fill(2);
-			else Mu_TP_POCA_quadrantVlad.at(t).Fill(3);
+			if(yPocaVlad >= 0) Mu_TP_POCA_quadrantVlad.at(t).Fill(2, w);
+			else Mu_TP_POCA_quadrantVlad.at(t).Fill(3, w);
 		}
 
 		double pi = TMath::Pi();
 		if(signed_dxy > 0){
-		  if(phi0 > -pi && phi0 < -pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(4);
-		  if(phi0 > -pi/2 && phi0 < 0) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(1);
-		  if(phi0 > 0 && phi0 < pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(2);
-		  if(phi0 > pi/2 && phi0 < pi) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(3);
+		  if(phi0 > -pi && phi0 < -pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(4, w);
+		  if(phi0 > -pi/2 && phi0 < 0) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(1, w);
+		  if(phi0 > 0 && phi0 < pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(2, w);
+		  if(phi0 > pi/2 && phi0 < pi) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(3, w);
 		}
 		else{
-		  if(phi0 > -pi && phi0 < -pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(2);
-		  if(phi0 > -pi/2 && phi0 < 0) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(3);
-		  if(phi0 > 0 && phi0 < pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(4);
-		  if(phi0 > pi/2 && phi0 < pi) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(1);
+		  if(phi0 > -pi && phi0 < -pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(2, w);
+		  if(phi0 > -pi/2 && phi0 < 0) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(3, w);
+		  if(phi0 > 0 && phi0 < pi/2) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(4, w);
+		  if(phi0 > pi/2 && phi0 < pi) Mu_TP_POCA_quadrantby_dxyphi0.at(t).Fill(1, w);
 		}
 		//Mu_TP_POCA_quadrantby_dxyphi0
 
@@ -1914,6 +2766,23 @@ void  ZToTaumuTauh::doEvent(){
 				}
 			}
 			if(hasMu && hasA1 && hasZH){
+
+				Gen_TauA1_P_noSel.at(t).Fill(GenTauh.P(), w);
+				Gen_TauA1_Pt_noSel.at(t).Fill(GenTauh.Pt(), w);
+				Gen_TauA1_Px_noSel.at(t).Fill(GenTauh.Px(), w);
+				Gen_TauA1_Py_noSel.at(t).Fill(GenTauh.Py(), w);
+				Gen_TauA1_Pz_noSel.at(t).Fill(GenTauh.Pz(), w);
+				Gen_TauA1_Phi_noSel.at(t).Fill(GenTauh.Phi(), w);
+				Gen_TauA1_Eta_noSel.at(t).Fill(GenTauh.Eta(), w);
+
+				Gen_TauMu_P_noSel.at(t).Fill(GenTaumu.P(), w);
+				Gen_TauMu_Pt_noSel.at(t).Fill(GenTaumu.Pt(), w);
+				Gen_TauMu_Px_noSel.at(t).Fill(GenTaumu.Px(), w);
+				Gen_TauMu_Py_noSel.at(t).Fill(GenTaumu.Py(), w);
+				Gen_TauMu_Pz_noSel.at(t).Fill(GenTaumu.Pz(), w);
+				Gen_TauMu_Phi_noSel.at(t).Fill(GenTaumu.Phi(), w);
+				Gen_TauMu_Eta_noSel.at(t).Fill(GenTaumu.Eta(), w);
+
 				Gen_TauMu_GJ.at(t).Fill(GenMu.Vect().Angle(GenTaumu.Vect()), w);
 				Gen_TauA1_GJ.at(t).Fill(GenA1.Vect().Angle(GenTauh.Vect()), w);
 				Phi_genTaumu.at(t).Fill(GenTaumu.Phi(), w);
@@ -1921,7 +2790,7 @@ void  ZToTaumuTauh::doEvent(){
 				Phi_genTauh.at(t).Fill(GenTauh.Phi(), w);
 				Theta_genTauh.at(t).Fill(GenTauh.Theta(), w);
 
-				double dPhi_genTaus = GenTauh.Phi() - GenTaumu.Phi();
+				double dPhi_genTaus = GenTauh.DeltaPhi(GenTaumu);
 				//if(dPhi_genTaus > TMath::Pi()) dPhi_genTaus = 2*TMath::Pi() - dPhi_genTaus;
 				TLorentzVector DiTau = GenTauh + GenTaumu;
 				Gen_Z_Pt.at(t).Fill(GenZH.Pt(), w);
@@ -1963,20 +2832,94 @@ void  ZToTaumuTauh::doEvent(){
 
 				Gen_Z_Pt_vs_MET.at(t).Fill(GenZH.Pt(), Ntp->MET_CorrMVAMuTau_et());
 
-				dPhi_GenTauMu_GenMu.at(t).Fill(GenTaumu.Phi() - GenMu.Phi(), w);
+				dPhi_GenTauMu_GenMu.at(t).Fill(GenTaumu.DeltaPhi(GenMu), w);
 				dTheta_GenTauMu_GenMu.at(t).Fill(GenTaumu.Theta() - GenMu.Theta(), w);
 
 				if(status && value.at(TauFLSigma) != TauFLSigmaDummy){
 
-					int GenIndex;
+					int GenIndex, GenWrongIndex;
 					if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) < 0){
 						GenIndex = 2;
+						GenWrongIndex = 1;
 					}
 					else if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) > 0){
 						GenIndex = 1;
+						GenWrongIndex = 2;
 					}
 					else if(GenA1_boosted.Vect().Dot(GenTauh.Vect()) == 0){
 						GenIndex = 0;
+						GenWrongIndex = 0;
+					}
+
+					A1_Pull_Px.at(t).Fill((TPResults.getA1().LV().Px() - GenA1.Px())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px)), w);
+					A1_Pull_Py.at(t).Fill((TPResults.getA1().LV().Py() - GenA1.Py())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py)), w);
+					A1_Pull_Pz.at(t).Fill((TPResults.getA1().LV().Pz() - GenA1.Pz())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz)), w);
+					A1_Pull_M.at(t).Fill((TPResults.getA1().LV().M() - GenA1.M())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::m,LorentzVectorParticle::m)), w);
+
+					SV_Pull_Px.at(t).Fill((TPResults.getA1().Vertex().X() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).X())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vx,LorentzVectorParticle::vx)), w);
+					SV_Pull_Py.at(t).Fill((TPResults.getA1().Vertex().Y() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Y())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vy,LorentzVectorParticle::vy)), w);
+					SV_Pull_Pz.at(t).Fill((TPResults.getA1().Vertex().Z() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Z())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vz,LorentzVectorParticle::vz)), w);
+
+
+					if(!TPResults.isAmbiguous()){
+						TauA1_Par_Px_AmbZero.at(t).Fill(TPResults.getTauZero().LV().Px(), w);
+						TauA1_Par_Py_AmbZero.at(t).Fill(TPResults.getTauZero().LV().Py(), w);
+						TauA1_Par_Pz_AmbZero.at(t).Fill(TPResults.getTauZero().LV().Pz(), w);
+						TauA1_Cov_Pxx_AmbZero.at(t).Fill(TPResults.getTauZero().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px), w);
+						TauA1_Cov_Pyy_AmbZero.at(t).Fill(TPResults.getTauZero().Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py), w);
+						TauA1_Cov_Pzz_AmbZero.at(t).Fill(TPResults.getTauZero().Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz), w);
+						TauA1_Cov_Pxy_AmbZero.at(t).Fill(TPResults.getTauZero().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::py), w);
+						TauA1_Cov_Pxz_AmbZero.at(t).Fill(TPResults.getTauZero().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::pz), w);
+						TauA1_Cov_Pyz_AmbZero.at(t).Fill(TPResults.getTauZero().Covariance(LorentzVectorParticle::py,LorentzVectorParticle::pz), w);
+						TauA1_Pull_Px_AmbZero.at(t).Fill((TPResults.getTauZero().LV().Px() - GenTauh.Px())/sqrt(TPResults.getTauZero().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px)), w);
+						TauA1_Pull_Py_AmbZero.at(t).Fill((TPResults.getTauZero().LV().Py() - GenTauh.Py())/sqrt(TPResults.getTauZero().Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py)), w);
+						TauA1_Pull_Pz_AmbZero.at(t).Fill((TPResults.getTauZero().LV().Pz() - GenTauh.Pz())/sqrt(TPResults.getTauZero().Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz)), w);
+
+						A1_Pull_Px_AmbZero.at(t).Fill((TPResults.getA1().LV().Px() - GenA1.Px())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px)), w);
+						A1_Pull_Py_AmbZero.at(t).Fill((TPResults.getA1().LV().Py() - GenA1.Py())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py)), w);
+						A1_Pull_Pz_AmbZero.at(t).Fill((TPResults.getA1().LV().Pz() - GenA1.Pz())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz)), w);
+						A1_Pull_M_AmbZero.at(t).Fill((TPResults.getA1().LV().M() - GenA1.M())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::m,LorentzVectorParticle::m)), w);
+
+						SV_Pull_Px_AmbZero.at(t).Fill((TPResults.getA1().Vertex().X() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).X())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vx,LorentzVectorParticle::vx)), w);
+						SV_Pull_Py_AmbZero.at(t).Fill((TPResults.getA1().Vertex().Y() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Y())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vy,LorentzVectorParticle::vy)), w);
+						SV_Pull_Pz_AmbZero.at(t).Fill((TPResults.getA1().Vertex().Z() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Z())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vz,LorentzVectorParticle::vz)), w);
+					}
+
+					if(TPResults.isAmbiguous()){
+						TauA1_Par_Px_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).LV().Px(), w);
+						TauA1_Par_Py_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).LV().Py(), w);
+						TauA1_Par_Pz_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).LV().Pz(), w);
+						TauA1_Cov_Pxx_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px), w);
+						TauA1_Cov_Pyy_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py), w);
+						TauA1_Cov_Pzz_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz), w);
+						TauA1_Cov_Pxy_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::px,LorentzVectorParticle::py), w);
+						TauA1_Cov_Pxz_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::px,LorentzVectorParticle::pz), w);
+						TauA1_Cov_Pyz_CorrectAmb.at(t).Fill(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::py,LorentzVectorParticle::pz), w);
+						TauA1_Pull_Px_CorrectAmb.at(t).Fill((TPResults.getTaus().at(GenIndex).LV().Px()- GenTauh.Px())/sqrt(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px)), w);
+						TauA1_Pull_Py_CorrectAmb.at(t).Fill((TPResults.getTaus().at(GenIndex).LV().Py()- GenTauh.Py())/sqrt(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py)), w);
+						TauA1_Pull_Pz_CorrectAmb.at(t).Fill((TPResults.getTaus().at(GenIndex).LV().Pz()- GenTauh.Pz())/sqrt(TPResults.getTaus().at(GenIndex).Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz)), w);
+
+						TauA1_Par_Px_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).LV().Px(), w);
+						TauA1_Par_Py_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).LV().Py(), w);
+						TauA1_Par_Pz_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).LV().Pz(), w);
+						TauA1_Cov_Pxx_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px), w);
+						TauA1_Cov_Pyy_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py), w);
+						TauA1_Cov_Pzz_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz), w);
+						TauA1_Cov_Pxy_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::px,LorentzVectorParticle::py), w);
+						TauA1_Cov_Pxz_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::px,LorentzVectorParticle::pz), w);
+						TauA1_Cov_Pyz_WrongAmb.at(t).Fill(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::py,LorentzVectorParticle::pz), w);
+						TauA1_Pull_Px_WrongAmb.at(t).Fill((TPResults.getTaus().at(GenWrongIndex).LV().Px()- GenTauh.Px())/sqrt(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px)), w);
+						TauA1_Pull_Py_WrongAmb.at(t).Fill((TPResults.getTaus().at(GenWrongIndex).LV().Py()- GenTauh.Py())/sqrt(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py)), w);
+						TauA1_Pull_Pz_WrongAmb.at(t).Fill((TPResults.getTaus().at(GenWrongIndex).LV().Pz()- GenTauh.Pz())/sqrt(TPResults.getTaus().at(GenWrongIndex).Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz)), w);
+
+						A1_Pull_Px_wAmb.at(t).Fill((TPResults.getA1().LV().Px() - GenA1.Px())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px)), w);
+						A1_Pull_Py_wAmb.at(t).Fill((TPResults.getA1().LV().Py() - GenA1.Py())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py)), w);
+						A1_Pull_Pz_wAmb.at(t).Fill((TPResults.getA1().LV().Pz() - GenA1.Pz())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::pz,LorentzVectorParticle::pz)), w);
+						A1_Pull_M_wAmb.at(t).Fill((TPResults.getA1().LV().M() - GenA1.M())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::m,LorentzVectorParticle::m)), w);
+
+						SV_Pull_Px_wAmb.at(t).Fill((TPResults.getA1().Vertex().X() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).X())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vx,LorentzVectorParticle::vx)), w);
+						SV_Pull_Py_wAmb.at(t).Fill((TPResults.getA1().Vertex().Y() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Y())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vy,LorentzVectorParticle::vy)), w);
+						SV_Pull_Pz_wAmb.at(t).Fill((TPResults.getA1().Vertex().Z() - Ntp->MCTauandProd_Vertex(GenTauhIndex,1).Z())/sqrt(TPResults.getA1().Covariance(LorentzVectorParticle::vz,LorentzVectorParticle::vz)), w);
 					}
 
 					TVector3 POCAPV_dir = Ntp->Muon_Poca(selMuon_Iso) - Ntp->PFTau_TIP_primaryVertex_pos(selTau);
@@ -1994,14 +2937,14 @@ void  ZToTaumuTauh::doEvent(){
 
 					Phi_POCAPV.at(t).Fill(POCAPV_dir.Phi(), w);
 					Theta_POCAPV.at(t).Fill(POCAPV_dir.Theta(), w);
-					double dPhi = POCAPV_dir.Phi() - GenTaumu.Phi();
+					double dPhi = POCAPV_dir.DeltaPhi(GenTaumu.Vect());
 					dPhi_POCAPV_genTaumu.at(t).Fill(dPhi, w);
 					double dTheta = POCAPV_dir.Theta() - GenTaumu.Theta();
 					dTheta_POCAPV_genTaumu.at(t).Fill(dTheta, w);
 
 					Phi_SVPV.at(t).Fill(Ntp->PFTau_FlightLength3d(selTau).Phi(), w);
 					Theta_SVPV.at(t).Fill(Ntp->PFTau_FlightLength3d(selTau).Theta(), w);
-					dPhi = Ntp->PFTau_FlightLength3d(selTau).Phi() - GenTauh.Phi();
+					dPhi = Ntp->PFTau_FlightLength3d(selTau).DeltaPhi(GenTauh.Vect());
 					dPhi_SVPV_genTauh.at(t).Fill(dPhi, w);
 					dPhi_SVPV_genTauh_vs_TauFL.at(t).Fill(dPhi, Ntp->PFTau_FlightLength(selTau));
 					if(Tauh_charge == 1) dPhi_SVPV_genTauhPlus_vs_TauFL.at(t).Fill(dPhi, Ntp->PFTau_FlightLength(selTau));
@@ -2011,13 +2954,13 @@ void  ZToTaumuTauh::doEvent(){
 					Angle_SVPV_genTauh.at(t).Fill(Ntp->PFTau_FlightLength3d(selTau).Angle(GenTauh.Vect()));
 
 					TVector3 MinusPFTau_FlightLength3d = - Ntp->PFTau_FlightLength3d(selTau);
-					dPhi = MinusPFTau_FlightLength3d.Phi() - GenTaumu.Phi();
+					dPhi = MinusPFTau_FlightLength3d.DeltaPhi(GenTaumu.Vect());
 					dPhi_MinusSVPV_genTaumu.at(t).Fill(dPhi, w);
 					dTheta = MinusPFTau_FlightLength3d.Theta() - GenTaumu.Theta();
 					dTheta_MinusSVPV_genTaumu.at(t).Fill(dTheta, w);
 					Angle_MinusSVPV_genTaumu.at(t).Fill(MinusPFTau_FlightLength3d.Angle(GenTaumu.Vect()));
 
-					double A1_dPhi = Ntp->PFTau_3PS_A1_LV(selTau).Phi() - GenA1.Phi();
+					double A1_dPhi = Ntp->PFTau_3PS_A1_LV(selTau).DeltaPhi(GenA1);
 					double A1_dTheta = Ntp->PFTau_3PS_A1_LV(selTau).Theta() - GenA1.Theta();
 					A1_Phi_Res.at(t).Fill(A1_dPhi , w);
 					A1_Theta_Res.at(t).Fill(A1_dTheta , w);
@@ -2117,7 +3060,7 @@ void  ZToTaumuTauh::doEvent(){
 					VtxTracksPtRes.at(t).Fill(Pt_Z.Mod() - GenZH.Pt(), w);
 					//double phinew = (Recoil.Phi() > 0) ? Recoil.Phi() - TMath::Pi() : Recoil.Phi() + TMath::Pi();
 					VtxTracksPhiCorrectedRes.at(t).Fill(Pt_Z.Phi_mpi_pi(Pt_Z.Phi()) - GenZH.Phi(), w);
-					dPhi_GenTauMu_RecoMu.at(t).Fill(GenTaumu.Phi() - Ntp->Muon_p4(selMuon).Phi());
+					dPhi_GenTauMu_RecoMu.at(t).Fill(Ntp->Muon_p4(selMuon).DeltaPhi(GenTaumu));
 					dTheta_GenTauMu_RecoMu.at(t).Fill(GenTaumu.Theta() - Ntp->Muon_p4(selMuon).Theta());
 
 					TLorentzVector GenTauhHelix = GenTauHelixP4AtSV(GenTauhIndex, GenTauh);
@@ -2275,11 +3218,11 @@ void  ZToTaumuTauh::doEvent(){
 					TLorentzVector TauMu_wMET_afterMC = TauMuFullEstimate(PV, Muon, RecoTauh_wTruth, TauMu_wMETPtVec, IS_wMET);
 
 					Est_TauMu_wMET_PtRes.at(t).Fill(TauMu_wMET.Pt() - GenTaumu.Pt());
-					Est_TauMu_wMET_PhiRes.at(t).Fill(TauMu_wMET.Phi() - GenTaumu.Phi());
+					Est_TauMu_wMET_PhiRes.at(t).Fill(TauMu_wMET.DeltaPhi(GenTaumu));
 
 					TLorentzVector Z_wMET = RecoTauh_wTruth.LV() + TauMu_wMET;
 					Est_Z_wMET_PtRes.at(t).Fill(Z_wMET.Pt() - GenZH.Pt());
-					Est_Z_wMET_PhiRes.at(t).Fill(Z_wMET.Phi() - GenZH.Phi());
+					Est_Z_wMET_PhiRes.at(t).Fill(Z_wMET.DeltaPhi(GenZH));
 
 					TLorentzVector TauMuPtfromEventRecoil = Recoil - RecoTauh_wTruth.LV();
 					TVector2 TauMu_EventRecoil_PtVec = TauMuPtfromEventRecoil.Vect().XYvector();
@@ -2304,16 +3247,16 @@ void  ZToTaumuTauh::doEvent(){
 					TauMu_Start_EventRecoil_PtRes_AfterMC.at(t).Fill(TauMu_EventRecoil_afterMC.Pt() - GenTaumu.Pt());
 
 					Z_Start_MET_PtRes.at(t).Fill(Z_wMET.Pt() - GenZH.Pt());
-					Z_Start_MET_PhiRes.at(t).Fill(Z_wMET.Phi() - GenZH.Phi());
+					Z_Start_MET_PhiRes.at(t).Fill(Z_wMET.DeltaPhi(GenZH));
 					Z_Start_PtBalance_PtRes.at(t).Fill(- GenZH.Pt());
 					//Z_Start_PtBalance_PhiRes.at(t).Fill(
-					Z_Start_EventRecoil_PtRes.at(t).Fill(Pt_Z.Phi_mpi_pi(Pt_Z.Phi()) - GenZH.Pt());
-					Z_Start_EventRecoil_PhiRes.at(t).Fill(Pt_Z.Phi_mpi_pi(Pt_Z.Phi()) - GenZH.Phi());
+					Z_Start_EventRecoil_PtRes.at(t).Fill(Pt_Z.Mod() - GenZH.Pt());
+					Z_Start_EventRecoil_PhiRes.at(t).Fill(TVector2::Phi_mpi_pi(Pt_Z.Phi_mpi_pi(Pt_Z.Phi()) - GenZH.Phi()));
 
 					if(FitResults.Fitconverged()){
-					TauMu_Start_dPhi_TauMuTauH_MET.at(t).Fill(TauMu_wMET_afterMC.Phi() - RecoTauh_wTruth.LV().Phi());
-					TauMu_Start_dPhi_TauMuTauH_EventRecoil.at(t).Fill(TauMu_EventRecoil_afterMC.Phi() - RecoTauh_wTruth.LV().Phi());
-					TauMu_Start_dPhi_TauMuTauH_PtBalance.at(t).Fill(TauMu_PtBalance_afterMC.Phi() - RecoTauh_wTruth.LV().Phi());
+						TauMu_Start_dPhi_TauMuTauH_MET.at(t).Fill(TauMu_wMET_afterMC.DeltaPhi(RecoTauh_wTruth.LV()));
+						TauMu_Start_dPhi_TauMuTauH_EventRecoil.at(t).Fill(TauMu_EventRecoil_afterMC.DeltaPhi(RecoTauh_wTruth.LV()));
+						TauMu_Start_dPhi_TauMuTauH_PtBalance.at(t).Fill(TauMu_PtBalance_afterMC.DeltaPhi(RecoTauh_wTruth.LV()));
 					}
 
 					TVector3 PV_RecoTau(RecoTauh_wTruth.Vertex());
@@ -2343,8 +3286,8 @@ void  ZToTaumuTauh::doEvent(){
 					if(FitResults.Fitconverged()){
 						if(GenZH.Pt() < 5.){
 							if(FitResults.getResonance().Mass() >=0){
-								Reco_dPhi_TauMuTauA1_AfterFit_lowBoost.at(t).Fill(FitResults.getTauMu().LV().Phi() - FitResults.getTauH().LV().Phi(), w);
-								Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost.at(t).Fill(FitResults.getInitTauMu().LV().Phi() - FitResults.getInitTauH().LV().Phi(), w);
+								Reco_dPhi_TauMuTauA1_AfterFit_lowBoost.at(t).Fill(FitResults.getTauMu().LV().DeltaPhi(FitResults.getTauH().LV()), w);
+								Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost.at(t).Fill(FitResults.getInitTauMu().LV().DeltaPhi(FitResults.getInitTauH().LV()), w);
 								Reco_ZMass_UnboostedGenZ.at(t).Fill(FitResults.getResonance().Mass(), w);
 								RecoZ_Pt_Unboosted.at(t).Fill(FitResults.getResonance().LV().Pt(), w);
 								GenZ_Pt_Unboosted.at(t).Fill(GenZH.Pt(), w);
@@ -2475,13 +3418,14 @@ void  ZToTaumuTauh::doEvent(){
 						}
 						*/
 
-						Reco_Z_Energy_Res.at(t).Fill(dE_Z, w);
+						Reco_ZMass.at(t).Fill(Reco_Z_Corr.M(), w);
+						Reco_Z_Energy_Res.at(t).Fill(Reco_Z_Corr.E() - GenZH.E(), w);
 						Reco_PtRes_TauMu.at(t).Fill(dPt_TauMu, w);
 						Reco_PtRes_TauA1.at(t).Fill(dPt_TauA1, w);
 						Reco_PtRes_TauMu_NoFit.at(t).Fill(dPt_TauMu_NoFit, w);
 						Reco_PtRes_TauA1_NoFit.at(t).Fill(dPt_TauA1_NoFit, w);
 
-						double dPhi_TauMu_Prefit = FitResults.getInitTauMu().LV().Phi() - GenTaumu.Phi();
+						double dPhi_TauMu_Prefit = FitResults.getInitTauMu().LV().DeltaPhi(GenTaumu);
 						double dTheta_TauMu_Prefit = FitResults.getInitTauMu().LV().Theta() - GenTaumu.Theta();
 						Reco_PhiRes_TauMu_PreFit.at(t).Fill(dPhi_TauMu_Prefit);
 						Reco_ThetaRes_TauMu_PreFit.at(t).Fill(dTheta_TauMu_Prefit);
@@ -2544,16 +3488,21 @@ void  ZToTaumuTauh::doEvent(){
 						TPTF_TauA1_p_paralRes_vs_RecoGJAngle_FitSolution.at(t).Fill(dP_paral_TauA1_RecoA1, RecoGJAngle);
 						TPTF_A1_pRes_vs_RecoGJAngle.at(t).Fill(dP_A1, RecoGJAngle);
 
-						TPTF_TauA1_p_Reco.at(t).Fill(TauA1_TLV_FitSolution.P(), w);
-						TPTF_TauA1_pt_Reco.at(t).Fill(TauA1_TLV_FitSolution.Pt(), w);
-						TPTF_TauA1_px_Reco.at(t).Fill(TauA1_TLV_FitSolution.Px(), w);
-						TPTF_TauA1_py_Reco.at(t).Fill(TauA1_TLV_FitSolution.Py(), w);
-						TPTF_TauA1_pz_Reco.at(t).Fill(TauA1_TLV_FitSolution.Pz(), w);
-						TPTF_TauA1_p_Gen.at(t).Fill(GenTauh.P(), w);
-						TPTF_TauA1_pt_Gen.at(t).Fill(GenTauh.Pt(), w);
-						TPTF_TauA1_px_Gen.at(t).Fill(GenTauh.Px(), w);
-						TPTF_TauA1_py_Gen.at(t).Fill(GenTauh.Py(), w);
-						TPTF_TauA1_pz_Gen.at(t).Fill(GenTauh.Pz(), w);
+						Gen_TauA1_P.at(t).Fill(GenTauh.P(), w);
+						Gen_TauA1_Pt.at(t).Fill(GenTauh.Pt(), w);
+						Gen_TauA1_Px.at(t).Fill(GenTauh.Px(), w);
+						Gen_TauA1_Py.at(t).Fill(GenTauh.Py(), w);
+						Gen_TauA1_Pz.at(t).Fill(GenTauh.Pz(), w);
+						Gen_TauA1_Phi.at(t).Fill(GenTauh.Phi(), w);
+						Gen_TauA1_Eta.at(t).Fill(GenTauh.Eta(), w);
+
+						Gen_TauMu_P.at(t).Fill(GenTaumu.P(), w);
+						Gen_TauMu_Pt.at(t).Fill(GenTaumu.Pt(), w);
+						Gen_TauMu_Px.at(t).Fill(GenTaumu.Px(), w);
+						Gen_TauMu_Py.at(t).Fill(GenTaumu.Py(), w);
+						Gen_TauMu_Pz.at(t).Fill(GenTaumu.Pz(), w);
+						Gen_TauMu_Phi.at(t).Fill(GenTaumu.Phi(), w);
+						Gen_TauMu_Eta.at(t).Fill(GenTaumu.Eta(), w);
 
 						TPTF_TauA1_pxsq_Reco.at(t).Fill(pow(TauA1_TLV_FitSolution.Px(),2.), w);
 						TPTF_TauA1_pysq_Reco.at(t).Fill(pow(TauA1_TLV_FitSolution.Py(),2.), w);
@@ -2564,6 +3513,160 @@ void  ZToTaumuTauh::doEvent(){
 
 						TPTF_TauA1_ptRes_vs_ptGen.at(t).Fill(dPt_TauA1, GenTauh.Pt());
 						TPTF_TauA1_ptRes_vs_ptReco.at(t).Fill(dPt_TauA1, TauA1_TLV_FitSolution.Pt());
+
+						Reco_Z_PhiRes.at(t).Fill(Reco_Z_Corr.DeltaPhi(GenZH), w);
+						Reco_Z_EtaRes.at(t).Fill(Reco_Z_Corr.Eta() - GenZH.Eta(), w);
+						Reco_Z_PRes.at(t).Fill(Reco_Z_Corr.P() - GenZH.P(), w);
+						Reco_Z_PtRes.at(t).Fill(Reco_Z_Corr.Pt() - GenZH.Pt(), w);
+
+						if(FitResults.getIndex() == 0){
+							Reco_Z_PhiRes_noAmb.at(t).Fill(Reco_Z_Corr.DeltaPhi(GenZH), w);
+							Reco_Z_EtaRes_noAmb.at(t).Fill(Reco_Z_Corr.Eta() - GenZH.Eta(), w);
+							Reco_Z_PRes_noAmb.at(t).Fill(Reco_Z_Corr.P() - GenZH.P(), w);
+						}
+						else{
+							if(fitstatuses.at(1) && fitstatuses.at(2)){
+								Reco_Z_PhiRes_wAmb.at(t).Fill(Reco_Z_Corr.DeltaPhi(GenZH), w);
+								Reco_Z_EtaRes_wAmb.at(t).Fill(Reco_Z_Corr.Eta() - GenZH.Eta(), w);
+								Reco_Z_PRes_wAmb.at(t).Fill(Reco_Z_Corr.P() - GenZH.P(), w);
+								Reco_Chi2_rightAmb.at(t).Fill(FitResults.getChi2Vectors().at(GenIndex).Sum(), w);
+								Reco_Chi2_orig_rightAmb.at(t).Fill(FitResults.getChi2Vectors().at(GenIndex)(0), w);
+								Reco_Chi2_SC_rightAmb.at(t).Fill(FitResults.getChi2Vectors().at(GenIndex)(1), w);
+								Reco_Chi2_HC_rightAmb.at(t).Fill(FitResults.getChi2Vectors().at(GenIndex)(2), w);
+								Reco_Chi2_wrongAmb.at(t).Fill(FitResults.getChi2Vectors().at(GenWrongIndex).Sum(), w);
+								Reco_Chi2_orig_wrongAmb.at(t).Fill(FitResults.getChi2Vectors().at(GenWrongIndex)(0), w);
+								Reco_Chi2_SC_wrongAmb.at(t).Fill(FitResults.getChi2Vectors().at(GenWrongIndex)(1), w);
+								Reco_Chi2_HC_wrongAmb.at(t).Fill(FitResults.getChi2Vectors().at(GenWrongIndex)(2), w);
+							}
+						}
+						if(FitResults.getIndex() == GenIndex){
+							Reco_Z_PhiRes_pickedrightAmb.at(t).Fill(Reco_Z_Corr.DeltaPhi(GenZH), w);
+							Reco_Z_EtaRes_pickedrightAmb.at(t).Fill(Reco_Z_Corr.Eta() - GenZH.Eta(), w);
+							Reco_Z_PRes_pickedrightAmb.at(t).Fill(Reco_Z_Corr.P() - GenZH.P(), w);
+							Reco_NIter_pickedrightAmb.at(t).Fill(FitResults.getNiterations(), w);
+							Reco_Chi2_pickedrightAmb.at(t).Fill(FitResults.getChi2(), w);
+							Reco_Chi2_orig_pickedrightAmb.at(t).Fill(FitResults.getChi2Vector()(0), w);
+							Reco_Chi2_SC_pickedrightAmb.at(t).Fill(FitResults.getChi2Vector()(1), w);
+							Reco_Chi2_HC_pickedrightAmb.at(t).Fill(FitResults.getChi2Vector()(2), w);
+						}
+
+						if(FitResults.getIndex() != GenIndex){
+							Reco_Z_PhiRes_pickedwrongAmb.at(t).Fill(Reco_Z_Corr.DeltaPhi(GenZH), w);
+							Reco_Z_EtaRes_pickedwrongAmb.at(t).Fill(Reco_Z_Corr.Eta() - GenZH.Eta(), w);
+							Reco_Z_PRes_pickedwrongAmb.at(t).Fill(Reco_Z_Corr.P() - GenZH.P(), w);
+							Reco_NIter_pickedwrongAmb.at(t).Fill(FitResults.getNiterations(), w);
+							Reco_Chi2_pickedwrongAmb.at(t).Fill(FitResults.getChi2(), w);
+							Reco_Chi2_orig_pickedwrongAmb.at(t).Fill(FitResults.getChi2Vector()(0), w);
+							Reco_Chi2_SC_pickedwrongAmb.at(t).Fill(FitResults.getChi2Vector()(1), w);
+							Reco_Chi2_HC_pickedwrongAmb.at(t).Fill(FitResults.getChi2Vector()(2), w);
+						}
+						int index_bychi2_full, index_bychi2_orig, index_bySC, index_byHC, index_byorigplusSC;
+						if(fitstatuses.at(1) && fitstatuses.at(2)){
+							if(FitResults.getChi2Vectors().at(1).Sum() <= FitResults.getChi2Vectors().at(2).Sum()) index_bychi2_full = 1;
+							if(FitResults.getChi2Vectors().at(1).Sum() > FitResults.getChi2Vectors().at(2).Sum()) index_bychi2_full = 2;
+							if(FitResults.getChi2Vectors().at(1)(0) <= FitResults.getChi2Vectors().at(2)(0)) index_bychi2_orig = 1;
+							if(FitResults.getChi2Vectors().at(1)(0) > FitResults.getChi2Vectors().at(2)(0)) index_bychi2_orig = 2;
+							if(FitResults.getChi2Vectors().at(1)(1) <= FitResults.getChi2Vectors().at(2)(1)) index_bySC = 1;
+							if(FitResults.getChi2Vectors().at(1)(1) > FitResults.getChi2Vectors().at(2)(1)) index_bySC = 2;
+							if(FitResults.getChi2Vectors().at(1)(2) <= FitResults.getChi2Vectors().at(2)(2)) index_byHC = 1;
+							if(FitResults.getChi2Vectors().at(1)(2) > FitResults.getChi2Vectors().at(2)(2)) index_byHC = 2;
+							if( 	(FitResults.getChi2Vectors().at(1)(0) + FitResults.getChi2Vectors().at(1)(1))
+								<=	(FitResults.getChi2Vectors().at(2)(0) + FitResults.getChi2Vectors().at(2)(1))
+								) index_byorigplusSC = 1;
+							if( 	(FitResults.getChi2Vectors().at(1)(0) + FitResults.getChi2Vectors().at(1)(1))
+								>	(FitResults.getChi2Vectors().at(2)(0) + FitResults.getChi2Vectors().at(2)(1))
+								) index_byorigplusSC = 2;
+							Reco_FitSolution_byChi2_Full_vs_RightSolution.at(t).Fill(GenIndex, index_bychi2_full);
+							Reco_FitSolution_byChi2_orig_vs_RightSolution.at(t).Fill(GenIndex, index_bychi2_orig);
+							Reco_FitSolution_byChi2_SC_vs_RightSolution.at(t).Fill(GenIndex, index_bySC);
+							Reco_FitSolution_byChi2_HC_vs_RightSolution.at(t).Fill(GenIndex, index_byHC);
+							Reco_FitSolution_byChi2_origplusSC_vs_RightSolution.at(t).Fill(GenIndex, index_byorigplusSC);
+
+							double chi2_diff = FitResults.getChi2Vectors().at(2).Sum() - FitResults.getChi2Vectors().at(1).Sum();
+							Reco_Chi2_diff.at(t).Fill(chi2_diff, w);
+							Reco_Chi2_orig_diff.at(t).Fill(FitResults.getChi2Vectors().at(2)(0) - FitResults.getChi2Vectors().at(1)(0), w);
+							Reco_Chi2_SC_diff.at(t).Fill(FitResults.getChi2Vectors().at(2)(1) - FitResults.getChi2Vectors().at(1)(1), w);
+							Reco_Chi2_HC_diff.at(t).Fill(FitResults.getChi2Vectors().at(2)(2) - FitResults.getChi2Vectors().at(1)(2), w);
+							Reco_Chi2_origplusSC_diff.at(t).Fill(FitResults.getChi2Vectors().at(2)(0) + FitResults.getChi2Vectors().at(2)(1) - FitResults.getChi2Vectors().at(1)(0) - FitResults.getChi2Vectors().at(1)(1), w);
+
+							if(chi2_diff >= 0){
+								if(GenIndex == 1) Reco_Chi2_diff_vs_correctAssignment.at(t).Fill(chi2_diff, 1.);
+								else if(GenIndex == 2) Reco_Chi2_diff_vs_correctAssignment.at(t).Fill(chi2_diff, 0);
+							}
+							else{
+								if(GenIndex == 2) Reco_Chi2_diff_vs_correctAssignment.at(t).Fill(chi2_diff, 1.);
+								else if(GenIndex == 1) Reco_Chi2_diff_vs_correctAssignment.at(t).Fill(chi2_diff, 0);
+							}
+						}
+
+
+					}
+					if(FitResultswithFullRecoil.Fitconverged()){
+						Reco_PtRes_TauA1_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pt() - GenTauh.Pt(), w);
+						Reco_PtRes_TauMu_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pt() - GenTaumu.Pt(), w);
+						Reco_PtRes_TauA1_wRecoil_PreFit.at(t).Fill(FitResultswithFullRecoil.getInitTauH().LV().Pt() - GenTauh.Pt(), w);
+						Reco_PtRes_TauMu_wRecoil_PreFit.at(t).Fill(FitResultswithFullRecoil.getInitTauMu().LV().Pt() - GenTaumu.Pt(), w);
+						Reco_Z_Energy_Res_wRecoil.at(t).Fill(FitResultswithFullRecoil.getResonance().LV().E() - GenZH.E(), w);
+						Reco_ZMass_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.M(), w);
+						Reco_TauA1_ptRes_vs_ptGen_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pt() - GenTauh.Pt(), GenTauh.Pt());
+						Reco_TauA1_ptRes_vs_ptReco_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pt() - GenTauh.Pt(), FitResultswithFullRecoil.getTauH().LV().Pt());
+						Reco_TauMu_ptRes_vs_ptGen_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pt() - GenTaumu.Pt(), GenTaumu.Pt());
+						Reco_TauMu_ptRes_vs_ptReco_wRecoil.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pt() - GenTaumu.Pt(), FitResultswithFullRecoil.getInitTauMu().LV().Pt());
+
+						Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr.at(t).Fill(GenTauh.Pt() - FitResultswithFullRecoil.getTauH().LV().Pt(), FitResultswithFullRecoil.getTauH().LV().Pt());
+						Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr.at(t).Fill(GenTaumu.Pt() - FitResultswithFullRecoil.getTauMu().LV().Pt(), FitResultswithFullRecoil.getInitTauMu().LV().Pt());
+
+						Reco_Z_PtRes_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.Pt() - GenZH.Pt(), w);
+						Reco_Z_EtaRes_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.Eta() - GenZH.Eta(), w);
+						Reco_Z_PhiRes_wRecoil.at(t).Fill(Reco_Z_Corr_wRecoil.DeltaPhi(GenZH), w);
+
+						if(FitResultswithFullRecoil.getIndex() == 0){
+							Reco_PtRes_TauA1_wRecoil_AmbZero.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pt() - GenTauh.Pt(), w);
+							Reco_PtRes_TauMu_wRecoil_AmbZero.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pt() - GenTaumu.Pt(), w);
+							Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_AmbZero.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pt() - GenTaumu.Pt(), FitResultswithFullRecoil.getTauMu().LV().Pt());
+							Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_AmbZero.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pt() - GenTauh.Pt(), FitResultswithFullRecoil.getTauH().LV().Pt());
+							Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit.at(t).Fill(FitResultswithFullRecoil.getInitTauHs().at(0).LV().Pt() - GenTauh.Pt(), FitResultswithFullRecoil.getInitTauHs().at(0).LV().Pt());
+							Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit.at(t).Fill(FitResultswithFullRecoil.getInitTauMus().at(0).LV().Pt() - GenTaumu.Pt(), FitResultswithFullRecoil.getInitTauMus().at(0).LV().Pt());
+						}
+						if(FitResultswithFullRecoil.getIndex() != 0){
+							Reco_PtRes_TauA1_wRecoil_wAmb.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pt() - GenTauh.Pt(), w);
+							Reco_PtRes_TauMu_wRecoil_wAmb.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pt() - GenTaumu.Pt(), w);
+							Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_wAmb.at(t).Fill(FitResultswithFullRecoil.getTauMu().LV().Pt() - GenTaumu.Pt(), FitResultswithFullRecoil.getTauMu().LV().Pt());
+							Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_wAmb.at(t).Fill(FitResultswithFullRecoil.getTauH().LV().Pt() - GenTauh.Pt(), FitResultswithFullRecoil.getTauH().LV().Pt());
+
+							if(fitstatuses_wRecoil.at(1) && fitstatuses_wRecoil.at(2)){
+								if(GenIndex == 1){
+									Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit.at(t).Fill(FitResultswithFullRecoil.getInitTauHs().at(GenIndex).LV().Pt() - GenTauh.Pt(), FitResultswithFullRecoil.getInitTauHs().at(GenIndex).LV().Pt());
+									Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit.at(t).Fill(FitResultswithFullRecoil.getInitTauMus().at(GenIndex).LV().Pt() - GenTaumu.Pt(), FitResultswithFullRecoil.getInitTauMus().at(GenIndex).LV().Pt());
+								}
+								if(GenIndex == 2){
+									Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit.at(t).Fill(FitResultswithFullRecoil.getInitTauHs().at(GenIndex).LV().Pt() - GenTauh.Pt(), FitResultswithFullRecoil.getInitTauHs().at(GenIndex).LV().Pt());
+									Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit.at(t).Fill(FitResultswithFullRecoil.getInitTauMus().at(GenIndex).LV().Pt() - GenTaumu.Pt(), FitResultswithFullRecoil.getInitTauMus().at(GenIndex).LV().Pt());
+								}
+							}
+						}
+						int index_bychi2_full, index_bychi2_orig, index_bySC, index_byHC, index_byorigplusSC;
+						if(fitstatuses_wRecoil.at(1) && fitstatuses_wRecoil.at(2)){
+							if(FitResultswithFullRecoil.getChi2Vectors().at(1).Sum() <= FitResultswithFullRecoil.getChi2Vectors().at(2).Sum()) index_bychi2_full = 1;
+							if(FitResultswithFullRecoil.getChi2Vectors().at(1).Sum() > FitResultswithFullRecoil.getChi2Vectors().at(2).Sum()) index_bychi2_full = 2;
+							if(FitResultswithFullRecoil.getChi2Vectors().at(1)(0) <= FitResultswithFullRecoil.getChi2Vectors().at(2)(0)) index_bychi2_orig = 1;
+							if(FitResultswithFullRecoil.getChi2Vectors().at(1)(0) > FitResultswithFullRecoil.getChi2Vectors().at(2)(0)) index_bychi2_orig = 2;
+							if(FitResultswithFullRecoil.getChi2Vectors().at(1)(1) <= FitResultswithFullRecoil.getChi2Vectors().at(2)(1)) index_bySC = 1;
+							if(FitResultswithFullRecoil.getChi2Vectors().at(1)(1) > FitResultswithFullRecoil.getChi2Vectors().at(2)(1)) index_bySC = 2;
+							if(FitResultswithFullRecoil.getChi2Vectors().at(1)(2) <= FitResultswithFullRecoil.getChi2Vectors().at(2)(2)) index_byHC = 1;
+							if(FitResultswithFullRecoil.getChi2Vectors().at(1)(2) > FitResultswithFullRecoil.getChi2Vectors().at(2)(2)) index_byHC = 2;
+							if( 	(FitResultswithFullRecoil.getChi2Vectors().at(1)(0) + FitResultswithFullRecoil.getChi2Vectors().at(1)(1))
+								<=	(FitResultswithFullRecoil.getChi2Vectors().at(2)(0) + FitResultswithFullRecoil.getChi2Vectors().at(2)(1))
+								) index_byorigplusSC = 1;
+							if( 	(FitResultswithFullRecoil.getChi2Vectors().at(1)(0) + FitResultswithFullRecoil.getChi2Vectors().at(1)(1))
+								>	(FitResultswithFullRecoil.getChi2Vectors().at(2)(0) + FitResultswithFullRecoil.getChi2Vectors().at(2)(1))
+								) index_byorigplusSC = 2;
+							Reco_FitSolution_byChi2_Full_vs_RightSolution_wRecoil.at(t).Fill(GenIndex, index_bychi2_full);
+							Reco_FitSolution_byChi2_orig_vs_RightSolution_wRecoil.at(t).Fill(GenIndex, index_bychi2_orig);
+							Reco_FitSolution_byChi2_SC_vs_RightSolution_wRecoil.at(t).Fill(GenIndex, index_bySC);
+							Reco_FitSolution_byChi2_HC_vs_RightSolution_wRecoil.at(t).Fill(GenIndex, index_byHC);
+							Reco_FitSolution_byChi2_origplusSC_vs_RightSolution_wRecoil.at(t).Fill(GenIndex, index_byorigplusSC);
+						}
 					}
 				}
 			}
@@ -2631,6 +3734,38 @@ void  ZToTaumuTauh::doEvent(){
 			}
 			else TransTrk_Failure_noSelection.at(t).Fill(1., w);
 		}
+	}
+	if(passAllBut(TauFLSigma)){
+	  double FLSigmaVlad = Ntp->PFTau_FlightLenght_significance(Ntp->PFTau_TIP_primaryVertex_pos(selTau), Ntp->PFTau_TIP_primaryVertex_cov(selTau), Ntp->PFTau_TIP_secondaryVertex_pos(selTau), Ntp->PFTau_TIP_secondaryVertex_cov(selTau));
+	  double sign(0);
+	  if(Ntp->PFTau_3PS_A1_LV(selTau).Vect().Dot(Ntp->PFTau_FlightLength3d(selTau)) < 0){
+			sign = -1;
+		}
+		else{
+			sign = 1;
+		}
+	  TauFLSigmaVlad.at(t).Fill(sign*FLSigmaVlad, w);
+	  TauFLSigmaAlex.at(t).Fill(sign*Ntp->PFTau_FlightLength_significance(selTau), w);
+
+	  if(FLSigmaVlad >= cut.at(TauFLSigma)){
+		TauFLSigmaVlad_PhiA1.at(t).Fill(Ntp->PFTau_p4(selTau).Phi(), w);
+		if(FitResults.Fitconverged()){
+			TauFLSigmaVlad_PhiTau.at(t).Fill(FitResults.getTauH().LV().Phi(), w);
+			TauFLSigmaVlad_PhiTauNoCorr.at(t).Fill(FitResultsNoCorr.getTauH().LV().Phi(), w);
+			TauFLSigmaVlad_PhiZnoCorr.at(t).Fill(FitResults.getResonance().LV().Phi(), w);
+			TauFLSigmaVlad_PhiZwCorr.at(t).Fill(Reco_Z_Corr.Phi(), w);
+		}
+	  }
+
+	  if(Ntp->PFTau_FlightLength_significance(selTau) >= cut.at(TauFLSigma)){
+		TauFLSigmaAlex_PhiA1.at(t).Fill(Ntp->PFTau_p4(selTau).Phi(), w);
+		if(FitResults.Fitconverged()){
+			TauFLSigmaAlex_PhiTau.at(t).Fill(FitResults.getTauH().LV().Phi(), w);
+			TauFLSigmaAlex_PhiTauNoCorr.at(t).Fill(FitResultsNoCorr.getTauH().LV().Phi(), w);
+			TauFLSigmaAlex_PhiZnoCorr.at(t).Fill(FitResults.getResonance().LV().Phi(), w);
+			TauFLSigmaAlex_PhiZwCorr.at(t).Fill(Reco_Z_Corr.Phi(), w);
+		}
+	  }
 	}
 
 }//final bracket of DoEvent
@@ -3161,5 +4296,12 @@ TVector3 ZToTaumuTauh::TauMuEstimatorWithMET(TrackParticle Muon, LorentzVectorPa
 	double xdoc = dxy*sin(phi0) + tmu*cos(phi0);
 	double ydoc = dxy*cos(phi0) + tmu*sin(phi0);
 	double zdoc = dsz*cos(lam) + tmu*tan(lam);
+}
+*/
+/*
+double ZToTaumuTauh::GJErrorCalc(TVector3 SVPV, LorentzVectorParticle A1){
+  double error;
+  TVector3 A1.
+  return error;
 }
 */

@@ -86,6 +86,10 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> NUnphysical_StraightTau_HelixTau;
 
   std::vector<TH1D> Gen_TauA1_GJ, Gen_TauMu_GJ;
+  std::vector<TH1D> Gen_TauA1_P, Gen_TauA1_Pt, Gen_TauA1_Px, Gen_TauA1_Py, Gen_TauA1_Pz, Gen_TauA1_Phi, Gen_TauA1_Eta;
+  std::vector<TH1D> Gen_TauMu_P, Gen_TauMu_Pt, Gen_TauMu_Px, Gen_TauMu_Py, Gen_TauMu_Pz, Gen_TauMu_Phi, Gen_TauMu_Eta;
+  std::vector<TH1D> Gen_TauA1_P_noSel, Gen_TauA1_Pt_noSel, Gen_TauA1_Px_noSel, Gen_TauA1_Py_noSel, Gen_TauA1_Pz_noSel, Gen_TauA1_Phi_noSel, Gen_TauA1_Eta_noSel;
+  std::vector<TH1D> Gen_TauMu_P_noSel, Gen_TauMu_Pt_noSel, Gen_TauMu_Px_noSel, Gen_TauMu_Py_noSel, Gen_TauMu_Pz_noSel, Gen_TauMu_Phi_noSel, Gen_TauMu_Eta_noSel;
   std::vector<TH1D> Gen_DiTau_dPhi, Gen_DiTau_Pt, Gen_Z_Pt, Gen_Z_M, Gen_DiTau_PtBalance_M, Gen_DiTau_PtBalance_dM, Gen_TauMu_PtBalance_Pt, Gen_TauMu_PtBalance_dP, Gen_TauA1_dP;
   std::vector<TH1D> Gen_TPTF_TauA1_Solution_NoSelection, Gen_TPTF_TauA1_Solution_WithSelection;
   std::vector<TH2D> Gen_Z_Pt_vs_MET;
@@ -104,7 +108,6 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH2D> TPTF_TauA1_pxRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_pyRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_pzRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_ptRes_vs_RecoGJAngle_FitSolution;
   std::vector<TH2D> TPTF_TauA1_pxsqRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_pysqRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_pzsqRes_vs_RecoGJAngle_FitSolution;
   std::vector<TH2D> TPTF_TauA1_p_orthoRes_vs_RecoGJAngle_FitSolution, TPTF_TauA1_p_paralRes_vs_RecoGJAngle_FitSolution;
-  std::vector<TH1D> TPTF_TauA1_p_Reco, TPTF_TauA1_pt_Reco, TPTF_TauA1_px_Reco, TPTF_TauA1_py_Reco, TPTF_TauA1_pz_Reco, TPTF_TauA1_p_Gen, TPTF_TauA1_pt_Gen, TPTF_TauA1_px_Gen, TPTF_TauA1_py_Gen, TPTF_TauA1_pz_Gen;
   std::vector<TH1D> TPTF_TauA1_pxsq_Reco, TPTF_TauA1_pysq_Reco, TPTF_TauA1_pzsq_Reco, TPTF_TauA1_pxsq_Gen, TPTF_TauA1_pysq_Gen, TPTF_TauA1_pzsq_Gen;
 
   std::vector<TH2D> TPTF_TauA1_ptRes_vs_ptGen, TPTF_TauA1_ptRes_vs_ptReco;
@@ -133,7 +136,10 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> Est_Z_M_wTruth2;
   std::vector<TH1D> Est_TauMu_wMET_PtRes, Est_TauMu_wMET_PhiRes, Est_TauMu_wMET_EtaRes, Est_Z_wMET_PtRes, Est_Z_wMET_PhiRes;
 
-  std::vector<TH1D> Reco_ZMass, Reco_ZMass_UnboostedGenZ, Reco_EventFit_Solution, Reco_A1Fit_Solution, Reco_Chi2, Reco_Chi2_FitSolutionOnly, Reco_Chi2_FitSolutionOnlyLargeScale, Reco_ConstrainedDeltaSum, Reco_ConstrainedDeltaMass, Reco_ConstrainedDeltaPt, Reco_NIter;
+  std::vector<TH1D> Reco_TauA1_P, Reco_TauA1_Pt, Reco_TauA1_Px, Reco_TauA1_Py, Reco_TauA1_Pz, Reco_TauA1_Phi, Reco_TauA1_Eta;
+  std::vector<TH1D> Reco_TauMu_P, Reco_TauMu_Pt, Reco_TauMu_Px, Reco_TauMu_Py, Reco_TauMu_Pz, Reco_TauMu_Phi, Reco_TauMu_Eta;
+  std::vector<TH1D> Tau_pt_wo_FLSigmaCut, Tau_phi_wo_FLSigmaCut, Tau_eta_wo_FLSigmaCut;
+  std::vector<TH1D> Reco_ZMass, Reco_ZMass_UnboostedGenZ, Reco_EventFit_Solution, Reco_A1Fit_Solution, Reco_Chi2_FitSolutionOnlyLargeScale, Reco_ConstrainedDeltaSum, Reco_ConstrainedDeltaMass, Reco_ConstrainedDeltaPt;
   std::vector<TH1D> Reco_Z_Energy_Res, RecoZ_Pt;
   std::vector<TH1D> GenReco_ZMass, GenReco_EventFit_Solution, GenReco_A1Fit_Solution, GenReco_Chi2, GenReco_Chi2_FitSolutionOnly, GenReco_ConstrainedDeltaSum, GenReco_NIter;
   std::vector<TH1D> Reco_PtRes_TauA1, Reco_PtRes_TauA1_AmbPoint0, Reco_PtRes_TauA1_AmbPoint12, Reco_PtRes_TauA1_AmbPoint1, Reco_PtRes_TauMu, Reco_PtRes_TauMu_AmbPoint0, Reco_PtRes_TauMu_AmbPoint12, Reco_PtRes_TauMu_AmbPoint1;
@@ -147,6 +153,44 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> Reco_dPhi_TauMuTauA1_AfterFit_lowBoost, Reco_dPhi_TauMuTauA1_BeforeFit_lowBoost;
   std::vector<TH1D> Reco_ZMass_MassScan, Reco_ZMass_MassScanUnboosted, Reco_ZMasswithProbWeight_MassScan, Reco_ProbStack_MassScan, Reco_ZMass_PDF;
   std::vector<TH1D> GenZ_Pt_Unboosted, RecoZ_Pt_Unboosted;
+  std::vector<TH1D> Reco_Z_PhiRes, Reco_Z_PhiRes_noAmb, Reco_Z_PhiRes_wAmb, Reco_Z_PhiRes_pickedrightAmb, Reco_Z_PhiRes_pickedwrongAmb;
+  std::vector<TH1D> Reco_Z_EtaRes, Reco_Z_EtaRes_noAmb, Reco_Z_EtaRes_wAmb, Reco_Z_EtaRes_pickedrightAmb, Reco_Z_EtaRes_pickedwrongAmb;
+  std::vector<TH1D> Reco_Z_PRes, Reco_Z_PRes_noAmb, Reco_Z_PRes_wAmb, Reco_Z_PRes_pickedrightAmb, Reco_Z_PRes_pickedwrongAmb;
+  std::vector<TH1D> Reco_NIter, Reco_NIter_noAmb, Reco_NIter_wAmb, Reco_NIter_pickedrightAmb, Reco_NIter_pickedwrongAmb;
+  std::vector<TH1D> Reco_Chi2, Reco_Chi2_noAmb, Reco_Chi2_wAmb, Reco_Chi2_rightAmb, Reco_Chi2_wrongAmb, Reco_Chi2_pickedrightAmb, Reco_Chi2_pickedwrongAmb;
+  std::vector<TH1D> Reco_Chi2_orig, Reco_Chi2_orig_noAmb, Reco_Chi2_orig_wAmb, Reco_Chi2_orig_rightAmb, Reco_Chi2_orig_wrongAmb, Reco_Chi2_orig_pickedrightAmb, Reco_Chi2_orig_pickedwrongAmb;
+  std::vector<TH1D> Reco_Chi2_SC, Reco_Chi2_SC_noAmb, Reco_Chi2_SC_wAmb, Reco_Chi2_SC_rightAmb, Reco_Chi2_SC_wrongAmb, Reco_Chi2_SC_pickedrightAmb, Reco_Chi2_SC_pickedwrongAmb;
+  std::vector<TH1D> Reco_Chi2_HC, Reco_Chi2_HC_noAmb, Reco_Chi2_HC_wAmb, Reco_Chi2_HC_rightAmb, Reco_Chi2_HC_wrongAmb, Reco_Chi2_HC_pickedrightAmb, Reco_Chi2_HC_pickedwrongAmb;
+
+  std::vector<TH1D> Reco_Z_Px, Reco_Z_Py, Reco_Z_Pz, Reco_Z_Pt, Reco_Z_PtRes, Reco_Z_Phi, Reco_Z_Eta;
+
+  std::vector<TH1D> Reco_Chi2_diff, Reco_Chi2_orig_diff, Reco_Chi2_HC_diff, Reco_Chi2_SC_diff, Reco_Chi2_origplusSC_diff;
+  std::vector<TH2D> Reco_Chi2_diff_vs_correctAssignment;
+
+  std::vector<TH2D> Reco_FitSolution_byChi2_Full_vs_RightSolution;
+  std::vector<TH2D> Reco_FitSolution_byChi2_orig_vs_RightSolution, Reco_FitSolution_byChi2_SC_vs_RightSolution, Reco_FitSolution_byChi2_HC_vs_RightSolution;
+  std::vector<TH2D> Reco_FitSolution_byChi2_origplusSC_vs_RightSolution;
+
+  std::vector<TH1D> Reco_TauA1_P_wRecoil, Reco_TauA1_Pt_wRecoil, Reco_TauA1_Px_wRecoil, Reco_TauA1_Py_wRecoil, Reco_TauA1_Pz_wRecoil, Reco_TauA1_Phi_wRecoil, Reco_TauA1_Eta_wRecoil;
+  std::vector<TH1D> Reco_TauMu_P_wRecoil, Reco_TauMu_Pt_wRecoil, Reco_TauMu_Px_wRecoil, Reco_TauMu_Py_wRecoil, Reco_TauMu_Pz_wRecoil, Reco_TauMu_Phi_wRecoil, Reco_TauMu_Eta_wRecoil;
+  std::vector<TH1D> Reco_EventFit_Solution_wRecoil;
+  std::vector<TH1D> Reco_PtRes_TauA1_wRecoil, Reco_PtRes_TauMu_wRecoil, Reco_dPhi_TauMuTauA1_AfterFit_wRecoil, Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil;
+  std::vector<TH1D> Reco_Chi2_FitSolutionOnly_wRecoil, Reco_Chi2_Full_wRecoil, Reco_Chi2_Orig_wRecoil, Reco_Chi2_SC_wRecoil, Reco_Chi2_HC_wRecoil, Reco_Chi2_OrigProb_wRecoil;
+  std::vector<TH1D> Reco_ZMass_wRecoil, Reco_NIter_wRecoil, Reco_Z_Energy_Res_wRecoil;
+  std::vector<TH1D> Reco_PtRes_TauA1_wRecoil_PreFit, Reco_PtRes_TauMu_wRecoil_PreFit;
+  std::vector<TH1D> Reco_PtRes_TauA1_wRecoil_AmbZero, Reco_PtRes_TauA1_wRecoil_wAmb;
+  std::vector<TH1D> Reco_PtRes_TauMu_wRecoil_AmbZero, Reco_PtRes_TauMu_wRecoil_wAmb;
+  std::vector<TH1D> Reco_Z_Px_wRecoil, Reco_Z_Py_wRecoil, Reco_Z_Pz_wRecoil, Reco_Z_Pt_wRecoil, Reco_Z_PtRes_wRecoil, Reco_Z_Phi_wRecoil, Reco_Z_PhiRes_wRecoil, Reco_Z_Eta_wRecoil, Reco_Z_EtaRes_wRecoil;
+
+  std::vector<TH2D> Reco_TauA1_ptRes_vs_ptGen_wRecoil, Reco_TauA1_ptRes_vs_ptReco_wRecoil, Reco_TauMu_ptRes_vs_ptGen_wRecoil, Reco_TauMu_ptRes_vs_ptReco_wRecoil;
+  std::vector<TH2D> Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr, Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr;
+  std::vector<TH2D> Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_wAmb, Reco_TauA1_ptRes_vs_ptReco_wRecoilCorr_AmbZero, Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_wAmb, Reco_TauMu_ptRes_vs_ptReco_wRecoilCorr_AmbZero;
+  std::vector<TH2D> Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit, Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit, Reco_TauA1_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit;
+  std::vector<TH2D> Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb0_Prefit, Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb1_Prefit, Reco_TauMu_ptRes_vs_ptReco_wRecoilwTruth_Amb2_Prefit;
+
+  std::vector<TH2D> Reco_FitSolution_byChi2_Full_vs_RightSolution_wRecoil;
+  std::vector<TH2D> Reco_FitSolution_byChi2_orig_vs_RightSolution_wRecoil, Reco_FitSolution_byChi2_SC_vs_RightSolution_wRecoil;
+  std::vector<TH2D> Reco_FitSolution_byChi2_HC_vs_RightSolution_wRecoil, Reco_FitSolution_byChi2_origplusSC_vs_RightSolution_wRecoil;
 
   std::vector<TH1D> TauMu_Start_Collinear_PtRes, TauMu_Start_MET_PtRes, TauMu_Start_PtBalance_PtRes, TauMu_Start_EventRecoil_PtRes;
   std::vector<TH2D> TauMu_Start_Collinear_PtReco_vs_PtGen, TauMu_Start_MET_PtReco_vs_PtGen, TauMu_Start_PtBalance_PtReco_vs_PtGen, TauMu_Start_EventRecoil_PtReco_vs_PtGen;
@@ -159,6 +203,18 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> Mu_TP_Poca_quadrantData;
   std::vector<TH1D> Mu_TP_Poca_quadrantMCDY;
   std::vector<TH2D> Mu_TP_Poca_xy, Mu_TP_Vertex_xy, Mu_TP_RefitVertex_xy, Mu_TP_BeamSpot_xy, Mu_TP_NTP_Poca_xy;
+
+  std::vector<TH1D> MVAMET_metobject_XX, MVAMET_ptobject_XX;
+  std::vector<TH1D> A1_Par_Px, A1_Par_Py, A1_Par_Pz, A1_Par_M, A1_Cov_Pxx, A1_Cov_Pyy, A1_Cov_Pzz, A1_Cov_Pxy, A1_Cov_Pxz, A1_Cov_Pyz,A1_Pull_Px, A1_Pull_Py, A1_Pull_Pz, A1_Pull_M;
+  std::vector<TH1D> A1_Pull_Px_AmbZero, A1_Pull_Py_AmbZero, A1_Pull_Pz_AmbZero, A1_Pull_M_AmbZero, A1_Pull_Px_wAmb, A1_Pull_Py_wAmb, A1_Pull_Pz_wAmb, A1_Pull_M_wAmb;
+  std::vector<TH1D> SV_Par_x, SV_Par_y, SV_Par_z, SV_Cov_xx, SV_Cov_yy, SV_Cov_zz, SV_Cov_xy, SV_Cov_xz, SV_Cov_yz, SV_Pull_Px, SV_Pull_Py, SV_Pull_Pz;
+  std::vector<TH1D> SV_Pull_Px_AmbZero, SV_Pull_Py_AmbZero, SV_Pull_Pz_AmbZero, SV_Pull_Px_wAmb, SV_Pull_Py_wAmb, SV_Pull_Pz_wAmb;
+  std::vector<TH1D> TauA1_Par_Px_AmbZero, TauA1_Par_Py_AmbZero, TauA1_Par_Pz_AmbZero, TauA1_Cov_Pxx_AmbZero, TauA1_Cov_Pyy_AmbZero, TauA1_Cov_Pzz_AmbZero, TauA1_Cov_Pxy_AmbZero, TauA1_Cov_Pxz_AmbZero, TauA1_Cov_Pyz_AmbZero, TauA1_Pull_Px_AmbZero, TauA1_Pull_Py_AmbZero, TauA1_Pull_Pz_AmbZero;
+  std::vector<TH1D> TauA1_Par_Px_CorrectAmb, TauA1_Par_Py_CorrectAmb, TauA1_Par_Pz_CorrectAmb, TauA1_Cov_Pxx_CorrectAmb, TauA1_Cov_Pyy_CorrectAmb, TauA1_Cov_Pzz_CorrectAmb, TauA1_Cov_Pxy_CorrectAmb, TauA1_Cov_Pxz_CorrectAmb, TauA1_Cov_Pyz_CorrectAmb, TauA1_Pull_Px_CorrectAmb, TauA1_Pull_Py_CorrectAmb, TauA1_Pull_Pz_CorrectAmb;
+  std::vector<TH1D> TauA1_Par_Px_WrongAmb, TauA1_Par_Py_WrongAmb, TauA1_Par_Pz_WrongAmb, TauA1_Cov_Pxx_WrongAmb, TauA1_Cov_Pyy_WrongAmb, TauA1_Cov_Pzz_WrongAmb, TauA1_Cov_Pxy_WrongAmb, TauA1_Cov_Pxz_WrongAmb, TauA1_Cov_Pyz_WrongAmb, TauA1_Pull_Px_WrongAmb, TauA1_Pull_Py_WrongAmb, TauA1_Pull_Pz_WrongAmb;
+
+  std::vector<TH1D> TauFLSigmaVlad, TauFLSigmaVlad_PhiA1, TauFLSigmaVlad_PhiTau, TauFLSigmaVlad_PhiTauNoCorr, TauFLSigmaVlad_PhiZnoCorr, TauFLSigmaVlad_PhiZwCorr;
+  std::vector<TH1D> TauFLSigmaAlex, TauFLSigmaAlex_PhiA1, TauFLSigmaAlex_PhiTau, TauFLSigmaAlex_PhiTauNoCorr, TauFLSigmaAlex_PhiZnoCorr, TauFLSigmaAlex_PhiZwCorr;
 
   std::vector<TH1D> NQCD;
   std::vector<TH1D> QCD_MT_MuMET_A, QCD_MT_MuMET_B, QCD_MT_MuMET_C, QCD_MT_MuMET_D;

@@ -167,7 +167,7 @@ void MET::subtractNeutrino(LorentzVectorParticle neutrino){
 	significanceXX_ = significanceXX_ + neutrino.Covariance(LorentzVectorParticle::px,LorentzVectorParticle::px);
 	significanceXY_ = significanceXY_ + neutrino.Covariance(LorentzVectorParticle::px,LorentzVectorParticle::py);
 	significanceYY_ = significanceYY_ + neutrino.Covariance(LorentzVectorParticle::py,LorentzVectorParticle::py);
-	TMatrixD metmat = significanceMatrix();
+	TMatrixD metmat = significanceMatrix<TMatrixD>();
 	if (fabs(metmat.Determinant())>0.00001){
 		metmat.Invert();
 		significance_ = diff * (metmat * diff);
@@ -177,15 +177,6 @@ void MET::subtractNeutrino(LorentzVectorParticle neutrino){
 		significance_ = -1;
 		hasSignificance_ = false;
 	}
-}
-
-TMatrixD MET::significanceMatrix() const {
-	TMatrixD covMET(2,2);
-	covMET[0][0] = significanceXX_;
-	covMET[1][0] = significanceXY_;
-	covMET[0][1] = significanceXY_;
-	covMET[1][1] = significanceYY_;
-	return covMET;
 }
 
 Vector3D MET::met3D() const {

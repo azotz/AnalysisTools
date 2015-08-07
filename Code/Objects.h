@@ -58,7 +58,16 @@ public:
 	bool hasSignificance() const {return hasSignificance_;}
 	void set_hasSignificance(bool hasSignificance) {hasSignificance_ = hasSignificance;}
 
-	TMatrixD significanceMatrix() const;
+	template<typename T> T significanceMatrix() const{
+		T covMET;
+		covMET.ResizeTo(2,2);
+		covMET[0][0] = significanceXX_;
+		covMET[1][0] = significanceXY_;
+		covMET[0][1] = significanceXY_;
+		covMET[1][1] = significanceYY_;
+		return covMET;
+	}
+
 	Vector3D met3D() const;
 
 	const TString& metType() const {return metType_;}

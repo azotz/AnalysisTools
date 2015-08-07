@@ -14,15 +14,15 @@ SHELL = /bin/sh
 ###                              ###
 ####################################
 
-SHAREDLIBFLAGS =-L./CommonUtils/lib -lTauNtuple -L./DataFormats/lib -lDataFormats
-SHAREDCXXFLAGS =-I./CommonUtils -I./DataFormats
+SHAREDLIBFLAGS =-L./CommonUtils/lib -lTauNtuple 
+SHAREDCXXFLAGS =-I./CommonUtils 
 SUBDIRS = CommonUtils/ 
 TAUSPINERFLAG = 
 
 override CXXFLAGS += 
 ALLCXXFLAGS = $(CXXFLAGS) -I$(ROOTSYS)/include -c -I/include $(SHAREDCXXFLAGS) -c -I./ -c
 LDFLAGS       =  
-ROOTLIBS      =  -L$(ROOTSYS)/lib -L/usr/lib/ -L/lib/i686/  -lCore -lCint -lHist -lGraf  -lGraf3d -lGpad -lTree -lRint -lReflexDict -lReflex -lPostscript -lMatrix -lPhysics -lGui -LObj -lMinuit2 -lThread -lTreePlayer -lRIO -lMathCore -rdynamic -Wl,--rpath $(ROOTSYS)/lib
+ROOTLIBS      =  -L$(ROOTSYS)/lib -L/usr/lib/ -L/lib/i686/  -lCore -lCint -lHist -lGraf  -lGraf3d -lGpad -lTree -lRint -lReflexDict -lReflex -lPostscript -lMatrix -lPhysics -lGui -LObj -lMinuit2 -lThread -rdynamic -Wl,--rpath $(ROOTSYS)/lib
 
 # -ldl -lpthread
 
@@ -59,20 +59,13 @@ ifdef USE_TauSpinner
 	SHAREDLIBFLAGS +=	-L./TauSpiner/lhapdf/lib -lLHAPDF \
 				-L./TauSpiner/tauola++/1.1.3/lib -lTauolaCxxInterface -lTauolaFortran -lTauolaTauSpinner \
 				-L./TauSpiner/hepmc/install/lib -lHepMC
-        SHAREDCXXFLAGS +=	-I./TauSpiner/hepmc/install/include \
+	SHAREDCXXFLAGS +=	-I./TauSpiner/hepmc/install/include \
 				-I./TauSpiner/tauola++/1.1.3/include/Tauola/ \
 				-I./TauSpiner/tauola++/1.1.3/include/TauSpinner/ \
 				-I./TauSpiner/tauola++/1.1.3/include/ \
 				-I./TauSpiner/lhapdf/include/ \
 				-I./TauSpiner/pythia8/176/include/
 	DEFS += -DUSE_TauSpinner=1
-endif
-
-ifdef USE_SVfit
-	TARGETS += SVfitProvider DataStorage SVFitStorage
-	CINTTARGETS += SVFitObject
-	SHAREDLIBFLAGS += -L./CommonUtils/lib -lSVfit
-	DEFS += -DUSE_SVfit=1
 endif
 
 ifdef USE_cherepanov
@@ -150,31 +143,24 @@ vpath %.h CommonFiles
 $(OBJS): %.o : %.cxx
 	$(CXX) $(ALLCXXFLAGS) $(DEFS) $< -o i386_linux/$@ 
 
-.PHONY: clean cleanall cleandf all dataformats install sharedlib 
+.PHONY: clean cleanall all install sharedlib 
 
-install: dataformats Analysis.exe
+install: Analysis.exe
 
-
-dataformats: 
-	@cd DataFormats; gmake install; cd ../
 
 clean:
 	@rm i386_linux/*.o
 	@rm Analysis.exe
-
-cleandf:
-	@cd DataFormats; gmake clean; cd ../
 
 cleanall:
 	@for subdir in $(SUBDIRS); do \
 		echo "Making all in $$subdir"; \
 		cd $$subdir && $(MAKE) -f Makefile.standalone clean && cd ../../; \
 	done
-	@cd DataFormats; gmake clean; cd ../
 	@rm i386_linux/*.o
 	@rm Analysis.exe
 
-all: sharedlib dataformats install
+all: sharedlib install
 
 sharedlib:
 	@for subdir in $(SUBDIRS); do \
@@ -184,18 +170,8 @@ sharedlib:
 			cd $$subdir && $(MAKE) -f Makefile.standalone $(TAUSPINERFLAG) && cd ../ && pwd; \
 		else \
 			echo without flag ; \
-			cd $$subdir echo $(CXXFLAGS) && $(MAKE) -f Makefile.standalone CXXFLAGS+='$(CXXFLAGS)' ; \
-			pwd; \
-			if [ $$subdir == "CommonUtils/" ]; then \
-				echo $(USE_SVfit); \
-				if [ $(USE_SVfit) -eq 1 ]; then \
-					$(MAKE) -f Makefile.SVfitStandalone CXXFLAGS+='$(CXXFLAGS)' ; \
-				fi \
-			fi \
-			&& cd ../ && pwd; \
+			cd $$subdir echo $(CXXFLAGS) && $(MAKE) -f Makefile.standalone CXXFLAGS+='$(CXXFLAGS)' && cd ../ && pwd; \
 		fi \
 	done
 	$(install)
-
-
 
