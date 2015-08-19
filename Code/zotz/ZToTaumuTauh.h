@@ -90,7 +90,9 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> Gen_TauMu_P, Gen_TauMu_Pt, Gen_TauMu_Px, Gen_TauMu_Py, Gen_TauMu_Pz, Gen_TauMu_Phi, Gen_TauMu_Eta;
   std::vector<TH1D> Gen_TauA1_P_noSel, Gen_TauA1_Pt_noSel, Gen_TauA1_Px_noSel, Gen_TauA1_Py_noSel, Gen_TauA1_Pz_noSel, Gen_TauA1_Phi_noSel, Gen_TauA1_Eta_noSel;
   std::vector<TH1D> Gen_TauMu_P_noSel, Gen_TauMu_Pt_noSel, Gen_TauMu_Px_noSel, Gen_TauMu_Py_noSel, Gen_TauMu_Pz_noSel, Gen_TauMu_Phi_noSel, Gen_TauMu_Eta_noSel;
-  std::vector<TH1D> Gen_DiTau_dPhi, Gen_DiTau_Pt, Gen_Z_Pt, Gen_Z_M, Gen_DiTau_PtBalance_M, Gen_DiTau_PtBalance_dM, Gen_TauMu_PtBalance_Pt, Gen_TauMu_PtBalance_dP, Gen_TauA1_dP;
+  std::vector<TH1D> Gen_Z_Pt, Gen_Z_M, Gen_Z_Phi, Gen_Z_Eta;
+  std::vector<TH1D> Gen_Z_Pt_noSel, Gen_Z_Phi_noSel, Gen_Z_Eta_noSel;
+  std::vector<TH1D> Gen_DiTau_dPhi, Gen_DiTau_Pt, Gen_DiTau_PtBalance_M, Gen_DiTau_PtBalance_dM, Gen_TauMu_PtBalance_Pt, Gen_TauMu_PtBalance_dP, Gen_TauA1_dP;
   std::vector<TH1D> Gen_TPTF_TauA1_Solution_NoSelection, Gen_TPTF_TauA1_Solution_WithSelection;
   std::vector<TH2D> Gen_Z_Pt_vs_MET;
   std::vector<TH2D> Gen_Z_Pt_vs_VtxTracksPt;
@@ -176,6 +178,7 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> Reco_EventFit_Solution_wRecoil;
   std::vector<TH1D> Reco_PtRes_TauA1_wRecoil, Reco_PtRes_TauMu_wRecoil, Reco_dPhi_TauMuTauA1_AfterFit_wRecoil, Reco_dPhi_TauMuTauA1_BeforeFit_wRecoil;
   std::vector<TH1D> Reco_Chi2_FitSolutionOnly_wRecoil, Reco_Chi2_Full_wRecoil, Reco_Chi2_Orig_wRecoil, Reco_Chi2_SC_wRecoil, Reco_Chi2_HC_wRecoil, Reco_Chi2_OrigProb_wRecoil;
+  std::vector<TH1D> Reco_Chi2_diff_wRecoil, Reco_Chi2_orig_diff_wRecoil;
   std::vector<TH1D> Reco_ZMass_wRecoil, Reco_NIter_wRecoil, Reco_Z_Energy_Res_wRecoil;
   std::vector<TH1D> Reco_PtRes_TauA1_wRecoil_PreFit, Reco_PtRes_TauMu_wRecoil_PreFit;
   std::vector<TH1D> Reco_PtRes_TauA1_wRecoil_AmbZero, Reco_PtRes_TauA1_wRecoil_wAmb;
@@ -198,6 +201,10 @@ class ZToTaumuTauh : public Selection {
   std::vector<TH1D> TauMu_Start_MET_PtRes_AfterMC, TauMu_Start_PtBalance_PtRes_AfterMC, TauMu_Start_EventRecoil_PtRes_AfterMC;
   std::vector<TH1D> TauMu_Start_dPhi_TauMuTauH_MET, TauMu_Start_dPhi_TauMuTauH_EventRecoil, TauMu_Start_dPhi_TauMuTauH_PtBalance;
   std::vector<TH1D> Z_Start_MET_PtRes, Z_Start_PtBalance_PtRes, Z_Start_EventRecoil_PtRes, Z_Start_MET_PhiRes, Z_Start_PtBalance_PhiRes, Z_Start_EventRecoil_PhiRes;
+
+  std::vector<TH1D> Z_Start_MET_noNu_PtRes, Z_Start_MET_noNu_PhiRes, Z_Start_MET_noNu_M, Z_Start_MET_noNu_dE;
+  std::vector<TH1D> Z_Start_MET_noNu_PtRes_withRot, Z_Start_MET_noNu_PhiRes_withRot, Z_Start_MET_noNu_M_withRot;
+  std::vector<TH1D> Z_Start_B2B_M, Z_Start_B2B_dE;
 
   std::vector<TH1D> Mu_TP_phi0, Mu_TP_lambda, Mu_TP_dxy, Mu_TP_dz, Mu_TP_kappa, Mu_TP_POCA_quadrant, Mu_TP_POCA_quadrantVlad, Mu_TP_POCA_quadrantby_dxyphi0;
   std::vector<TH1D> Mu_TP_Poca_quadrantData;
@@ -242,6 +249,9 @@ class ZToTaumuTauh : public Selection {
   TLorentzVector TauMuEstimator2(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
   TLorentzVector TauMuEstimatorNoZMass(TrackParticle Muon, TLorentzVector Tauh, double PhiRecoil);
   TLorentzVector TauMuFullEstimate(TVector3 PV, TrackParticle Muon, LorentzVectorParticle Tauh, TVector2 TauMuPt, TVector3 &Intersection);
+  TLorentzVector ZEstimatorWithMET(bool rotate, TVector3 PV, TrackParticle Muon, LorentzVectorParticle A1, LorentzVectorParticle Tauh, TVector2 MET);
+  TLorentzVector ZEstimatorB2B(bool rotate, TVector3 PV, TrackParticle Muon, LorentzVectorParticle A1, LorentzVectorParticle Tauh);
+
  private:
 
 };
