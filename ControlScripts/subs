@@ -7,6 +7,9 @@
 #
 #   substitute a string by another in all files in a directory
 #
+#	This script could be replaced by
+#   sed -i -- 's/replaceThis/byThis/g' fileName*Pattern.* 
+#
 ############################################################
 #
 if (@ARGV < 2) { 
@@ -37,13 +40,11 @@ else {
   $outstr = shift @ARGV ;
   @files  = @ARGV;
   $nfile  = @files;
-  print   "No of files is $nfile \n" ; 
   $nmod   = 0 ;
   foreach $i (@files)   {
     system(sprintf("grep -s \"%s\" %s ",$inpstr,$i)) ;
     if ( $? == 0 ) {
       ++ $nmod ;
-      print "Substituting in file : $i \n";
       rename("$i","temp.job") || die "can't rename $i to temp.job" ;
       open(INPUT,"temp.job")  || die "can't open temp.job" ;
       open(OUTPUT,">$i") || die "can't open $i" ;
@@ -62,7 +63,7 @@ else {
     #    else { print "$? \n" } ;
   }
   system("rm -f temp.job") ;
-  print   "No of files substituted is $nmod \n" ; 
+  print   "No of files substituted is $nmod out of $nfile\n" ; 
 }
 
 

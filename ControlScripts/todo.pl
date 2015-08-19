@@ -33,6 +33,10 @@ if($UserID eq "zotz"){
     $UserIDCern="azotz";
     $UserDir="--zotz";
 }
+if($UserID eq "stahl"){
+    $UserIDCern="stahl";
+    $UserDir="--stahl";
+}
 
 
 #Default vaules
@@ -49,6 +53,7 @@ $BTag="NO";
 $Cleaning ="NO";
 $maxdata=100;
 $maxmc=100;
+$maxemb=100;
 $ARCH="slc6_amd64_gcc472";
 $Queue="cream-pbs-short";
 
@@ -77,6 +82,7 @@ if($ARGV[0] eq "--help" || $ARGV[0] eq ""){
     printf("\n                                                     --SetName <SetName>     Default value: $set ");
     printf("\n                                                     --NMaxData <Max Number of data files per job >     Default value: $maxdata ");
     printf("\n                                                     --NMaxMC <Max Number of MC files per job >     Default value: $maxmc ");
+	printf("\n                                                     --NMaxEmbed <Max Number of Embedding files per job > Default value: $maxemb ");
     printf("\n                                                     --ROOTSYS <ROOTSYS> the current ROOTSYS variable if --BuildRoot is not defined");
     printf("\n                                                     --TauSpinner Option to turn on TauSpinner");
     printf("\n                                                     --SVfit Option to turn on SVfit");
@@ -90,6 +96,7 @@ if($ARGV[0] eq "--help" || $ARGV[0] eq ""){
     printf("\n                                                     --SetName <SetName> "); 
     printf("\n                                                     --NMaxData <Max Number of data files per job >     Default value: $maxdata ");
     printf("\n                                                     --NMaxMC <Max Number of MC files per job >     Default value: $maxmc ");
+    printf("\n                                                     --NMaxEmbed <Max Number of Embedding files per job > Default value: $maxemb ");
     printf("\n                                                     --ROOTSYS <ROOTSYS> the current ROOTSYS variable if --BuildRoot is not defined");
     printf("\n                                                     --TauSpinner Option to turn on TauSpinner");
     printf("\n                                                     --SVfit Option to turn on SVfit");
@@ -104,6 +111,7 @@ if($ARGV[0] eq "--help" || $ARGV[0] eq ""){
     printf("\n                                                     --SetName <SetName> ");
     printf("\n                                                     --NMaxData <Max Number of data files per job > Default value: $maxdata");
     printf("\n                                                     --NMaxMC <Max Number of MC files per job > Default value: $maxmc ");
+    printf("\n                                                     --NMaxEmbed <Max Number of Embedding files per job > Default value: $maxemb ");
     printf("\n                                                     --BuildRoot <ROOT Version> builds custom version for root instead of copying lib+include");
     printf("\n                                                     --ROOTSYS <ROOTSYS> the current ROOTSYS variable if --BuildRoot is not defined");
     printf("\n                                                     --GRIDSite <site> the grid site you wish to run on. Default=grid-srm.physik.rwth-aachen.de");
@@ -170,6 +178,10 @@ for($l=2;$l<$numArgs; $l++){
     if($ARGV[$l] eq  "--NMaxMC" ){
 	$l++;
 	$maxmc=$ARGV[$l];
+    }
+    if($ARGV[$l] eq  "--NMaxEmbed" ){
+	$l++;
+	$maxemb=$ARGV[$l];
     }
     if($ARGV[$l] eq  "--BuildRoot"){
 	$l++;
@@ -380,8 +392,8 @@ if( $ARGV[0] eq "--Local" ){
     $B=0;
     $max=1;
     for($l=0;$l<2; $l++){
-	printf("\n\nStarting Loop $l  maxdata = $maxdata maxmc = $maxmc \n");
-	$A=$maxdata+$maxmc+10;
+	printf("\n\nStarting Loop $l  maxdata = $maxdata maxmc = $maxmc maxemb = $maxemb \n");
+	$A=$maxdata+$maxmc+$maxemb+10;
 	foreach $subdir (@dirs){
 	    printf("$subdir");
 	    if(($l==0 && ($subdir =~ m/data/)) || ($l==1 && !($subdir =~ m/data/))){
@@ -390,6 +402,9 @@ if( $ARGV[0] eq "--Local" ){
 		}
 		else{
 		    $max=$maxmc;
+			if($subdir =~ m/embed/){
+				$max=$maxemb
+			}
 		}
 		printf("Accessing Directory  $subdir \n");
 		opendir(SUBDIR,"$InputDir/$subdir/");
@@ -561,9 +576,12 @@ if( $ARGV[0] eq "--DCache" ){
 		}
 		else{
 		    $max=$maxmc;
+			if($DS =~ m/embed/){
+				$max=$maxemb
+			}
 		}
 		printf("\n\nStarting Loop $l \n");
-		$A=$maxdata+$maxmc+10;
+		$A=$maxdata+$maxmc+$maxemb+10;
 
 		# find the root files for the current DataSet (DS)
 		printf("Accessing Directory  $DS \n");
@@ -833,9 +851,12 @@ if( $ARGV[0] eq "--GRID" ){
 		}
 		else{
 		    $max=$maxmc;
+			if($DS =~ m/embed/){
+				$max=$maxemb
+			}
 		}
 		printf("\n\nStarting Loop $l \n");
-		$A=$maxdata+$maxmc+10;
+		$A=$maxdata+$maxmc+$maxemb+10;
 
 		# find the root files for the current DataSet (DS)
 		printf("Accessing Directory  $DS \n");
@@ -863,7 +884,7 @@ if( $ARGV[0] eq "--GRID" ){
 		
 		foreach $file (@files){
 		    $idx++;
-		    printf("$DS/$file Set= $B  Index=  $A   Max.= $max N Files = $nfiles Current File = $idx \n");
+		    #printf("$DS/$file Set= $B  Index=  $A   Max.= $max N Files = $nfiles Current File = $idx \n");
 		    if($A > $max ){
 			$A=1;
 			$B++;

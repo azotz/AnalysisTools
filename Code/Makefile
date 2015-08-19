@@ -83,7 +83,7 @@ ifdef USE_kargoll
 	TARGETS += OneJetBoost OneJetHigh OneJetLow VBFLoose VBFTight ZeroJetHigh ZeroJetLow Inclusive
 	TARGETS += CategoryStandalone VBFLooseStandalone VBFTightStandalone RelaxedVBFTightStandalone RelaxedVBFLooseStandalone
 	#TARGETS += MuTauSync MCDecayChain
-	TARGETS += ZeroJetLow3Prong
+	TARGETS += ZeroJet3Prong
 	DEFS += -DUSE_kargoll=1
 endif 
 
@@ -105,7 +105,10 @@ ifdef USE_zotz
 	TARGETS += ZToTaumuTauh
 	DEFS += -DUSE_zotz=1
 endif
-
+ifdef USE_stahl
+	TARGETS += 
+	DEFS += -DUSE_stahl=1
+endif
 
 
 HDRS          = $(TARGETS:=.h) 		
@@ -131,6 +134,8 @@ vpath %.cxx nehrkorn
 vpath %.h nehrkorn
 vpath %.cxx zotz
 vpath %.h zotz
+vpath %.cxx stahl
+vpath %.h stahl
 vpath %.cxx CommonFiles
 vpath %.h CommonFiles
 

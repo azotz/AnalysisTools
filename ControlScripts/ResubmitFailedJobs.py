@@ -28,7 +28,11 @@ for set in lSets:
     nFilesInSet = len(glob.glob(set + "/" + filename))
     
     if nFiles == -1:
-        nFiles = nFilesInSet
+        # determine expected number of root files from first set
+        if nFilesInSet == 0:
+            print "WARNING:", set, "contains", nFilesInSet, "root files. Using next set to determine expected number of root files."
+        else:
+            nFiles = nFilesInSet
     
     if nFilesInSet == 0:
         badSets.append(set)

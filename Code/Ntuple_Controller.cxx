@@ -1095,7 +1095,7 @@ bool Ntuple_Controller::hasSignalTauDecay(PDGInfo::PDGMCNumbering parent_pdgid,u
 }
 
 // calculate flight length significance from primary and secondary vertex info
-double Ntuple_Controller::PFTau_FlightLenght_significance(TVector3 pv,TMatrixTSym<double> PVcov, TVector3 sv, TMatrixTSym<double> SVcov ){
+double Ntuple_Controller::PFTau_FlightLength_significance(TVector3 pv,TMatrixTSym<double> PVcov, TVector3 sv, TMatrixTSym<double> SVcov ){
   TVector3 SVPV = sv - pv;
   TVectorF FD;
   FD.ResizeTo(3);
@@ -1445,85 +1445,6 @@ std::vector<TVector3> Ntuple_Controller::PFTau_daughterTracks_poca(unsigned int 
   }
   return poca;
 }
-
-//All ReFitTracks are evaluated at the fitted secondary vertex TODO: save TrackParticle also for full helix parametrization
-std::vector<TLorentzVector> Ntuple_Controller::PFTau_daughterReFitTracks_p4(unsigned int i){
-  std::vector<TLorentzVector> refittracks_p4;
-  for(unsigned int d=0; d<Ntp->PFTau_PionsP4->at(i).size(); d++){
-    TLorentzVector TLV(Ntp->PFTau_PionsP4->at(i).at(d).at(1), Ntp->PFTau_PionsP4->at(i).at(d).at(2), Ntp->PFTau_PionsP4->at(i).at(d).at(3), Ntp->PFTau_PionsP4->at(i).at(d).at(0));
-    refittracks_p4.push_back(TLV);
-  }
-  return refittracks_p4;
-}
-
-bool Ntuple_Controller::AmbiguitySolver(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Probs, int &IndexToReturn, bool &AmbiguityPoint){
-
-  if(EventFit.at(0) == true && EventFit.at(1) == false && EventFit.at(2) == false){IndexToReturn =0; AmbiguityPoint = true; return true;}
-  if(EventFit.at(1) == true && EventFit.at(2) == false){ IndexToReturn = 1;AmbiguityPoint = false;return true;}
-  if(EventFit.at(1) == false && EventFit.at(2) == true){ IndexToReturn = 2;AmbiguityPoint = false;return true;}
-
-  if((A1Fit.at(1) == true && A1Fit.at(2) == true) && (EventFit.at(1) == true && EventFit.at(2) == true)){
-    if(Probs.at(1)  >Probs.at(2) ){ IndexToReturn  =1;AmbiguityPoint = false;return true;}
-    if(Probs.at(1)  <Probs.at(2) ){ IndexToReturn  =2;AmbiguityPoint = false;return true;}
-    //  std::cout<< " probs 1,2  "<< Probs.at(1) <<"  "<< Probs.at(2)<<std::endl;
-  }
-  return false;
-}
-bool Ntuple_Controller::AmbiguitySolverByChi2(std::vector<bool> A1Fit, std::vector<bool> EventFit, std::vector<double> Chi2s, int &IndexToReturn, bool &AmbiguityPoint){
-
-  if(EventFit.at(0) == true && EventFit.at(1) == false && EventFit.at(2) == false){IndexToReturn =0; AmbiguityPoint = true; return true;}
-  if(EventFit.at(1) == true && EventFit.at(2) == false){ IndexToReturn = 1; AmbiguityPoint = false;return true;}
-  if(EventFit.at(1) == false && EventFit.at(2) == true){ IndexToReturn = 2; AmbiguityPoint = false;return true;}
-
-  if((A1Fit.at(1) == true && A1Fit.at(2) == true) && (EventFit.at(1) == true && EventFit.at(2) == true)){
-    if(Chi2s.at(1) < Chi2s.at(2) && Chi2s.at(1) > 0){ IndexToReturn =1; AmbiguityPoint = false;return true;}
-    if(Chi2s.at(1) > Chi2s.at(2) && Chi2s.at(2) > 0){ IndexToReturn =2; AmbiguityPoint = false;return true;}
-    //  std::cout<< " probs 1,2  "<< Probs.at(1) <<"  "<< Probs.at(2)<<std::endl;
-  }
-  return false;
-}
-
-TMatrixTSym<double> Ntuple_Controller::PF_Tau_FlightLegth3d_TauFrame_cov(unsigned int i){
-  TVector3 f=PFTau_FlightLength3d(i);
-  TMatrixT<double> Res(5,1);
-  Res(0,0)=f.X();
-  Res(1,0)=f.Y();
-  Res(2,0)=f.Z();
-  Res(3,0)=f.Phi();
-  Res(4,0)=f.Theta();
-  TMatrixTSym<double> ResCov(5);
-  TMatrixTSym<double> cov=PFTau_FlightLength3d_cov(i);
-  for(int s=0;s<LorentzVectorParticle::NVertex;s++){
-    for(int t=0;t<LorentzVectorParticle::NVertex;t++){
-      ResCov(s,t)=cov(s,t);
-    }
-  }
-  TMatrixT<double> Resp=MultiProngTauSolver::RotateToTauFrame(Res);
-  TMatrixTSym<double> RespCov=ErrorMatrixPropagator::PropagateError(&MultiProngTauSolver::RotateToTauFrame,Res,ResCov);
-  for(int s=0;s<LorentzVectorParticle::NVertex;s++){
-    for(int t=0;t<LorentzVectorParticle::NVertex;t++){
-      cov(s,t)=RespCov(s,t);
-    }
-  }
-  return cov;
-}
-
-TVector3 Ntuple_Controller::PF_Tau_FlightLegth3d_TauFrame(unsigned int i){
-  TVector3 f=PFTau_FlightLength3d(i);
-  TMatrixT<double> Res(5,1);
-  Res(0,0)=f.X();
-  Res(1,0)=f.Y();
-  Res(2,0)=f.Z();
-  Res(3,0)=f.Phi();
-  Res(4,0)=f.Theta();
-  TMatrixT<double> Resp=MultiProngTauSolver::RotateToTauFrame(Res);
-  return TVector3(Resp(0,0),Resp(1,0),Resp(2,0));
-}
-
-double Ntuple_Controller::PFTau_Mass(unsigned int i){
-  return Ntp->PFTau_Mass(i);
-}
-
 double Ntuple_Controller::dxySigned(TLorentzVector fourvector, TVector3 poca, TVector3 vtx){
 	return (-(poca.X()-vtx.X())*fourvector.Py()+(poca.Y()-vtx.Y())*fourvector.Px())/fourvector.Pt();
 }

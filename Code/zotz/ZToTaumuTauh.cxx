@@ -277,7 +277,6 @@ void  ZToTaumuTauh::Configure(){
 
 	Tau_Mass_Inclusive=HConfig.GetTH1D(Name+"_Tau_Mass_Inclusive","Tau_Mass_Inclusive",170,-0.2,1.5,"PFTau mass","Events");
 	Tau_Mass_sq_Inclusive=HConfig.GetTH1D(Name+"_Tau_Mass_sq_Inclusive","Tau_Mass_sq_Inclusive",170,-0.05,0.05,"PFTau mass squared","Events");
-	Tau_Mass_Inclusive_NoTLV=HConfig.GetTH1D(Name+"_Tau_Mass_Inclusive_NoTLV","Tau_Mass_Inclusive_NoTLV",170,-0.2,1.5,"PFTau mass No TLV","Events");
 	Tau_Mass_Inclusive_UnFitTracks=HConfig.GetTH1D(Name+"_Tau_Mass_Inclusive_UnFitTracks","Tau_Mass_Inclusive_UnFitTracks",170,-0.2,1.5,"Tau_Mass_Inclusive_UnFitTracks","Events");
 	Tau_Mass_Inclusive_ReFitTracks=HConfig.GetTH1D(Name+"_Tau_Mass_Inclusive_ReFitTracks","Tau_Mass_Inclusive_ReFitTracks",170,-0.2,1.5,"Tau_Mass_Inclusive_ReFitTracks","Events");
 
@@ -957,7 +956,6 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d.push_back(&Tau_eta_wo_FLSigmaCut);
 	Extradist1d.push_back(&Tau_Mass_Inclusive);
 	Extradist1d.push_back(&Tau_Mass_sq_Inclusive);
-	Extradist1d.push_back(&Tau_Mass_Inclusive_NoTLV);
 	Extradist1d.push_back(&Tau_Mass_Inclusive_UnFitTracks);
 	Extradist1d.push_back(&Tau_Mass_Inclusive_ReFitTracks);
 	Extradist1d.push_back(&Tau_Mass_Difference_PFTau_UnFitTracks_3PS);
@@ -1544,7 +1542,6 @@ void  ZToTaumuTauh::Store_ExtraDist(){
 	Extradist1d_OS.push_back(&Tau_eta);
 	Extradist1d_OS.push_back(&Tau_Mass_Inclusive);
 	Extradist1d_OS.push_back(&Tau_Mass_sq_Inclusive);
-	Extradist1d_OS.push_back(&Tau_Mass_Inclusive_NoTLV);
 	Extradist1d_OS.push_back(&Tau_Mass_Inclusive_UnFitTracks);
 	Extradist1d_OS.push_back(&Tau_Mass_Inclusive_ReFitTracks);
 	Extradist1d_OS.push_back(&MET_phi);
@@ -1978,8 +1975,8 @@ void  ZToTaumuTauh::doEvent(){
 			//std::cout << "Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength_error(selTau) << std::endl;
 			//std::cout << "Ntp->PFTau_FlightLength(selTau)/Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength(selTau)/Ntp->PFTau_FlightLength_error(selTau) << std::endl;
 			//std::cout << "Ntp->PFTau_FlightLength_error(selTau) " << Ntp->PFTau_FlightLength_error(selTau) << std::endl;
-			double FLSigma = Ntp->PFTau_FlightLenght_significance(Ntp->PFTau_TIP_primaryVertex_pos(selTau), Ntp->PFTau_TIP_primaryVertex_cov(selTau), Ntp->PFTau_TIP_secondaryVertex_pos(selTau), Ntp->PFTau_TIP_secondaryVertex_cov(selTau));
-			Logger(Logger::Debug) << "FLSigma Ich: " << Ntp->PFTau_FlightLength_significance(selTau) << std::endl;
+			double FLSigma = Ntp->PFTau_FlightLength_significance(Ntp->PFTau_TIP_primaryVertex_pos(selTau), Ntp->PFTau_TIP_primaryVertex_cov(selTau), Ntp->PFTau_TIP_secondaryVertex_pos(selTau), Ntp->PFTau_TIP_secondaryVertex_cov(selTau));
+			//Logger(Logger::Debug) << "FLSigma Ich: " << Ntp->PFTau_FlightLength_significance(selTau) << std::endl;
 			Logger(Logger::Debug) << "FLSigma Vladimir: " << FLSigma << std::endl;
 			if(Ntp->PFTau_3PS_A1_LV(selTau).Vect().Dot(Ntp->PFTau_FlightLength3d(selTau)) < 0){
 				value.at(TauFLSigma) = -FLSigma;
@@ -3015,6 +3012,7 @@ void  ZToTaumuTauh::doEvent(){
 					A1_Phi_Res.at(t).Fill(A1_dPhi , w);
 					A1_Theta_Res.at(t).Fill(A1_dTheta , w);
 
+					/*
 					std::vector< bool > TauA1Reco_StraightTau;
 					std::vector< bool > TauA1Reco_HelixTau;
 					for(unsigned Ambiguity=0; Ambiguity<3; Ambiguity++){
@@ -3031,13 +3029,12 @@ void  ZToTaumuTauh::doEvent(){
 							double MaxGJAngle = GJAngleMax(Ntp->PFTau_3PS_A1_LV(selTau));
 							double GJAngleStraightOverGJAngleMax = GJAngleStraight/MaxGJAngle;
 							double GJAngleHelixOverGJAngleMax = GJAngleHelix/MaxGJAngle;
-							/*
+
 							Logger(Logger::Debug) << "GJAngleStraight " << GJAngleStraight << std::endl;
 							Logger(Logger::Debug) << "GJAngleHelix " << GJAngleHelix << std::endl;
 							Logger(Logger::Debug) << "GJAngleMax " << MaxGJAngle << std::endl;
 							Logger(Logger::Debug) << "TauCharge " << Ntp->PFTau_Charge(selTau) << std::endl;
-							*/
-							/*
+
 							if(GenTauhIndex != -1){
 								Logger(Logger::Debug) << "GenTau1 Vertex :" << Ntp->MCTauandProd_Vertex(0,0).X() << ", " << Ntp->MCTauandProd_Vertex(0,0).Y() << ", " << Ntp->MCTauandProd_Vertex(0,0).Z() << std::endl;
 								Logger(Logger::Debug) << "GenTau2 Vertex :" << Ntp->MCTauandProd_Vertex(1,0).X() << ", " << Ntp->MCTauandProd_Vertex(1,0).Y() << ", " << Ntp->MCTauandProd_Vertex(1,0).Z() << std::endl;
@@ -3045,7 +3042,7 @@ void  ZToTaumuTauh::doEvent(){
 								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).X() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).Y() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,2).Z() << std::endl;
 								Logger(Logger::Debug) << "GenTauh Sec Vertex :" << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).X() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).Y() << ", " << Ntp->MCTauandProd_Vertex(GenTauhIndex,3).Z() << std::endl;
 							}
-							*/
+
 							double dGJAngleStraight = GJAngleStraight - MaxGJAngle;
 							double dGJAngleHelix = GJAngleHelix - MaxGJAngle;
 							dGJAngle_GJAngleMAX_StraightTau.at(t).Fill(dGJAngleStraight, w);
@@ -3075,6 +3072,7 @@ void  ZToTaumuTauh::doEvent(){
 							NUnphysical_StraightTau_HelixTau.at(t).Fill(-2., w);
 						}
 					}
+					*/
 
 					TLorentzVector Neutrino_UnFitTracks(GenTauh);
 					(Ntp->PFTau_NdaughterTracks(selTau) == 3) ? TransTrk_Failure_withSelection.at(t).Fill(0.,w) : TransTrk_Failure_withSelection.at(t).Fill(1.,w);
@@ -3770,7 +3768,6 @@ void  ZToTaumuTauh::doEvent(){
 		if(pass.at(MT_MuMET)){
 			Tau_Mass_Inclusive.at(t).Fill(Ntp->PFTau_p4(selTau).M(), w);
 			Tau_Mass_sq_Inclusive.at(t).Fill(Ntp->PFTau_p4(selTau).M2(), w);
-			Tau_Mass_Inclusive_NoTLV.at(t).Fill(Ntp->PFTau_Mass(selTau), w);
 			//std::cout << "Ntp->PFTau_NdaughtersReFitTracks_p4(selTau) " << Ntp->PFTau_NdaughtersReFitTracks_p4(selTau) << std::endl;
 			for(unsigned int i=0; i<Ntp->PFTau_NdaughtersReFitTracks_p4(selTau);i++){
 				//std::cout << "Ntp->PFTau_daughterReFitTracks_p4(selTau).at(i).M() " << Ntp->PFTau_daughterReFitTracks_p4(selTau).at(i).M() << std::endl;
@@ -3810,7 +3807,7 @@ void  ZToTaumuTauh::doEvent(){
 		}
 	}
 	if(passAllBut(TauFLSigma) && Ntp->PFTau_TIP_hassecondaryVertex(selTau) && pass.at(PrimeVtx)){
-	  double FLSigmaVlad = Ntp->PFTau_FlightLenght_significance(Ntp->PFTau_TIP_primaryVertex_pos(selTau), Ntp->PFTau_TIP_primaryVertex_cov(selTau), Ntp->PFTau_TIP_secondaryVertex_pos(selTau), Ntp->PFTau_TIP_secondaryVertex_cov(selTau));
+	  double FLSigmaVlad = Ntp->PFTau_FlightLength_significance(Ntp->PFTau_TIP_primaryVertex_pos(selTau), Ntp->PFTau_TIP_primaryVertex_cov(selTau), Ntp->PFTau_TIP_secondaryVertex_pos(selTau), Ntp->PFTau_TIP_secondaryVertex_cov(selTau));
 	  double sign(0);
 	  if(Ntp->PFTau_3PS_A1_LV(selTau).Vect().Dot(Ntp->PFTau_FlightLength3d(selTau)) < 0){
 			sign = -1;
@@ -3819,7 +3816,7 @@ void  ZToTaumuTauh::doEvent(){
 			sign = 1;
 		}
 	  TauFLSigmaVlad.at(t).Fill(sign*FLSigmaVlad, w);
-	  TauFLSigmaAlex.at(t).Fill(sign*Ntp->PFTau_FlightLength_significance(selTau), w);
+	  //TauFLSigmaAlex.at(t).Fill(sign*Ntp->PFTau_FlightLength_significance(selTau), w);
 
 	  if(FLSigmaVlad >= cut.at(TauFLSigma)){
 		TauFLSigmaVlad_PhiA1.at(t).Fill(Ntp->PFTau_p4(selTau).Phi(), w);
@@ -3830,7 +3827,7 @@ void  ZToTaumuTauh::doEvent(){
 			TauFLSigmaVlad_PhiZwCorr.at(t).Fill(Reco_Z_Corr.Phi(), w);
 		}
 	  }
-
+	  /*
 	  if(Ntp->PFTau_FlightLength_significance(selTau) >= cut.at(TauFLSigma)){
 		TauFLSigmaAlex_PhiA1.at(t).Fill(Ntp->PFTau_p4(selTau).Phi(), w);
 		if(FitResults.Fitconverged()){
@@ -3840,6 +3837,7 @@ void  ZToTaumuTauh::doEvent(){
 			TauFLSigmaAlex_PhiZwCorr.at(t).Fill(Reco_Z_Corr.Phi(), w);
 		}
 	  }
+	  */
 	}
 
 }//final bracket of DoEvent

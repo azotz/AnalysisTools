@@ -273,8 +273,7 @@ class HToTaumuTauh : public Selection {
   bool qcdUseEfficiencyMethod;
   // flag to use embedding
   bool useEmbedding;
-  // flag to enable/disable SVFit calculation
-  bool runSVFit;
+
 
   // object corrections to use
   TString correctTaus;

@@ -12,6 +12,7 @@ if [ "${1}"  == "--help" ]; then
     echo "--nehrkorn                Configures the make file to compile files in the directory nehrkorn"
     echo "--pistone                 Configures the make file to compile files in the directory pistone"
     echo "--zotz                    Configures the make file to compile files in the directory zotz"
+    echo "--stahl                   Configures the make file to compile files in the directory stahl"
 else
 
     echo "Configuring Environment...."
@@ -88,6 +89,10 @@ else
 	    if [ "${var}" == "--zotz" ]; then
 	    echo "Configuring Code to use directory zotz"
 	    echo "USE_zotz=1" >> make.inc
+	    fi 
+	   	if [ "${var}" == "--stahl" ]; then
+	    echo "Configuring Code to use directory stahl"
+	    echo "USE_stahl=1" >> make.inc
 	    fi 
 	done
     fi

@@ -1,24 +1,23 @@
 /*
- * ZeroJetLow3Prong.h
+ * ZeroJet3Prong.h
  *
  *  Created on: Mar 21, 2014
  *      Author: kargoll
  */
 
-#ifndef ZeroJetLow3Prong_H_
-#define ZeroJetLow3Prong_H_
+#ifndef ZeroJet3Prong_H_
+#define ZeroJet3Prong_H_
 
 #include "Category.h"
 
-class ZeroJetLow3Prong: public Category {
+class ZeroJet3Prong: public Category {
 public:
-	ZeroJetLow3Prong(TString Name_, TString id_);
-	virtual ~ZeroJetLow3Prong();
+	ZeroJet3Prong(TString Name_, TString id_);
+	virtual ~ZeroJet3Prong();
 
 	// enumerator for the cuts in this category
-	enum cuts_ZeroJetLow3Prong {
+	enum cuts_ZeroJet3Prong {
 		NJet = HToTaumuTauh::CatCut1,
-		TauPt,
 		DecayMode,
 		SigmaSV,
 		NCuts
@@ -29,6 +28,9 @@ protected:
 	bool categorySelection();
 	void categoryExtradist();
 	void categoryPlotting();
+
+	// flag to enable/disable SVFit calculation
+	bool runSVFit_;
 
 	// svfit
 	SVFitStorage svfitstor_Tau3pPlus;
@@ -80,11 +82,6 @@ protected:
 	std::vector<TH1D> svFit3pMassResol_ZeroSol;
 	std::vector<TH1D> svFit3pMassResol_TrueSol;
 
-	std::vector<TH2D> Tau_Pt_3pTrueVsSVfit3pTrueSol;
-	std::vector<TH1D> Tau_Pt_3pTrueSVfit3pTrueSolResol;
-	std::vector<TH2D> Tau_Pt_3pTrueVsSVfit3pZeroSol;
-	std::vector<TH1D> Tau_Pt_3pTrueSVfit3pZeroSolResol;
-
 	std::vector<TH1D> vis3pMass_PlusSol;
 	std::vector<TH1D> vis3pMass_MinusSol;
 	std::vector<TH1D> vis3pMass_ZeroSol;
@@ -130,4 +127,4 @@ protected:
 
 };
 
-#endif /* ZeroJetLow3Prong_H_ */
+#endif /* ZeroJet3Prong_H_ */
